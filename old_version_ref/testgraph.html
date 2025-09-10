@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Example 1</title>
+	<script src=
+"https://cdn.jsdelivr.net/npm/chart.js">
+	</script>
+</head>
+
+<body>
+	<h2 style="color:green">
+		GeeksforGeeks
+	</h2>
+	<h5>
+	Approach 1: Using Arrays
+	</h5>
+	<canvas id="chart1"
+			width="400"
+			height="200">
+	</canvas>
+	<script>
+		const labels = 
+['JavaScript', 'Python', 'Java', 'C++'];
+		const data = [80, 90, 75, 85];
+		const colors = 
+		Array.from(
+		{ length: labels.length },
+		() =>
+'#' + Math.floor(Math.random() * 16777215).toString(16)
+		);
+		const ctx = document.
+		getElementById('chart1').
+		getContext('2d');
+		const chart1 = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 
+'GeeksforGeeks Programming Languages',
+					data: data,
+					backgroundColor: colors,
+				}]
+			},
+		});
+	</script>
+</body>
+
+</html>
