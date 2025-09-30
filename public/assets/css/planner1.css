@@ -30,10 +30,10 @@
     }    
 
     .container-data {
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         width: 100%;
         height: calc(100% - 60px);
         background-color: white;
+        z-index: 1;
         overflow: hidden;
     }
 
@@ -108,7 +108,7 @@
         min-width: 80px;
         box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
         border-radius: 5px;
-        z-index: 1;
+        z-index: 3;
         flex-direction: column;
     }
 
@@ -126,12 +126,10 @@
         background-color: #ddd;
     }
 
-    /* 👇 Open dropdown on hover */
     .dropdowndom:hover .dropdown-content {
         display: flex;
     }
 
-    /* Optional: highlight button when open */
     .dropdowndom:hover .dropbtn {
         background-color: #2980b9;
         color: white;
@@ -395,6 +393,12 @@
         display: none;
     }
 
+    #section-header4{
+        display: flex;
+        flex-direction: column;
+        height: 35px;
+    }
+
     .product-info {
         display: grid;
         width: 90%;
@@ -517,6 +521,18 @@
         height: calc(100vh - 100px);
     }
 
+    #form-swp-container {
+        background-color: #ffffff;
+        padding: 0px 30px;
+        width: 75%;
+        height: calc(100vh - 60px);
+        margin: auto;
+        display: none;
+        overflow: auto;
+        flex-direction: column;
+        gap: 25px;
+    }
+
     .upload-swp-container {
         background-color: #ffffff;
         padding: 30px;
@@ -525,8 +541,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        max-width: 400px;
+        width: 75%;
         margin: 20px auto;
+        font-family: Arial;
     }
 
     .upload-section {
@@ -579,16 +596,31 @@
         background-color: #218838;
     }
 
-    #form-pic-container,
-    #form-swp-container {
+    #form-pic-container {
+        background-color: #ffffff;
+        padding: 0px 30px;
+        width: 75%;
+        height: calc(100vh - 60px);
+        margin: auto;
+        display: none;
+        overflow: auto;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .table-person-container{
         display: flex;
         justify-content: center;
-        align-items: center;
-        padding: 40px;
-        background-color: #f8f9fa;
-        width: 800px;
-        max-width: 800px;
-        display: none;
+    }
+
+    #table-person{
+        width: 90%;
+    }
+
+    #table-person td{
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 800;
     }
 
     #editForm {
@@ -602,6 +634,146 @@
 
     }
 
+    .btn-container {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: center;
+    }
+
+    .updateBtn button {
+        padding: 12px 25px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .updateBtn button:hover{
+        background-color: #0056b3;
+    }
+
+    .uploadPIC-Btn button{
+        padding: 12px 25px;
+        background-color: green;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .uploadPIC-Btn button:hover{
+        background-color: rgb(0, 88, 0);
+    }
+
+    .deleteBtn button {
+        padding: 12px 25px;
+        background-color: red;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .deleteBtn button:hover{
+        background-color: rgb(165, 0, 0);
+    }
+
+    .operator-cover {
+        position: absolute;
+        width: 100%;
+        height: calc(100% - 60px);
+        background-color: rgba(129, 129, 129, 0.438);
+        z-index: 2;
+        display: flex; /* keep flex so structure never breaks */
+        justify-content: center;        
+        align-items: center;
+
+        backdrop-filter: blur(5px);  
+        -webkit-backdrop-filter: blur(10px);
+
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+
+        /* Trick: delay visibility until after fade-out */
+        transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+    }
+
+    .operator-cover.active {
+        opacity: 1;
+        pointer-events: auto;
+        visibility: visible;
+
+        /* only animate opacity when active */
+        transition: opacity 0.5s ease;
+    }
+
+    .update-operator-container {
+        background: white;
+        width: 40%;
+        height: 60vh;
+        padding: 20px;
+        border-radius: 10px;
+        overflow: auto;
+
+        transform: scale(0.95);
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        opacity: 0;
+    }
+
+    .operator-cover.active .update-operator-container {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+
+
+    .exit-btn {
+        top: 10px;
+        right: 10px;
+        background: #ff4757;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .exit-btn:hover {
+        background: #ff3742;
+    }
+
+    .DeleteContainer {
+        position: absolute;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-width: 400px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        display: none;
+    }
+
     .upload-pic-container {
         background-color: #ffffff;
         padding: 30px;
@@ -609,7 +781,7 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         max-width: 400px;
         width: 100%;
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: center;
         margin-left: 150px;
@@ -705,46 +877,6 @@
         box-shadow: #555;
     }
 
-    .update-container,
-    .DeleteContainer {
-        position: absolute;
-        top: 50%;
-        left: 70%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        min-width: 400px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        display: none;
-    }
-
-
-    .exit-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: #ff4757;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .exit-btn:hover {
-        background: #ff3742;
-    }
-
     h1 {
         text-align: center;
         margin-bottom: 20px;
@@ -823,36 +955,6 @@
         background: #26d467;
     }
 
-    .updateBtn button {
-        padding: 12px 25px;
-        background-color: blue;
-        color: #ffffff;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    .deleteBtn button {
-        padding: 12px 25px;
-        background-color: red;
-        color: #ffffff;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    .btn-container {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        margin-top: 10px;
-        justify-content: flex-end;
-    }
-
     .upper-table-operator {
         display: flex;
         flex-direction: column;
@@ -863,9 +965,20 @@
     .title-delete-form {
         margin-bottom: 5px;
     }
+
+
     #plan-table-container{
+        background-color: #ffffff;
+        padding: 0px 30px;
+        width: 75%;
+        height: calc(100vh - 60px);
+        margin: auto;
         display: none;
+        overflow: auto;
+        flex-direction: column;
+        gap: 25px;
     }
+
     #plan-table-container table {
         width: 200%;
         border-collapse: collapse;
