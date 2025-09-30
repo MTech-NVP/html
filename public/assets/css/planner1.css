@@ -611,6 +611,8 @@
     .table-person-container{
         display: flex;
         justify-content: center;
+        height: 65vh;
+        overflow: auto;
     }
 
     #table-person{

@@ -3328,7 +3328,7 @@ include_once("../src/config/connection_db.php");
 
                 <script src="./assets/js/drop_data.js"></script>
                 <script src="./assets/js/actual_out_table.js"></script>
-                <script src="./assets//js/downtime_table_data.js"></script>
+                <script src="./assets/js/downtime_table_data.js"></script>
                 <script src="./assets/js/bar_chart.js "></script>
                 <script src="./assets/js/summary_part.js"></script>
                 <script src="./assets/js/timer_handler.js"></script>

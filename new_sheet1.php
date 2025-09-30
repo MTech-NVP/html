@@ -1540,7 +1540,7 @@ error_reporting(E_ALL);
             }, 1000);
 
         }
-
+        // ignore this function
         function checkValues(ids) {
             ids.forEach(id => {
                 const element = document.getElementById(id);

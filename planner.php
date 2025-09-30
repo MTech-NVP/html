@@ -466,7 +466,7 @@
                         <input type="text" name="ope-pic" placeholder="Enter Operator Name" required>
                         <input type="submit" value="Upload" class="submit-button">
                     </div>
-                </form>
+                </form> 
             </div>            
         </div>
 
@@ -982,6 +982,7 @@
             alert('Form submitted! Check console for data.');
 
             document.getElementById('update-operator-div').style.display = "none";
+            document.getElementById("operator-div").classList.remove("active");
         }
 
         function deleteOperator() {
@@ -993,6 +994,7 @@
             sendNumDelete(formData)
 
             document.getElementById('DeleteContainer').style.display = "none";
+            document.getElementById('delete-operator-div').classList.remove("active"); 
         }
 
         function edit() {
