@@ -24,7 +24,7 @@
                 <img width="35" height="25" src="public/assets/images/nichivi_logo_white.png" alt="logo">
             </div>
             <div>
-                <span style="font-size: 0.9rem;">NICHIVI dfdfPHILIPPINES CORPORATION</span>
+                <span style="font-size: 0.9rem;">NICHIVI PHILIPPINES CORPORATION</span>
             </div>
             <div class="line-nav"></div>
             <div class="prod-line-container">
