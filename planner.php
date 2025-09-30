@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="public/assets/images/nichivi-logo.ico">
-    <link rel="stylesheet" href="public/assets/css/planner1.css">
+    <link rel="stylesheet" href="public/assets/css/planner.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -243,7 +243,7 @@
                     </div>
 
                     <div id="plan-table-container">
-                        <div class="section-header" id="section-header4" >Table Plan
+                        <div class="section-header" id="section-header5" >Table Plan
                         </div>
 
                         <div>
@@ -283,6 +283,7 @@
                                     <div class="header-edit-form">
                                         <span>Edit Table Form</span>
                                     </div>
+
                                     <div class="edit-field-input">
                                         <label for="">Plan number</label>
                                         <input type="text" id="planId" placeholder="Enter Plan number" readonly>
@@ -497,7 +498,7 @@
                 datasets: [{
                         label: 'Production',
                         data: [120, 150, 100, 180, 130],
-                        backgroundColor: 'green'
+                        backgroundColor: '#007bff'
                     },
                     {
                         label: 'Downtime',
@@ -772,59 +773,59 @@
                     let rows = '';
                     data.forEach(row => {
                         rows += `<tr>
-                <td>${row.id}</td>
-                <td>${row.part_no}</td>
-                <td>${row.model}</td>
-                <td>${row.line}</td>
-                <td>${row.del_date}</td>
-                <td>${row.ct_as_of}</td>
-                <td>${row.exp_date}</td>
-                <td>${row.man_power}</td>
-                <td>${row.prod_hrs}</td>
-                <td>${row.plan_1}</td>
-                <td>${row.plan_2}</td>
-                <td>${row.plan_3}</td>
-                <td>${row.plan_4}</td>
-                <td>${row.plan_5}</td>
-                <td>${row.plan_6}</td>
-                <td>${row.plan_7}</td>
-                <td>${row.plan_8}</td>
-                <td>${row.plan_9}</td>
-                <td>${row.plan_10}</td>
-                <td>${row.plan_11}</td>
-                <td>${row.plan_12}</td>
-                <td>${row.plan_13}</td>
-                <td>${row.plan_14}</td>
-                <td>
-                    <button class="editbtn-table" onclick="editPlan(
-                    ${row.id},
-                   '${row.part_no}',
-                   '${row.model}', 
-                   '${row.line}',
-                   '${row.del_date}',
-                   '${row.ct_as_of}',
-                   '${row.exp_date}',
-                   '${row.man_power}',
-                   '${row.prod_hrs}',
-                   '${row.plan_1}',
-                   '${row.plan_2}',
-                   '${row.plan_3}',
-                   '${row.plan_4}',
-                   '${row.plan_5}',
-                   '${row.plan_6}',
-                   '${row.plan_7}',
-                   '${row.plan_8}',
-                   '${row.plan_9}',
-                   '${row.plan_10}',
-                   '${row.plan_11}',
-                   '${row.plan_12}',
-                   '${row.plan_13}',
-                   '${row.plan_14}',)">Edit</button>
+                                    <td>${row.id}</td>
+                                    <td>${row.part_no}</td>
+                                    <td>${row.model}</td>
+                                    <td>${row.line}</td>
+                                    <td>${row.del_date}</td>
+                                    <td>${row.ct_as_of}</td>
+                                    <td>${row.exp_date}</td>
+                                    <td>${row.man_power}</td>
+                                    <td>${row.prod_hrs}</td>
+                                    <td>${row.plan_1}</td>
+                                    <td>${row.plan_2}</td>
+                                    <td>${row.plan_3}</td>
+                                    <td>${row.plan_4}</td>
+                                    <td>${row.plan_5}</td>
+                                    <td>${row.plan_6}</td>
+                                    <td>${row.plan_7}</td>
+                                    <td>${row.plan_8}</td>
+                                    <td>${row.plan_9}</td>
+                                    <td>${row.plan_10}</td>
+                                    <td>${row.plan_11}</td>
+                                    <td>${row.plan_12}</td>
+                                    <td>${row.plan_13}</td>
+                                    <td>${row.plan_14}</td>
+                                    <td>
+                                        <button class="editbtn-table" onclick="editPlan(
+                                        ${row.id},
+                                    '${row.part_no}',
+                                    '${row.model}', 
+                                    '${row.line}',
+                                    '${row.del_date}',
+                                    '${row.ct_as_of}',
+                                    '${row.exp_date}',
+                                    '${row.man_power}',
+                                    '${row.prod_hrs}',
+                                    '${row.plan_1}',
+                                    '${row.plan_2}',
+                                    '${row.plan_3}',
+                                    '${row.plan_4}',
+                                    '${row.plan_5}',
+                                    '${row.plan_6}',
+                                    '${row.plan_7}',
+                                    '${row.plan_8}',
+                                    '${row.plan_9}',
+                                    '${row.plan_10}',
+                                    '${row.plan_11}',
+                                    '${row.plan_12}',
+                                    '${row.plan_13}',
+                                    '${row.plan_14}',)">Edit</button>
 
-                   
-                    <button class="deletebtn-table" onclick="deletePlan(${row.id})">Delete</button>
-                </td>
-            </tr>`;
+                                    
+                                        <button class="deletebtn-table" onclick="deletePlan(${row.id})">Delete</button>
+                                    </td>
+                                 </tr>`;
                     });
                     document.getElementById('table-data-plan').innerHTML = rows;
                 });
