@@ -158,7 +158,7 @@
         overflow-y: auto;
         */
         
-        display: none;
+        display: flex;
         background-color: transparent;
         flex-direction: column;
         justify-content: space-between;
@@ -278,7 +278,7 @@
         overflow-y: auto;
         */
         
-        display: flex;
+        display: none;
         flex-direction: column;
         justify-content: space-between;
         overflow: auto;
