@@ -18,8 +18,8 @@
 
 <body>
 
-    <nav class="side-nav">
-        <div class="title-dashboard">
+    <nav class="side-nav" id="side-nav-menu">
+        <div class="title-dashboard" id="title-with-dom-number">
             <div>
                 <img width="35" height="25" src="public/assets/images/nichivi_logo_white.png" alt="logo">
             </div>
@@ -34,10 +34,12 @@
             </div>
         </div>
 
-        <div class="navbar-buttons">
-            <button class="nav-button1">Dashboard</button>
+        <div class="navbar-buttons" id="navigation-btn">
+            <button class="nav-button1" id="navbutton1">Home</button>
             <div class="line-nav2"></div>
-            <button class="nav-button1">Data Entry</button>
+            <button class="nav-button1" id="navbutton2">Time-Based Data</button>
+            <div class="line-nav2"></div>
+            <button class="nav-button1" id="navbutton3">Data Entry</button>
             <div class="line-nav2"></div>
             <div class="dropdowndom">
                 <button class="nav-button dropbtn" id="dropbtn">Select DOM</button>
@@ -54,7 +56,65 @@
     </nav> 
 
     <div class="container-data">
+        <div id="home">
+            <div id="home-container">
+                <!--
+                <div id="title-container">
+                    <div id="logo-element">
+                        <img width="90" height="74" src="public/assets/images/nichivi-logo-hd.png" alt="logo">
+                    </div>
+                    <div id="home-title-element">
+                        <div class="company-name">
+                            N I C H I V I 
+                        </div>
+                        <div class="company-name">
+                            PHILIPPINES CORPORATION
+                        </div>
+                        <div style="font-weight: bold;">
+                        DIGITAL OUTPUT MONITORING - PLANNER
+                        </div>
+                        <span class="line-prod-main" style="font-size: 1.2rem; font-weight:bolder">Loading...</span>
+                    </div>
+                </div> -->
 
+                <div id="dom-data-container">
+                    <div id="home-name" style="font-weight:bold">
+                        <span class="line-prod-main" style="font-weight:bold">Loading...</span> &nbsp;REAL-TIME MONITORING
+                    </div>
+                    <div class="DOM-graphs-data">
+                        <div id="DOM-graphs-title">Tube Assembly Daily Production</div>
+                        <div id="DOM-graphs-container">
+                            <div class="bar-container">
+                                <span class="label">C4</span>
+                                <div class="bar" data-width=""></div>
+                            </div>
+                            <div class="bar-container">
+                                <span class="label">C7</span>
+                                <div class="bar" data-width2=""></div>
+                            </div>
+                            <div class="bar-container">
+                                <span class="label">C9</span>
+                                <div class="bar" data-width=""></div>
+                            </div>
+                            <div class="bar-container">
+                                <span class="label">C9-1</span>
+                                <div class="bar" data-width=""></div>
+                            </div>
+                            <div class="bar-container">
+                                <span class="label">C10</span>
+                                <div class="bar" data-width=""></div>
+                            </div>
+                        </div>
+
+                    </div>      
+                </div>
+
+            </div>
+
+            <footer class="footer">
+                <p>© 2025 NICHIVI Philippines Corporation (Manufacturing Technology) All Rights Reserved.</p>
+            </footer>
+        </div>
         <div id="dashboard-container">
             <div id="dashboard">
 
@@ -109,26 +169,34 @@
                             
                             <div class="section-header" id="section-header1">Product Information</div>
                             <div class="product-info" id="product-tab">
-                                <label>Plan ID:</label>
-                                <input type="text" name="id" placeholder="Enter plan ID">
-                                <label>Part Number:</label>
-                                <input type="text" name="part_no" placeholder="Enter part number">
-                                <label>Model:</label>
-                                <input type="text" name="model" placeholder="Enter model name">
-                                <label>Line:</label>
-                                <input type="text" name="line" placeholder="Enter line name">
-                                <label>Delivery Date:</label>
-                                <input type="date" name="del_date">
-                                <label>Balance:</label>
-                                <input type="number" name="balance" placeholder="Enter balance">
-                                <label>Manpower:</label>
-                                <input type="number" name="man_power" placeholder="Enter manpower count">
-                                <label>Ct. as of:</label>
-                                <input type="date" name="ct_as_of">
-                                <label>Exp. Date:</label>
-                                <input type="date" name="exp_date">
-                                <label>Production Hours</label>
-                                <input type="text" name="prod_hrs" placeholder="Enter Production Hours">
+                                <label for="part_no">Part Number:</label>
+                                <input type="text" id="part_no" name="part_no" placeholder="Enter part number">
+
+                                <label for="model">Model:</label>
+                                <input type="text" id="model" name="model" placeholder="Enter model name">
+
+                                <label for="line-label">Line:</label>
+                                <input type="text" id="line-label" name="line" placeholder="Enter line name">
+
+                                <label for="del_date">Delivery Date:</label>
+                                <input type="date" id="del_date" name="del_date">
+
+                                <label for="balance">Balance:</label>
+                                <input type="number" id="balance" name="balance" placeholder="Enter balance">
+
+                                <label for="man_power">Manpower:</label>
+                                <input type="number" id="man_power" name="man_power" placeholder="Enter manpower count">
+
+                                <label for="ct_as_of">Ct. as of:</label>
+                                <input type="date" id="ct_as_of" name="ct_as_of">
+
+                                <label for="exp_date">Exp. Date:</label>
+                                <input type="date" id="exp_date" name="exp_date">
+
+                                <div class="merged">
+                                    <label for="prod_hrs">Production Hours:</label>
+                                    <input type="text" id="prod_hrs" name="prod_hrs" placeholder="Enter Production Hours">
+                                </div>
                             </div>
                                                 
                             
@@ -243,41 +311,15 @@
                     </div>
 
                     <div id="plan-table-container">
-                        <div class="section-header" id="section-header5" >Table Plan
+                        <div class="section-header" id="section-header5" >Planned Quota Per Day
+                            <span class="line-prod-number3" style="font-size: 0.7rem; font-family:Arial"></span>
+                        </div>
+
+
+                        <div id="append-data-plan">
                         </div>
 
                         <div>
-                            <table id="tableData">
-                                <thead>
-                                    <tr>
-                                        <th>Plan No.</th>
-                                        <th>Part No.</th>
-                                        <th>Model</th>
-                                        <th>Line</th>
-                                        <th>Del.Date</th>
-                                        <th>Ct.As.Of</th>
-                                        <th>Exp.Date</th>
-                                        <th>Manpower</th>
-                                        <th>Prod.Hours</th>
-                                        <th>6am-7am</th>
-                                        <th>7am-8am</th>
-                                        <th>8am-9am</th>
-                                        <th>9am-10am</th>
-                                        <th>10am-11am</th>
-                                        <th>11am-12nn</th>
-                                        <th>12nn-1pm</th>
-                                        <th>1pm-2pm</th>
-                                        <th>2pm-3pm</th>
-                                        <th>3pm-4pm</th>
-                                        <th>4pm-5pm</th>
-                                        <th>5pm-6pm</th>
-                                        <th>6pm-7pm</th>
-                                        <th>7pm-8pm</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-data-plan"></tbody>
-                            </table>
                             <form id="editForm">
                                 <div class="info-prod-edit">
                                     <div class="header-edit-form">
@@ -285,98 +327,98 @@
                                     </div>
 
                                     <div class="edit-field-input">
-                                        <label for="">Plan number</label>
+                                        <label for="planId">Plan number</label>
                                         <input type="text" id="planId" placeholder="Enter Plan number" readonly>
 
                                         <div class="edit-field-input">
-                                            <label for="">Part Number</label>
+                                            <label for="partno">Part Number</label>
                                             <input type="text" id="partno" name="part_no" placeholder="Enter Part number">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">Model</label>
+                                            <label for="model">Model</label>
                                             <input type="text" id="model" name="model" placeholder="Enter Model">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">Line</label>
+                                            <label for="line-edit">Line</label>
                                             <input type="text" id="line-edit" name="line" placeholder="Enter Line">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">Delivery Date</label>
+                                            <label for="delDate">Delivery Date</label>
                                             <input type="text" id="delDate" name="delDate">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">Manpower</label>
+                                            <label for="manpower">Manpower</label>
                                             <input type="text" id="manpower" name="manpower" placeholder="Enter Number Manpower">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">CT.AS.OF</label>
+                                            <label for="ctasof">CT.AS.OF</label>
                                             <input type="text" id="ctasof" name="ctasof">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">Exp.Date</label>
+                                            <label for="expdate">Exp.Date</label>
                                             <input type="text" id="expdate" name="expdate">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">Production Hours</label>
+                                            <label for="prodhrs">Production Hours</label>
                                             <input type="text" id="prodhrs" name="prodhrs" placeholder="Enter Production Hours">
                                         </div>
                                     </div>
 
                                     <div class="table-plan-edit-form">
                                         <div class="edit-field-input">
-                                            <label for="">6am-7am</label>
+                                            <label for="plan1">6am-7am</label>
                                             <input type="number" id="plan1" name="plan1" placeholder="6am-7am">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">7am-8am</label>
+                                            <label for="plan2">7am-8am</label>
                                             <input type="number" id="plan2" name="plan2" placeholder="7am-8am">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">8am-9am</label>
+                                            <label for="plan3">8am-9am</label>
                                             <input type="number" id="plan3" name="plan3" placeholder="8am-9am">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">9am-10am</label>
+                                            <label for="plan4">9am-10am</label>
                                             <input type="text" id="plan4" name="plan4" placeholder="9am-10am">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">10am-11am</label>
+                                            <label for="plan5">10am-11am</label>
                                             <input type="number" id="plan5" name="plan5" placeholder="10am-11am">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">11am-12nn</label>
+                                            <label for="plan6">11am-12nn</label>
                                             <input type="number" id="plan6" name="plan6" placeholder="11am-12nn">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">12nn-1pm</label>
+                                            <label for="plan7">12nn-1pm</label>
                                             <input type="number" id="plan7" name="plan7" placeholder="12nn-1pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">1pm-2pm</label>
+                                            <label for="plan8">1pm-2pm</label>
                                             <input type="number" id="plan8" name="plan8" placeholder="1pm-2pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">2pm-3pm</label>
+                                            <label for="plan9">2pm-3pm</label>
                                             <input type="text" id="plan9" name="plan9" placeholder="2pm-3pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">3pm-4pm</label>
+                                            <label for="plan10">3pm-4pm</label>
                                             <input type="number" id="plan10" name="plan10" placeholder="3pm-4pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">4pm-5pm</label>
+                                            <label for="plan11">4pm-5pm</label>
                                             <input type="number" id="plan11" name="plan11" placeholder="4pm-5pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">5pm-6pm</label>
+                                            <label for="plan12">5pm-6pm</label>
                                             <input type="number" id="plan12" name="plan12" placeholder="5pm-6pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">6pm-7pm</label>
+                                            <label for="plan13">6pm-7pm</label>
                                             <input type="number" id="plan13" name="plan13" placeholder="6pm-7pm">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="">7pm-8pm</label>
+                                            <label for="plan14">7pm-8pm</label>
                                             <input type="number" id="plan14" name="plan14" placeholder="7pm-8pm">
                                         </div>
                                     </div>
@@ -386,12 +428,12 @@
                                     </div>
                             </form>
                         </div>
-
+                        
                     </div>
 
                 </div>           
         </div>
-
+    
         <div class="operator-cover" id="operator-div">
             <div class="update-operator-container" id="update-operator-div">
                 <button class="exit-btn" onclick="exitForm()">&times;</button>
@@ -459,7 +501,7 @@
                 <button class="exit-btn" onclick="exitForm()">&times;</button>
                 <form action="inserSigna.php" method="POST" enctype="multipart/form-data">
                     <div class="upload-section">
-                        <label for="upload-file" class="upload-label-pic">
+                        <label class="upload-label-pic">
                             Upload PIC Picture
                         </label>
                         <input type="file" name="picture" required>
@@ -488,6 +530,7 @@
         </div>
 
     </div> 
+    <script src="/planner_fetch/planner_data.js"></script>
 
     <script>
         const ctx = document.getElementById('graph-data').getContext('2d');
@@ -575,18 +618,25 @@
         }
 
         const dashboardNames = {
-            "10.0.0.199": "C4 PRODUCTION LINE",
-            "10.0.0.102": "C7 PRODUCTION LINE",
-            "10.0.0.136": "C9 PRODUCTION LINE",
-            "10.0.0.125": "C9-1 PRODUCTION LINE",
-            "10.0.0.164": "C10 PRODUCTION LINE",
+            "10.0.0.199": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
+            "10.0.0.102": "TUBE ASSEMBLY: C7 PRODUCTION LINE",
+            "10.0.0.136": "TUBE ASSEMBLY: C9 PRODUCTION LINE",
+            "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE",
+            "10.0.0.164": "TUBE ASSEMBLY: C10 PRODUCTION LINE",
             "localhost": "ADMINISTRATOR",
-            "192.168.0.225": "ADMINISTRATOR"
+            "192.168.0.225": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
         }
 
         const currentIP = window.location.hostname;
 
         const dashboardTitle = dashboardNames[currentIP] || "PRODUCTION LINE";
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const titleSpan = document.querySelector(".line-prod-main");
+            if (titleSpan) {
+                titleSpan.textContent = dashboardTitle;
+            }
+        });
 
         document.addEventListener("DOMContentLoaded", function() {
             const titleSpan = document.querySelector(".line-prod-number");
@@ -602,18 +652,41 @@
             }
         });
 
+        document.addEventListener("DOMContentLoaded", function() {
+            const titleSpan = document.querySelector(".line-prod-number3");
+            if (titleSpan) {
+                titleSpan.textContent = dashboardTitle;
+            }
+        });
+
+
         document.querySelector('.side-nav button:nth-child(1)').addEventListener('click', function() {
-            document.getElementById('dashboard').style.display = 'flex';
-            document.getElementById('dashboard-container').style.display = 'flex';
+            document.getElementById('home').style.display = 'block';
+            document.getElementById('dashboard-container').style.display = 'none';
             document.getElementById('dataentry-container').style.display = 'none';
-            document.getElementById('input-data').style.display = 'none';
+            /*document.getElementById('title-with-dom-number').style.display = 'none';
+            document.getElementById('side-nav-menu').style.justifyContent = 'center';
+            document.getElementById('navigation-btn').style.margin = '0px 0px 0px 0px'; */
         });
 
         document.querySelector('.side-nav button:nth-child(3)').addEventListener('click', function() {
-            document.getElementById('dashboard').style.display = 'none';
+            
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('dashboard-container').style.display = 'flex';
+            document.getElementById('dataentry-container').style.display = 'none';
+            /*document.getElementById('title-with-dom-number').style.display = 'flex';
+            document.getElementById('side-nav-menu').style.justifyContent = 'space-between';
+            document.getElementById('navigation-btn').style.margin = '0px 50px 0px 0px'; */
+        });
+
+        document.querySelector('.side-nav button:nth-child(5)').addEventListener('click', function() {
+            
+            document.getElementById('home').style.display = 'none';
             document.getElementById('dashboard-container').style.display = 'none';
             document.getElementById('dataentry-container').style.display = 'flex';
-            document.getElementById('input-data').style.display = 'flex';
+            /*document.getElementById('title-with-dom-number').style.display = 'flex';
+            document.getElementById('side-nav-menu').style.justifyContent = 'space-between';
+            document.getElementById('navigation-btn').style.margin = '0px 50px 0px 0px';*/
         });
 
         document.querySelector('.dropdown-content button:nth-child(1)').addEventListener('click', function() {
@@ -646,7 +719,6 @@
             document.getElementById('form-swp-container').style.display = 'block';
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('plan-table-container').style.display = 'none';
-
         }
 
         function showPlandata() {
@@ -655,7 +727,6 @@
             document.getElementById('form-container').style.display = 'block';
             document.getElementById('plan-table-container').style.display = 'none';
         }
-
 
         function showPic() {
             document.getElementById('form-pic-container').style.display = 'block';
@@ -669,6 +740,8 @@
             document.getElementById('form-swp-container').style.display = 'none';
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('plan-table-container').style.display = 'block';
+            const planDiv = document.getElementById('append-data-plan');
+            planDiv.scrollTop = 0;
         }
 
         document.querySelector('.next-btn-container button').addEventListener('click', function() {
@@ -700,6 +773,7 @@
             document.getElementById("mySidenav").style.width = "0";
         }
     </script>
+
     <script>
         async function loadImages() {
             try {
@@ -763,73 +837,113 @@
 
         function loadPlans() {
             fetch('tablePlanServer.php', {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        action: 'read'
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    let rows = '';
-                    data.forEach(row => {
-                        rows += `<tr>
-                                    <td>${row.id}</td>
-                                    <td>${row.part_no}</td>
-                                    <td>${row.model}</td>
-                                    <td>${row.line}</td>
-                                    <td>${row.del_date}</td>
-                                    <td>${row.ct_as_of}</td>
-                                    <td>${row.exp_date}</td>
-                                    <td>${row.man_power}</td>
-                                    <td>${row.prod_hrs}</td>
-                                    <td>${row.plan_1}</td>
-                                    <td>${row.plan_2}</td>
-                                    <td>${row.plan_3}</td>
-                                    <td>${row.plan_4}</td>
-                                    <td>${row.plan_5}</td>
-                                    <td>${row.plan_6}</td>
-                                    <td>${row.plan_7}</td>
-                                    <td>${row.plan_8}</td>
-                                    <td>${row.plan_9}</td>
-                                    <td>${row.plan_10}</td>
-                                    <td>${row.plan_11}</td>
-                                    <td>${row.plan_12}</td>
-                                    <td>${row.plan_13}</td>
-                                    <td>${row.plan_14}</td>
-                                    <td>
-                                        <button class="editbtn-table" onclick="editPlan(
-                                        ${row.id},
-                                    '${row.part_no}',
-                                    '${row.model}', 
-                                    '${row.line}',
-                                    '${row.del_date}',
-                                    '${row.ct_as_of}',
-                                    '${row.exp_date}',
-                                    '${row.man_power}',
-                                    '${row.prod_hrs}',
-                                    '${row.plan_1}',
-                                    '${row.plan_2}',
-                                    '${row.plan_3}',
-                                    '${row.plan_4}',
-                                    '${row.plan_5}',
-                                    '${row.plan_6}',
-                                    '${row.plan_7}',
-                                    '${row.plan_8}',
-                                    '${row.plan_9}',
-                                    '${row.plan_10}',
-                                    '${row.plan_11}',
-                                    '${row.plan_12}',
-                                    '${row.plan_13}',
-                                    '${row.plan_14}',)">Edit</button>
+                method: 'POST',
+                body: new URLSearchParams({ action: 'read' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let text = '';
 
-                                    
-                                        <button class="deletebtn-table" onclick="deletePlan(${row.id})">Delete</button>
-                                    </td>
-                                 </tr>`;
-                    });
-                    document.getElementById('table-data-plan').innerHTML = rows;
-                });
+            data.forEach(row => {
+                text += `
+                <div class="plan-data-container">
+                    <div class="plan-data">
+                        <div class="header-plan-data">
+                            Plan No. ${row.id}
+                        </div>
+                        <div class="plan-section" id="information-plan-title">Product Information</div>
+                        <div class="information-plan">
+                            <div><label>Part No:&nbsp;</label> ${row.part_no}</div>
+                            <div><label>Model:&nbsp;</label> ${row.model}</div>
+                            <div><label>Line:&nbsp;</label> ${row.line}</div>
+                            <div><label>Delivery Date:&nbsp;</label> ${row.del_date}</div>
+                            <div><label>CT As Of:&nbsp;</label> ${row.ct_as_of}</div>
+                            <div><label>Expected Date:&nbsp;</label> ${row.exp_date}</div>
+                            <div><label>Man Power:&nbsp;</label> ${row.man_power}</div>
+                            <div><label>Prod Hours:&nbsp;</label> ${row.prod_hrs}</div>                            
+                        </div>
+
+                        <div class="plan-section" id="time-plan-title">Plan Output Per Hour</div>
+
+                        <div class="time-plan">
+                            ${(() => {
+                                const plans = [
+                                    row.plan_1, row.plan_2, row.plan_3, row.plan_4,
+                                    row.plan_5, row.plan_6, row.plan_7, row.plan_8,
+                                    row.plan_9, row.plan_10, row.plan_11, row.plan_12,
+                                    row.plan_13, row.plan_14
+                                ];
+                                const times = [
+                                    "6AM–7AM", "7AM–8AM", "8AM–9AM", "9AM–10AM",
+                                    "10AM–11AM", "11AM–12PM", "12PM–1PM", "1PM–2PM",
+                                    "2PM–3PM", "3PM–4PM", "4PM–5PM", "5PM–6PM",
+                                    "6PM–7PM", "7PM–8PM"
+                                ];
+
+                                const half = Math.ceil(plans.length / 2);
+
+                                // First column
+                                const col1 = plans.slice(0, half).map((p, i) => `
+                                    <div class="plan-item">
+                                        <label class="time-label">${times[i]}:&nbsp;</label>
+                                        <span class="plan-value">${p ?? '-'}</span>
+                                    </div>
+                                `).join('');
+
+                                const col2 = plans.slice(half).map((p, i) => `
+                                    <div class="plan-item">
+                                        <label class="time-label">${times[i + half]}:&nbsp;</label>
+                                        <span class="plan-value">${p ?? '-'}</span>
+                                    </div>
+                                `).join('');
+
+                                return `
+                                    <div class="column">${col1}</div>
+                                    <div class="column">${col2}</div>
+                                `;
+                            })()}
+                        </div>
+
+                        <div id="plan-buttons">
+                            <button class="editbtn-table" onclick="editPlan(
+                                ${row.id},
+                                '${row.part_no}',
+                                '${row.model}', 
+                                '${row.line}',
+                                '${row.del_date}',
+                                '${row.ct_as_of}',
+                                '${row.exp_date}',
+                                '${row.man_power}',
+                                '${row.prod_hrs}',
+                                '${row.plan_1}',
+                                '${row.plan_2}',
+                                '${row.plan_3}',
+                                '${row.plan_4}',
+                                '${row.plan_5}',
+                                '${row.plan_6}',
+                                '${row.plan_7}',
+                                '${row.plan_8}',
+                                '${row.plan_9}',
+                                '${row.plan_10}',
+                                '${row.plan_11}',
+                                '${row.plan_12}',
+                                '${row.plan_13}',
+                                '${row.plan_14}'
+                            )">Edit</button>
+
+                            <button class="deletebtn-table" onclick="deletePlan(${row.id})">Delete</button>
+                        </div>
+                        
+                    </div>                    
+                </div>
+                `;
+            });
+
+                document.getElementById('append-data-plan').innerHTML = text;
+            })
+            .catch(err => console.error('Error loading plans:', err));
         }
+
 
         document.getElementById('editForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -847,6 +961,7 @@
                     this.reset();
                     loadPlans(); // refresh the table
                     document.getElementById('editForm').style.display = "none";
+                    document.getElementById('append-data-plan').style.display = "flex";
                 });
         });
 
@@ -859,6 +974,7 @@
             const deli = document.getElementById('delDate').value;
             console.log(deli)
             document.getElementById('editForm').style.display = "flex";
+            document.getElementById('append-data-plan').style.display = "none";
             document.getElementById('planId').value = id;
             document.getElementById('partno').value = part_no;
             document.getElementById('model').value = model;

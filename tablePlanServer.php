@@ -18,8 +18,36 @@ if ($conn->connect_error) {
 // Get action
 $action = $_POST['action'] ?? '';
 
-// ------------------ READ ------------------
+function reorderIds($conn) {
+    // Check existing IDs
+    $result = $conn->query("SELECT id FROM details_product ORDER BY id ASC");
+    $existing = [];
+    while ($row = $result->fetch_assoc()) {
+        $existing[] = (int)$row['id'];
+    }
+
+    // Find missing numbers and insert placeholder rows
+    if (!empty($existing)) {
+        $max = max($existing);
+        for ($i = 1; $i <= $max; $i++) {
+            if (!in_array($i, $existing)) {
+                $conn->query("INSERT INTO details_product (part_no, model, line) VALUES ('Missing $i', '', '')");
+            }
+        }
+    }
+
+    // Reorder the IDs
+    $conn->query("SET @count = 0");
+    $conn->query("UPDATE details_product SET id = @count := @count + 1 ORDER BY id");
+    $conn->query("ALTER TABLE details_product AUTO_INCREMENT = 1");
+}
+
+
+
 if ($action === 'read') {
+    // Ensure IDs start from 1 (auto fix)
+    reorderIds($conn);
+
     $result = $conn->query("SELECT * FROM details_product ORDER BY id ASC");
     $rows = [];
     while ($row = $result->fetch_assoc()) {
@@ -29,7 +57,7 @@ if ($action === 'read') {
     exit;
 }
 
-// ------------------ UPDATE ------------------
+
 if ($action === 'update') {
     // Make sure id exists
     $id = $_POST['planId'] ?? null;
@@ -97,7 +125,14 @@ if ($action === 'delete') {
         die(json_encode(["error" => $stmt->error]));
     }
 
-    echo json_encode(["status" => "deleted"]);
+    // Reorder the IDs
+    $conn->query("SET @count = 0");
+    $conn->query("UPDATE details_product SET id = @count:=@count+1 ORDER BY id");
+
+    // Reset auto increment to match new max id
+    $conn->query("ALTER TABLE details_product AUTO_INCREMENT = 1");
+
+    echo json_encode(["status" => "deleted and reordered"]);
     exit;
 }
 
