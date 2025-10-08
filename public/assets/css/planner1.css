@@ -192,54 +192,60 @@
        display: flex;
        justify-content: center; 
        padding: 5px 0 15px 0;
-       border-bottom: 2px solid #007bff;
     }
+
     #dom-data-container{
         width: 100%;
         height: calc(95vh - 100px);
-        overflow: auto;
     }
 
     .DOM-graphs-data{
         display: flex;
         height: 200px;
         width: 40;
-        border-radius: 10px;
         width: 40%;
         flex-direction: column;
         height: 90%;
         padding-left: 30px;
         align-items: left;
+        border-right: 1px solid gray;
+        overflow: auto;
     }
 
     #DOM-graphs-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    height: 170px;
-    width: 100%;
-    border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        border-radius: 10px;
     }
 
     #DOM-graphs-title{
-        padding: 20px 0 10px 0;
-        font-size: 1.3em;
+        padding: 20px 0 15px 0;
+        font-size: 1.2em;
     }
 
+    .per-dom-container{
+        height: 100px;
+        width: 100%;
+    }
+    
     .bar-container {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 5px;
-    gap: 10px;
+    font-weight: bold;
+    gap: 5px;
     width: 100%;
     }
 
     .bar {
     height: 25px;
     width: 0%;
-    background: #FBC02D;
-    border: 2px solid brown;
+    margin-left: 10px;
+    background: #006ee4;
+    border: 2px solid black;
     border-radius: 0px 5px 5px 0px;
     transition: width 1s ease-in-out, background-color 0.8s ease;;
 
@@ -248,18 +254,32 @@
     align-items: center;
     justify-content: flex-start;
     padding-left: 8px;
-    color: black;
+    color: white;
     font-weight: 600;
     font-size: 0.85rem;
 
     /* Flip direction so width animates from right */
     transform-origin: right;
     }
+    #spacer{
+        padding-left: 15px;
+        width: 50px;
+    }
+    #spacer2{
+        width: 44px;
+    }
 
     .label {
-    width: 40px;
+    width: 35px;
     font-weight: 600;
-    font-size: 0.9rem;
+    text-align: right;
+    font-size: 1rem;
+    }
+
+    .dom-info{
+        padding-left: 15px;
+        font-weight: bold;
+        font-size: 0.8rem;
     }
 
     footer{
@@ -1136,6 +1156,7 @@
             black 2%,
             black 90%
         );
+        padding-bottom: 30px;
     }
 
     .plan-data-container{

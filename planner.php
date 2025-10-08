@@ -83,29 +83,59 @@
                     </div>
                     <div class="DOM-graphs-data">
                         <div id="DOM-graphs-title">Tube Assembly Daily Production</div>
-                        <div id="DOM-graphs-container">
-                            <div class="bar-container">
-                                <span class="label">C4</span>
-                                <div class="bar" data-width=""></div>
-                            </div>
-                            <div class="bar-container">
-                                <span class="label">C7</span>
-                                <div class="bar" data-width2=""></div>
-                            </div>
-                            <div class="bar-container">
-                                <span class="label">C9</span>
-                                <div class="bar" data-width=""></div>
-                            </div>
-                            <div class="bar-container">
-                                <span class="label">C9-1</span>
-                                <div class="bar" data-width=""></div>
-                            </div>
-                            <div class="bar-container">
-                                <span class="label">C10</span>
-                                <div class="bar" data-width=""></div>
-                            </div>
-                        </div>
+                        <div id="DOM-graphs-container"> 
 
+                            <div class="per-dom-container" id="c4-cont">
+                                <div class="bar-container">
+                                    <span class="label">C4</span>Line:
+                                    <div class="bar" data-width=""></div>
+                                </div> 
+                                <div class="dom-info" id="c4-info">
+                                    Quota per day: <br>Percentage: <br>Product Model:
+                                </div>                               
+                            </div>
+
+                            <div class="per-dom-container" id="c7-cont">
+                                <div class="bar-container">
+                                    <span class="label">C7</span>Line:
+                                    <div class="bar" data-width=""></div>
+                                </div>     
+                                   <div class="dom-info" id="c7-info">
+                                    Quota per day: <br>Percentage: <br>Product Model:
+                                </div>                            
+                            </div>
+
+                            <div class="per-dom-container" id="c9-cont">
+                                <div class="bar-container">
+                                    <span class="label">C9</span>Line:
+                                    <div class="bar" data-width=""></div>
+                                </div>  
+                                <div class="dom-info" id="c9-info">
+                                    Quota per day: <br>Percentage: <br>Product Model:
+                                </div>                              
+                            </div>
+
+                            <div class="per-dom-container" id="c9-1-cont">
+                                <div class="bar-container">
+                                    <span class="label" id="spacer">C9-1</span>Line:
+                                    <div class="bar" data-width=""></div>
+                                </div> 
+                                <div class="dom-info" id="c9-1-info">
+                                    Quota per day: <br>Percentage: <br>Product Model:
+                                </div>                                
+                            </div>
+
+                            <div class="per-dom-container" id="c10-cont">
+                                <div class="bar-container">
+                                    <span class="label" id="spacer2">C10</span>Line:
+                                    <div class="bar" data-width=""></div>
+                                </div> 
+                                <div class="dom-info" id="c10-info">
+                                        Quota per day: <br>Percentage: <br>Product Model:
+                                </div>                                
+                            </div>
+
+                        </div>
                     </div>      
                 </div>
 
