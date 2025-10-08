@@ -87,51 +87,72 @@
 
                             <div class="per-dom-container" id="c4-cont">
                                 <div class="bar-container">
-                                    <span class="label">C4</span>Line:
-                                    <div class="bar" data-width=""></div>
+                                    <span class="label">C4 Line:</span>
+                                    <div class="bar-size">
+                                        <div class="bar" data-width=""></div>
+                                    </div>
                                 </div> 
                                 <div class="dom-info" id="c4-info">
-                                    Quota per day: <br>Percentage: <br>Product Model:
+                                    <div>Product Model: YDB</div>
+                                    <div>Quota per day:</div>
+                                    <div>Percentage:</div>
                                 </div>                               
                             </div>
 
                             <div class="per-dom-container" id="c7-cont">
                                 <div class="bar-container">
-                                    <span class="label">C7</span>Line:
-                                    <div class="bar" data-width=""></div>
+                                    <span class="label">C7 Line:</span>
+                                    <div class="bar-size">
+                                        <div class="bar" data-width=""></div>
+                                    </div>
                                 </div>     
                                    <div class="dom-info" id="c7-info">
-                                    Quota per day: <br>Percentage: <br>Product Model:
+                                    <div>Product Model: 840B</div> 
+                                    <div>Quota per day:</div>
+                                    <div>Percentage:</div>
                                 </div>                            
                             </div>
 
                             <div class="per-dom-container" id="c9-cont">
                                 <div class="bar-container">
-                                    <span class="label">C9</span>Line:
-                                    <div class="bar" data-width=""></div>
+                                    <span class="label">C9 Line:</span>
+                                    <div class="bar-size">
+                                        <div class="bar" data-width=""></div>
+                                    </div>
                                 </div>  
                                 <div class="dom-info" id="c9-info">
-                                    Quota per day: <br>Percentage: <br>Product Model:
+                                    <div>Product Model: YDB</div>
+                                    <div>Quota per day:</div>
+                                    <div>Percentage:</div>
                                 </div>                              
                             </div>
 
                             <div class="per-dom-container" id="c9-1-cont">
                                 <div class="bar-container">
-                                    <span class="label" id="spacer">C9-1</span>Line:
-                                    <div class="bar" data-width=""></div>
+                                    <span class="label">C9-1 Line:</span>
+                                    <div class="bar-size">
+                                        <div class="bar" data-width=""></div>
+                                    </div>
                                 </div> 
                                 <div class="dom-info" id="c9-1-info">
-                                    Quota per day: <br>Percentage: <br>Product Model:
+                                    <div>Product Model: YDB</div>
+                                    <div>Quota per day:</div>
+                                    <div>Percentage:</div>
                                 </div>                                
                             </div>
 
                             <div class="per-dom-container" id="c10-cont">
                                 <div class="bar-container">
-                                    <span class="label" id="spacer2">C10</span>Line:
-                                    <div class="bar" data-width=""></div>
+                                    <span class="label">C10 Line:</span>
+                                    <div class="bar-size">
+                                        <div class="bar" data-width=""></div>
+                                    </div>
                                 </div> 
                                 <div class="dom-info" id="c10-info">
-                                        Quota per day: <br>Percentage: <br>Product Model:
+                                    <div>Product Model: YTB</div>
+                                    <div>Quota per day:</div>
+                                    <div>Percentage:</div>
+                                    
                                 </div>                                
                             </div>
 
@@ -720,7 +741,7 @@
         });
 
         document.querySelector('.dropdown-content button:nth-child(1)').addEventListener('click', function() {
-            window.location.href = "http://10.0.0.199/planner.php";
+            window.location.href = "http://10.0.0.189/planner.php";
         });
         document.querySelector('.dropdown-content button:nth-child(2)').addEventListener('click', function() {
             window.location.href = "http://10.0.0.193/planner.php";
