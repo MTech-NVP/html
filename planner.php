@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="public/assets/images/nichivi-logo.ico">
-    <link rel="stylesheet" href="public/assets/css/planner1.css">
+    <link rel="stylesheet" href="public/assets/css/planner10.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -20,16 +20,16 @@
 
     <nav class="side-nav" id="side-nav-menu">
         <div class="title-dashboard" id="title-with-dom-number">
-            <div>
+            <div style="height: 25px;">
                 <img width="35" height="25" src="public/assets/images/nichivi_logo_white.png" alt="logo">
             </div>
-            <div>
+            <div style="height: 17px; display: flex;">
                 <span style="font-size: 0.9rem;">NICHIVI PHILIPPINES CORPORATION</span>
             </div>
             <div class="line-nav"></div>
             <div class="prod-line-container">
                 <span style="font-size: 0.8rem;">DIGITAL OUTPUT MONITORING - PLANNER</span>
-                <span class="line-prod-number" style="font-size: 0.7rem;">Loading...</span>
+                <span class="line-prod-number" id="prod-number" style="font-size: 0.7rem; display: none;">Loading...</span>
                 <!-- C(equals value) done-->
             </div>
         </div>
@@ -58,31 +58,15 @@
     <div class="container-data">
         <div id="home">
             <div id="home-container">
-                <!--
-                <div id="title-container">
-                    <div id="logo-element">
-                        <img width="90" height="74" src="public/assets/images/nichivi-logo-hd.png" alt="logo">
-                    </div>
-                    <div id="home-title-element">
-                        <div class="company-name">
-                            N I C H I V I 
-                        </div>
-                        <div class="company-name">
-                            PHILIPPINES CORPORATION
-                        </div>
-                        <div style="font-weight: bold;">
-                        DIGITAL OUTPUT MONITORING - PLANNER
-                        </div>
-                        <span class="line-prod-main" style="font-size: 1.2rem; font-weight:bolder">Loading...</span>
-                    </div>
-                </div> -->
+                <div id="home-name" style="font-weight:bold">
+                    <span class="line-prod-main" style="font-weight:bold">Loading...</span> &nbsp;REAL-TIME MONITORING
+                </div>
 
                 <div id="dom-data-container">
-                    <div id="home-name" style="font-weight:bold">
-                        <span class="line-prod-main" style="font-weight:bold">Loading...</span> &nbsp;REAL-TIME MONITORING
-                    </div>
+
                     <div class="DOM-graphs-data">
-                        <div id="DOM-graphs-title">Tube Assembly Daily Production</div>
+                        <div class="DOM-graphs-title">Tube Assembly Daily Production</div>
+
                         <div id="DOM-graphs-container"> 
 
                             <div class="per-dom-container" id="c4-cont">
@@ -152,20 +136,23 @@
                                     <div>Product Model: YTB</div>
                                     <div>Quota per day:</div>
                                     <div>Percentage:</div>
-                                    
                                 </div>                                
                             </div>
-
                         </div>
-                    </div>      
-                </div>
+                    </div>
 
+                    <div id="dom-overview-container">
+                    </div>
+                       
+                </div>
             </div>
 
             <footer class="footer">
-                <p>© 2025 NICHIVI Philippines Corporation (Manufacturing Technology) All Rights Reserved.</p>
+                <p>Digital Output Monitoring (Version 1.9.1)</p>
+                <p>© 2025 Nichivi Philippines Corporation (Manufacturing Technology) All Rights Reserved.</p>
             </footer>
         </div>
+
         <div id="dashboard-container">
             <div id="dashboard">
 
@@ -581,7 +568,7 @@
         </div>
 
     </div> 
-    <script src="/planner_fetch/planner_data.js"></script>
+    <script src="/planner_fetch/planner_data1.js"></script>
 
     <script>
         const ctx = document.getElementById('graph-data').getContext('2d');
@@ -710,11 +697,11 @@
             }
         });
 
-
         document.querySelector('.side-nav button:nth-child(1)').addEventListener('click', function() {
             document.getElementById('home').style.display = 'block';
             document.getElementById('dashboard-container').style.display = 'none';
             document.getElementById('dataentry-container').style.display = 'none';
+            document.getElementById('prod-number').style.display = 'none';
             /*document.getElementById('title-with-dom-number').style.display = 'none';
             document.getElementById('side-nav-menu').style.justifyContent = 'center';
             document.getElementById('navigation-btn').style.margin = '0px 0px 0px 0px'; */
@@ -725,6 +712,7 @@
             document.getElementById('home').style.display = 'none';
             document.getElementById('dashboard-container').style.display = 'flex';
             document.getElementById('dataentry-container').style.display = 'none';
+            document.getElementById('prod-number').style.display = 'block';
             /*document.getElementById('title-with-dom-number').style.display = 'flex';
             document.getElementById('side-nav-menu').style.justifyContent = 'space-between';
             document.getElementById('navigation-btn').style.margin = '0px 50px 0px 0px'; */
@@ -735,6 +723,7 @@
             document.getElementById('home').style.display = 'none';
             document.getElementById('dashboard-container').style.display = 'none';
             document.getElementById('dataentry-container').style.display = 'flex';
+            document.getElementById('prod-number').style.display = 'block';
             /*document.getElementById('title-with-dom-number').style.display = 'flex';
             document.getElementById('side-nav-menu').style.justifyContent = 'space-between';
             document.getElementById('navigation-btn').style.margin = '0px 50px 0px 0px';*/
@@ -825,7 +814,7 @@
         }
     </script>
 
-    <script>
+    <script> 
         async function loadImages() {
             try {
                 const response = await fetch('server_display.php');

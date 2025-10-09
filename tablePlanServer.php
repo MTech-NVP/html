@@ -57,6 +57,22 @@ if ($action === 'read') {
     exit;
 }
 
+if ($action === 'get_countPerHr') {
+    $result = $conn->query("SELECT countPerHr FROM actualCountData");
+    
+    if (!$result) {
+        die(json_encode(["error" => $conn->error]));
+    }
+
+    $values = [];
+    while ($row = $result->fetch_assoc()) {
+        $values[] = $row['countPerHr'];
+    }
+
+    echo json_encode($values);
+    exit;
+}
+
 
 if ($action === 'update') {
     // Make sure id exists

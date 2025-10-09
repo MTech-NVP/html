@@ -167,26 +167,12 @@
         padding: 20px;
         max-height: calc(100vh - 60px);
     }
-/*
-    #title-container{
-        padding: 20px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
+
+    #home-container{
+        width: 100%;
+        height: calc(100vh - 140px);
     }
 
-    #home-title-element{
-        padding-left: 10px;
-        display: flex;
-        flex-direction: column;
-        height: 20vh;
-        text-align: left;
-    }
-
-    .company-name{
-        color: #004186;
-        font-weight: bolder;
-    } */
     #home-name{
        font-size: 1.2em;
        display: flex;
@@ -195,18 +181,18 @@
     }
 
     #dom-data-container{
+        display: flex;
         width: 100%;
         height: calc(95vh - 100px);
     }
 
     .DOM-graphs-data{
         display: flex;
-        height: 200px;
+        height: 90%;
         width: 40%;
         flex-direction: column;
-        height: 90%;
         align-items: center;
-        border-right: 1px solid gray;
+        border-right: 3px solid gray;
         overflow: auto;
     }
 
@@ -215,13 +201,14 @@
         flex-direction: column;
         align-items: flex-start;
         height: 100%;
-        justify-content: space-between;
+        justify-content: space-evenly;
         width: 90%;
         border-radius: 10px;
     }
 
-    #DOM-graphs-title{
-        padding: 20px 0 10px 0;
+    .DOM-graphs-title{
+        height: 30px;
+        padding: 10px 0 0 0;
         font-size: 1.1em;
         font-weight: bold;
     }
@@ -240,16 +227,18 @@
     gap: 5px;
     width: 100%;
     }
-    .bar-size{
-        width: 375.55px;
-        border-right: 2px solid green;
-    }
 
+    .bar-size{
+        width: 95%;
+        border-right: 2px solid green;
+        border: 1.5px solid black;
+        border-radius: 0px 7px 7px 0px;
+    }
+   
     .bar {
-        height: 25px;
+        height: 15px;
         width: 0%;
         background: #006ee4;
-        border: 2px solid black;
         border-radius: 0px 5px 5px 0px;
         transition: width 0.5s ease-in-out, background-color 0.5s ease;;
 
@@ -257,7 +246,7 @@
         align-items: center;
         justify-content: flex-start;
         padding-left: 8px;
-        color: white;
+        color: black;
         font-weight: 600;
         font-size: 0.85rem;
 
@@ -265,7 +254,7 @@
     }
 
     .label {
-        width: 80px;
+        width: 90px;
         font-weight: 600;
         text-align: left;
         font-size: 1rem;
@@ -279,12 +268,88 @@
         border-bottom: 1px solid gray;
     }
 
+    #dom-overview-container{
+        display: flex;
+        margin-left: 20px;
+        height: 90%;
+        width: 60%;
+        background: #0056b3;
+        color: white;
+        border-radius: 20px;
+        flex-direction: column;
+        align-items: center;
+        overflow: auto;
+    }
+
+    .overview-plan-data-container{
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+    }
+    .overview-header-plan-data{text-align: center;}
+
+    .overview-plan-data{
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .overview-plan-section{
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.5em;
+        padding-bottom: 5px;
+        border-bottom: 3px solid lightblue;
+    }
+
+    .overview-information{
+        padding-top: 5px;
+        display: grid;
+        font-size: 0.9em;
+        font-weight: bold;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1.2fr 1fr;
+    }
+    .overview-information label{
+        font-weight: 100;
+    }
+    #overview-time-title{
+        padding-top: 10px;
+    }
+    .overview-time-plan{
+        height: 50%;
+        padding-top: 5px;
+        width: 100%;
+    }
+
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        text-align: center;
+    }
+
+    .time-cell {
+        font-size: 0.8em;
+        color: white;
+        font-weight: 500;
+    }
+    #timecell2{
+        padding-top: 10px;
+    }
+
+    .value-cell {
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
     footer{
         font-size: 0.8em;
+        height: 40px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         align-items: center;
         padding: 10px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         color: #7b7b7baa;
     }
@@ -371,12 +436,6 @@
     #date-prod{
         font-size: 0.8rem;
         font-weight:650;
-    }
-
-    table {
-        width: 100%;
-        height: 100%;
-        border-collapse: collapse;
     }
 
     th,
@@ -772,6 +831,8 @@
 
     #table-person{
         width: 90%;
+        height: 100%;
+        border-collapse: collapse;
     }
 
     #table-person td{
