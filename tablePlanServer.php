@@ -18,60 +18,88 @@ if ($conn->connect_error) {
 // Get action
 $action = $_POST['action'] ?? '';
 
-function reorderIds($conn) {
-    // Check existing IDs
-    $result = $conn->query("SELECT id FROM details_product ORDER BY id ASC");
-    $existing = [];
-    while ($row = $result->fetch_assoc()) {
-        $existing[] = (int)$row['id'];
-    }
+    function reorderIds($conn) {
+        // Check existing IDs
+        $result = $conn->query("SELECT id FROM details_product ORDER BY id ASC");
+        $existing = [];
+        while ($row = $result->fetch_assoc()) {
+            $existing[] = (int)$row['id'];
+        }
 
-    // Find missing numbers and insert placeholder rows
-    if (!empty($existing)) {
-        $max = max($existing);
-        for ($i = 1; $i <= $max; $i++) {
-            if (!in_array($i, $existing)) {
-                $conn->query("INSERT INTO details_product (part_no, model, line) VALUES ('Missing $i', '', '')");
+        // Find missing numbers and insert placeholder rows
+        if (!empty($existing)) {
+            $max = max($existing);
+            for ($i = 1; $i <= $max; $i++) {
+                if (!in_array($i, $existing)) {
+                    $conn->query("INSERT INTO details_product (part_no, model, line) VALUES ('Missing $i', '', '')");
+                }
             }
         }
+
+        // Reorder the IDs
+        $conn->query("SET @count = 0");
+        $conn->query("UPDATE details_product SET id = @count := @count + 1 ORDER BY id");
+        $conn->query("ALTER TABLE details_product AUTO_INCREMENT = 1");
     }
 
-    // Reorder the IDs
-    $conn->query("SET @count = 0");
-    $conn->query("UPDATE details_product SET id = @count := @count + 1 ORDER BY id");
-    $conn->query("ALTER TABLE details_product AUTO_INCREMENT = 1");
-}
 
+    if ($action === 'read') {
+        // Ensure IDs start from 1 (auto fix)
+        reorderIds($conn);
 
-
-if ($action === 'read') {
-    // Ensure IDs start from 1 (auto fix)
-    reorderIds($conn);
-
-    $result = $conn->query("SELECT * FROM details_product ORDER BY id ASC");
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-    echo json_encode($rows);
-    exit;
-}
-
-if ($action === 'get_countPerHr') {
-    $result = $conn->query("SELECT countPerHr FROM actualCountData");
-    
-    if (!$result) {
-        die(json_encode(["error" => $conn->error]));
+        $result = $conn->query("SELECT * FROM details_product ORDER BY id ASC");
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        echo json_encode($rows);
+        exit;
     }
 
-    $values = [];
-    while ($row = $result->fetch_assoc()) {
-        $values[] = $row['countPerHr'];
+    if ($action === 'get_countPerHr') {
+        $result = $conn->query("SELECT countPerHr FROM actualCountData");
+        
+        if (!$result) {
+            die(json_encode(["error" => $conn->error]));
+        }
+
+        $values = [];
+        while ($row = $result->fetch_assoc()) {
+            $values[] = $row['countPerHr'];
+        }
+
+        echo json_encode($values);
+        exit;
     }
 
-    echo json_encode($values);
-    exit;
-}
+    if ($action === 'get_by_plan_id_value') {
+        // Get the latest plan_id from plan_id_value
+        $stmt = $conn->prepare("SELECT id_value FROM plan_id_value WHERE id = 1");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        if (!$row) {
+            die(json_encode(["error" => "No plan found"]));
+        }
+
+        $id_value = $row['id_value'];
+
+        // Fetch the corresponding row from details_product
+        $stmt2 = $conn->prepare("SELECT * FROM details_product WHERE id = ?");
+        $stmt2->bind_param("i", $id_value);
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+        $product_row = $result2->fetch_assoc();
+
+        if (!$product_row) {
+            die(json_encode(["error" => "No details_product found for id_value $id_value"]));
+        }
+
+        echo json_encode($product_row);
+        exit;
+    }
+
 
 
 if ($action === 'update') {

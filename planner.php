@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="public/assets/images/nichivi-logo.ico">
-    <link rel="stylesheet" href="public/assets/css/planner10.css">
+    <link rel="stylesheet" href="public/assets/css/planner1.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -44,11 +44,11 @@
             <div class="dropdowndom">
                 <button class="nav-button dropbtn" id="dropbtn">Select DOM</button>
                 <div class="dropdown-content" id="dropdownMenu">
-                    <button class="nav-button">C4 DOM</button>
-                    <button class="nav-button">C7 DOM</button>
-                    <button class="nav-button">C9 DOM</button>
-                    <button class="nav-button">C9-1 DOM</button>
-                    <button class="nav-button">C10 DOM</button>
+                    <button class="nav-button" data-ip="10.0.0.189">C4 DOM</button>
+                    <button class="nav-button" data-ip="10.0.0.102">C7 DOM</button>
+                    <button class="nav-button" data-ip="10.0.0.136">C9 DOM</button>
+                    <button class="nav-button" data-ip="10.0.0.125">C9-1 DOM</button>
+                    <button class="nav-button" data-ip="10.0.0.164">C10 DOM</button>
                 </div>
             </div>
         </div>
@@ -77,9 +77,10 @@
                                     </div>
                                 </div> 
                                 <div class="dom-info" id="c4-info">
-                                    <div>Product Model: YDB</div>
+                                    <div>Status: </div>
+                                    <div>Product Model: </div>
                                     <div>Quota per day:</div>
-                                    <div>Percentage:</div>
+                                    <div>Completion Rate:</div>
                                 </div>                               
                             </div>
 
@@ -91,9 +92,10 @@
                                     </div>
                                 </div>     
                                    <div class="dom-info" id="c7-info">
-                                    <div>Product Model: 840B</div> 
+                                    <div>Status: </div>
+                                    <div>Product Model: </div> 
                                     <div>Quota per day:</div>
-                                    <div>Percentage:</div>
+                                    <div>Completion Rate:</div>
                                 </div>                            
                             </div>
 
@@ -105,9 +107,10 @@
                                     </div>
                                 </div>  
                                 <div class="dom-info" id="c9-info">
-                                    <div>Product Model: YDB</div>
+                                    <div>Status: </div>
+                                    <div>Product Model: </div>
                                     <div>Quota per day:</div>
-                                    <div>Percentage:</div>
+                                    <div>Completion Rate:</div>
                                 </div>                              
                             </div>
 
@@ -118,10 +121,11 @@
                                         <div class="bar" data-width=""></div>
                                     </div>
                                 </div> 
-                                <div class="dom-info" id="c9-1-info">
-                                    <div>Product Model: YDB</div>
+                                <div class="dom-info" id="c9one-info">
+                                    <div>Status: </div>
+                                    <div>Product Model: </div>
                                     <div>Quota per day:</div>
-                                    <div>Percentage:</div>
+                                    <div>Completion Rate:</div>
                                 </div>                                
                             </div>
 
@@ -133,9 +137,10 @@
                                     </div>
                                 </div> 
                                 <div class="dom-info" id="c10-info">
-                                    <div>Product Model: YTB</div>
+                                    <div>Status: </div>
+                                    <div>Product Model: </div>
                                     <div>Quota per day:</div>
-                                    <div>Percentage:</div>
+                                    <div>Completion Rate:</div>
                                 </div>                                
                             </div>
                         </div>
@@ -568,9 +573,23 @@
         </div>
 
     </div> 
-    <script src="/planner_fetch/planner_data1.js"></script>
+    <script src="/planner_fetch/planner_data.js"></script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Get the current IP from the page URL
+            const currentIP = window.location.hostname; // e.g., "10.0.0.102"
+
+            // Loop through each button and check if it matches
+            document.querySelectorAll(".nav-button").forEach(button => {
+                if (button.dataset.ip === currentIP) {
+                    button.disabled = true; // disable matching button
+                    button.style.opacity = "0.5"; // optional style
+                    button.style.cursor = "not-allowed"; // optional visual feedback
+                }
+            });
+        });
+        
         const ctx = document.getElementById('graph-data').getContext('2d');
 
         let chartData = {
@@ -656,7 +675,7 @@
         }
 
         const dashboardNames = {
-            "10.0.0.199": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
+            "10.0.0.189": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
             "10.0.0.102": "TUBE ASSEMBLY: C7 PRODUCTION LINE",
             "10.0.0.136": "TUBE ASSEMBLY: C9 PRODUCTION LINE",
             "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE",
@@ -733,7 +752,7 @@
             window.location.href = "http://10.0.0.189/planner.php";
         });
         document.querySelector('.dropdown-content button:nth-child(2)').addEventListener('click', function() {
-            window.location.href = "http://10.0.0.193/planner.php";
+            window.location.href = "http://10.0.0.102/planner.php";
         });
         document.querySelector('.dropdown-content button:nth-child(3)').addEventListener('click', function() {
             window.location.href = "http://10.0.0.136/planner.php";

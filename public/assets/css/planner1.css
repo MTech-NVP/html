@@ -238,6 +238,7 @@
     .bar {
         height: 15px;
         width: 0%;
+        max-width: 100%;
         background: #006ee4;
         border-radius: 0px 5px 5px 0px;
         transition: width 0.5s ease-in-out, background-color 0.5s ease;;
@@ -261,6 +262,8 @@
     }
 
     .dom-info{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         padding-bottom: 3px;
         font-size: 0.8rem;
         width: 100%;
@@ -278,17 +281,18 @@
         border-radius: 20px;
         flex-direction: column;
         align-items: center;
-        overflow: auto;
     }
 
     .overview-plan-data-container{
         width: 100%;
-        height: 100%;
-        padding: 20px;
+        height: calc(100% - 30px);
+        padding: 20px 20px 20px 20px;
     }
     .overview-header-plan-data{text-align: center;}
 
     .overview-plan-data{
+        display: flex;
+        flex-direction: column;
         height: 100%;
         overflow-y: auto;
     }
@@ -296,7 +300,7 @@
     .overview-plan-section{
         text-align: center;
         font-weight: bold;
-        font-size: 1.5em;
+        font-size: 1.2em;
         padding-bottom: 5px;
         border-bottom: 3px solid lightblue;
     }
@@ -316,8 +320,7 @@
         padding-top: 10px;
     }
     .overview-time-plan{
-        height: 50%;
-        padding-top: 5px;
+        padding-top: 15px;
         width: 100%;
     }
 
@@ -341,6 +344,60 @@
         border-radius: 4px;
         font-weight: bold;
     }
+
+    #achieved-per-hr {
+        height: 45%;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .achieved-bar-title {
+        height: 8%;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .achieved-bar-graph {
+        display: flex;
+        align-items: flex-end; /* aligns bars to bottom */
+        justify-content: space-around;
+        padding-top: 10px;
+        border-top: 1px solid #ccc;
+        height: 100%;
+    }
+
+    .achieved-bar-item {
+        display: flex; /* was missing */
+        flex-direction: column;
+        align-items: center;
+        width: 40px;
+    }
+
+    .achieved-bar {
+        width: 100%;
+        color: white;
+        border-radius: 6px 6px 0 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        height: 0; /* start collapsed */
+        transition: height 1s ease-in-out;
+    }
+
+    .achieved-bar-value {
+        font-size: 12px;
+        padding-bottom: 4px;
+        font-weight: bold;
+    }
+
+    .achieved-bar-label {
+        font-size: 11px;
+        margin-top: 5px;
+        text-align: center;
+    }
+
 
     footer{
         font-size: 0.8em;
