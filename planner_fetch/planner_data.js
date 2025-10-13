@@ -169,7 +169,6 @@ function loadOverviewPlan() {
         // Save plan globally
         window.currentPlan = row;
 
-        // --- Build the HTML ---
         const text = `
             <div class="DOM-graphs-title">Daily Production Details</div>
             <div class="overview-plan-data-container">
@@ -184,8 +183,8 @@ function loadOverviewPlan() {
                         <div><label>Model:<br></label> ${row.model}</div>
                         <div><label>Line:<br></label> ${row.line}</div>
                         <div><label>Delivery Date:<br></label> ${row.del_date}</div>
-                        <div><label>CT As Of:<br></label> ${row.ct_as_of}</div>
-                        <div><label>Expected Date:<br></label> ${row.exp_date}</div>
+                        <div><label>Cycle Time As Of:<br></label> ${row.ct_as_of}</div>
+                        <div><label>Expiration Date:<br></label> ${row.exp_date}</div>
                         <div><label>Man Power:<br></label> ${row.man_power}</div>
                         <div><label>Prod Hours:<br></label> ${row.prod_hrs}</div>
                     </div>
@@ -196,10 +195,18 @@ function loadOverviewPlan() {
                     </div>
 
                     <div id="achieved-per-hr">
-                        <div class="achieved-bar-title">Actual Count Per Hour</div>
-                        <div class="achieved-bar-graph">
-                            ${generateInitialBars()}
-                        </div>
+                        <div class="achieved-bar-title">Actual Count Per Hour 
+                        <select id="bar-graph-selection">
+                            <option value="prodgraph" id="bar-select-1" class="bar-select">Production</option>
+                            <option value="dtgraph"  id="bar-select-2" class="bar-select">Downtime</option>
+                        </select>
+                    </div>
+                    <div class="achieved-bar-graph" id="production-bar-graph">
+                        ${generateInitialBars()}
+                    </div>
+                    <div class="achieved-bar-graph" id="downtime-bar-graph" style="display:none;">
+                        ${generateDowntimeBars()}
+                    </div>
                     </div>
                 </div>
             </div>
@@ -210,9 +217,7 @@ function loadOverviewPlan() {
     .catch(err => console.error('Error loading plan details:', err));
 }
 
-// -----------------------------
 // Helper: generate plan per hour grid
-// -----------------------------
 function generatePlanGrid(row) {
     const plans = [
         row.plan_1, row.plan_2, row.plan_3, row.plan_4,
@@ -250,9 +255,7 @@ function generatePlanGrid(row) {
     `;
 }
 
-// -----------------------------
 // Helper: generate initial bars
-// -----------------------------
 function generateInitialBars() {
     const times = ["6AM–7AM","7AM–8AM","8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–1PM",
                    "1PM–2PM","2PM–3PM","3PM–4PM","4PM–5PM","5PM–6PM","6PM–7PM","7PM–8PM"];
@@ -266,9 +269,21 @@ function generateInitialBars() {
     `).join('');
 }
 
-// -----------------------------
+// Generate initial downtime bars
+function generateDowntimeBars() {
+    const times = ["6AM–7AM","7AM–8AM","8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–1PM",
+                   "1PM–2PM","2PM–3PM","3PM–4PM","4PM–5PM","5PM–6PM","6PM–7PM","7PM–8PM"];
+    return times.map(time => `
+        <div class="achieved-bar-item">
+            <div class="achieved-bar" style="height:0; transition: height 0.5s; background-color:#dc3545;">
+                <span class="achieved-bar-value">0</span>
+            </div>
+            <div class="achieved-bar-label">${time}</div>
+        </div>
+    `).join('');
+}
+
 // Update bar heights only
-// -----------------------------
 function updateBarHeights() {
     if (!window.currentPlan) return;
 
@@ -290,7 +305,7 @@ function updateBarHeights() {
             ...plans.map(p => parseInt(p) || 0)
         ) || 1;
 
-        const graphHeight = 15; // in vh
+        const graphHeight = 150; // in vh
         const bars = document.querySelectorAll('#achieved-per-hr .achieved-bar');
 
         bars.forEach((bar, i) => {
@@ -298,7 +313,7 @@ function updateBarHeights() {
             const barHeight = (numericVal / maxVal) * graphHeight;
             const color = numericVal >= (parseInt(plans[i]) || 0) ? "#28a745" : "#007bff";
 
-            bar.style.height = barHeight + 'vh';
+            bar.style.height = barHeight + 'px';
             bar.style.backgroundColor = color;
             bar.querySelector('.achieved-bar-value').textContent = numericVal;
         });
@@ -306,9 +321,29 @@ function updateBarHeights() {
     .catch(err => console.error('Error updating bar heights:', err));
 }
 
-// -----------------------------
+// Update Downtime Bars
+function updateDowntimeBars() {
+    fetch('tablePlanServer.php', {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'get_downtime_data' })
+    })
+    .then(res => res.json())
+    .then(downtimeData => {
+        const bars = document.querySelectorAll('#downtime-bar-graph .achieved-bar');
+        const maxVal = Math.max(...downtimeData.map(v => v.time_num || 0), 1);
+        const graphHeight = 150; // same as production
+
+        bars.forEach((bar, i) => {
+            const val = downtimeData[i]?.time_num || 0;
+            const barHeight = (val / maxVal) * graphHeight;
+            bar.style.height = barHeight + 'px';
+            bar.querySelector('.achieved-bar-value').textContent = val;
+        });
+    })
+    .catch(err => console.error('Error updating downtime bars:', err));
+}
+
 // Update all plan info (less frequent)
-// -----------------------------
 function updateOverviewPlan() {
     fetch('tablePlanServer.php', {
         method: 'POST',
@@ -326,8 +361,8 @@ function updateOverviewPlan() {
             <div><label>Model:<br></label> ${row.model}</div>
             <div><label>Line:<br></label> ${row.line}</div>
             <div><label>Delivery Date:<br></label> ${row.del_date}</div>
-            <div><label>CT As Of:<br></label> ${row.ct_as_of}</div>
-            <div><label>Expected Date:<br></label> ${row.exp_date}</div>
+            <div><label>Cycle Time As Of:<br></label> ${row.ct_as_of}</div>
+            <div><label>Expiration Date:<br></label> ${row.exp_date}</div>
             <div><label>Man Power:<br></label> ${row.man_power}</div>
             <div><label>Prod Hours:<br></label> ${row.prod_hrs}</div>
         `;
@@ -339,16 +374,29 @@ function updateOverviewPlan() {
     .catch(err => console.error('Error updating plan:', err));
 }
 
-// -----------------------------
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'bar-graph-selection') {
+        const selection = e.target.value;
+
+        if (selection === 'prodgraph') {
+            document.getElementById('production-bar-graph').style.display = 'flex';
+            document.getElementById('downtime-bar-graph').style.display = 'none';
+            updateBarHeights();
+        } else if (selection === 'dtgraph') {
+            document.getElementById('production-bar-graph').style.display = 'none';
+            document.getElementById('downtime-bar-graph').style.display = 'flex';
+            updateDowntimeBars();
+        }
+    }
+});
+
 // Initial load
-// -----------------------------
 loadOverviewPlan();
 
-// -----------------------------
 // Intervals
-// -----------------------------
-setInterval(updateBarHeights, 3000); // update bars every 3s
-setInterval(updateOverviewPlan, 5000); // update plan info every 60s
+setInterval(updateBarHeights, 3000);  
+setInterval(updateDowntimeBars, 3000);
+setInterval(updateOverviewPlan, 5000); 
 
 
 

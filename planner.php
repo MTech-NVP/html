@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="public/assets/images/nichivi-logo.ico">
-    <link rel="stylesheet" href="public/assets/css/planner1.css">
+    <link rel="stylesheet" href="public/assets/css/planner.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -56,6 +56,7 @@
     </nav> 
 
     <div class="container-data">
+
         <div id="home">
             <div id="home-container">
                 <div id="home-name" style="font-weight:bold">
@@ -379,7 +380,7 @@
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="model">Model</label>
-                                            <input type="text" id="model" name="model" placeholder="Enter Model">
+                                            <input type="text" id="modelnumber" name="model" placeholder="Enter Model">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="line-edit">Line</label>
@@ -573,6 +574,7 @@
         </div>
 
     </div> 
+
     <script src="/planner_fetch/planner_data.js"></script>
 
     <script>
@@ -869,7 +871,6 @@
             }
         }
 
-
         async function loadPerson() {
             try {
                 const response = await fetch('person_display_server.php');
@@ -917,7 +918,7 @@
                             <div><label>Line:&nbsp;</label> ${row.line}</div>
                             <div><label>Delivery Date:&nbsp;</label> ${row.del_date}</div>
                             <div><label>CT As Of:&nbsp;</label> ${row.ct_as_of}</div>
-                            <div><label>Expected Date:&nbsp;</label> ${row.exp_date}</div>
+                            <div><label>Exp. Date:&nbsp;</label> ${row.exp_date}</div>
                             <div><label>Man Power:&nbsp;</label> ${row.man_power}</div>
                             <div><label>Prod Hours:&nbsp;</label> ${row.prod_hrs}</div>                            
                         </div>
@@ -1003,7 +1004,6 @@
             .catch(err => console.error('Error loading plans:', err));
         }
 
-
         document.getElementById('editForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -1024,7 +1024,6 @@
                 });
         });
 
-
         function editPlan(id, part_no, model, line, del_date,
             ctasof, expdate, manpower, prodhrs, plan1, plan2,
             plan3, plan4, plan5, plan6, plan7, plan8, plan9, plan10,
@@ -1036,7 +1035,7 @@
             document.getElementById('append-data-plan').style.display = "none";
             document.getElementById('planId').value = id;
             document.getElementById('partno').value = part_no;
-            document.getElementById('model').value = model;
+            document.getElementById('modelnumber').value = model;
             document.getElementById('line-edit').value = line;
             document.getElementById('delDate').value = del_date;
             document.getElementById('ctasof').value = ctasof;

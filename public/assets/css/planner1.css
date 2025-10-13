@@ -219,13 +219,13 @@
     }
     
     .bar-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 5px;
-    font-weight: bold;
-    gap: 5px;
-    width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 5px;
+        font-weight: bold;
+        gap: 5px;
+        width: 100%;
     }
 
     .bar-size{
@@ -283,11 +283,39 @@
         align-items: center;
     }
 
-    .overview-plan-data-container{
+    .overview-plan-data-container {
         width: 100%;
         height: calc(100% - 30px);
-        padding: 20px 20px 20px 20px;
+        padding: 20px;
+        overflow-y: overlay;
+        overflow-y: auto;
     }
+
+    /* WebKit browsers (Chrome, Edge, Safari) */
+    .overview-plan-data-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .overview-plan-data-container::-webkit-scrollbar-track {
+        background: transparent; /* no visible track */
+    }
+
+    .overview-plan-data-container::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3); /* semi-transparent scrollbar */
+        border-radius: 10px;
+        transition: background 0.3s;
+    }
+
+    .overview-plan-data-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.6); /* more visible on hover */
+    }
+
+    /* Firefox */
+    .overview-plan-data-container {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
     .overview-header-plan-data{text-align: center;}
 
     .overview-plan-data{
@@ -316,9 +344,11 @@
     .overview-information label{
         font-weight: 100;
     }
+
     #overview-time-title{
         padding-top: 10px;
     }
+
     .overview-time-plan{
         padding-top: 15px;
         width: 100%;
@@ -346,17 +376,36 @@
     }
 
     #achieved-per-hr {
-        height: 45%;
+        height: 160px;
         width: 100%;
         padding: 20px;
     }
 
     .achieved-bar-title {
+        display: flex;
+        justify-content: space-between;
         height: 8%;
         text-align: center;
         font-weight: bold;
         margin-bottom: 10px;
         font-size: 16px;
+    }
+
+    #bar-graph-selection{
+        height: 20px;
+        width: 100px;
+        font-size: 0.8em;
+        font-weight:bold;
+        background-color: transparent;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        transition: background 0.5s ease;
+    }
+
+    #bar-graph-selection:hover{
+        background-color: white;
+        color: black;
     }
 
     .achieved-bar-graph {
@@ -365,7 +414,7 @@
         justify-content: space-around;
         padding-top: 10px;
         border-top: 1px solid #ccc;
-        height: 100%;
+        height: 190px;
     }
 
     .achieved-bar-item {
@@ -386,6 +435,18 @@
         transition: height 1s ease-in-out;
     }
 
+    #downtime-bar-graph .achieved-bar{
+        width: 100%;
+        color: white;
+        background-color: red;
+        border-radius: 6px 6px 0 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        height: 0; /* start collapsed */
+        transition: height 1s ease-in-out;
+    }
+
     .achieved-bar-value {
         font-size: 12px;
         padding-bottom: 4px;
@@ -397,7 +458,6 @@
         margin-top: 5px;
         text-align: center;
     }
-
 
     footer{
         font-size: 0.8em;
@@ -1400,7 +1460,7 @@
     }
 
 
-    select {
+    #data-selector {
         padding: 10px 15px;
         font-size: 17px;
         border-radius: 5px;

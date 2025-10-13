@@ -180,4 +180,24 @@ if ($action === 'delete') {
     exit;
 }
 
+if ($action === 'get_downtime_data') {
+    $result = $conn->query("SELECT id, time_num FROM downtime_data ORDER BY id ASC");
+
+    if (!$result) {
+        die(json_encode(["error" => $conn->error]));
+    }
+
+    $rows = [];
+    while ($row = $result->fetch_assoc()) {
+        // Make sure time_num is an integer in the JSON output
+        $row['time_num'] = (int)$row['time_num'];
+        $row['id'] = (int)$row['id'];
+        $rows[] = $row;
+    }
+
+    echo json_encode($rows);
+    exit;
+}
+
+
 ?>
