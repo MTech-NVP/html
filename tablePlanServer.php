@@ -16,7 +16,7 @@ if ($conn->connect_error) {
 }
 
 // Get action
-$action = $_POST['action'] ?? '';
+$action = $_REQUEST['action'] ?? '';
 
     function reorderIds($conn) {
         // Check existing IDs
@@ -198,6 +198,41 @@ if ($action === 'get_downtime_data') {
     echo json_encode($rows);
     exit;
 }
+
+if ($action === 'get_downtime_total') {
+    $result = $conn->query("SELECT SUM(time_num) AS total_time FROM downtime_data");
+
+    if (!$result) {
+        die(json_encode(["error" => $conn->error]));
+    }
+
+    $row = $result->fetch_assoc();
+    $totalTime = (int)$row['total_time'];
+
+    echo json_encode(["total_time" => $totalTime]);
+    exit;
+}
+
+
+if ($action === 'get_downtime_duration') {
+    $result = $conn->query("SELECT id, time_Elapse FROM downtime_data ORDER BY id ASC");
+
+    if (!$result) {
+        die(json_encode(["error" => $conn->error]));
+    }
+
+    $rows = [];
+    while ($row = $result->fetch_assoc()) {
+        // id as integer, time_Elapse kept as string
+        $row['id'] = (int)$row['id'];
+        $row['time_Elapse'] = (string)$row['time_Elapse'];
+        $rows[] = $row;
+    }
+
+    echo json_encode($rows);
+    exit;
+}
+
 
 
 ?>

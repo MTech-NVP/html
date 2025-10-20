@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="public/assets/images/nichivi-logo.ico">
-    <link rel="stylesheet" href="public/assets/css/planner.css">
+    <link rel="stylesheet" href="public/assets/css/planner1.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -82,6 +82,8 @@
                                     <div>Product Model: </div>
                                     <div>Quota per day:</div>
                                     <div>Completion Rate:</div>
+                                    <div>Downtime Count:</div>
+                                    <div>DT Duration:</div>
                                 </div>                               
                             </div>
 
@@ -94,9 +96,11 @@
                                 </div>     
                                    <div class="dom-info" id="c7-info">
                                     <div>Status: </div>
-                                    <div>Product Model: </div> 
+                                    <div>Product Model: </div>
                                     <div>Quota per day:</div>
                                     <div>Completion Rate:</div>
+                                    <div>Downtime Count:</div>
+                                    <div>DT Duration:</div>
                                 </div>                            
                             </div>
 
@@ -112,6 +116,8 @@
                                     <div>Product Model: </div>
                                     <div>Quota per day:</div>
                                     <div>Completion Rate:</div>
+                                    <div>Downtime Count:</div>
+                                    <div>DT Duration:</div>
                                 </div>                              
                             </div>
 
@@ -127,6 +133,8 @@
                                     <div>Product Model: </div>
                                     <div>Quota per day:</div>
                                     <div>Completion Rate:</div>
+                                    <div>Downtime Count:</div>
+                                    <div>DT Duration:</div>
                                 </div>                                
                             </div>
 
@@ -142,6 +150,8 @@
                                     <div>Product Model: </div>
                                     <div>Quota per day:</div>
                                     <div>Completion Rate:</div>
+                                    <div>Downtime Count:</div>
+                                    <div>DT Duration:</div>
                                 </div>                                
                             </div>
                         </div>
@@ -577,7 +587,7 @@
 
     <script src="/planner_fetch/planner_data.js"></script>
 
-    <script>
+    <script> 
         document.addEventListener("DOMContentLoaded", () => {
             // Get the current IP from the page URL
             const currentIP = window.location.hostname; // e.g., "10.0.0.102"
@@ -675,6 +685,26 @@
             a.click();
             window.URL.revokeObjectURL(url);
         }
+
+        document.getElementById("c4-cont").addEventListener("click", function() {
+            window.location.href = "http://10.0.0.189/planner.php";
+        });
+
+        document.getElementById("c7-cont").addEventListener("click", function() {
+            window.location.href = "http://10.0.0.102/planner.php";
+        });
+
+        document.getElementById("c9-cont").addEventListener("click", function() {
+            window.location.href = "http://10.0.0.136/planner.php";
+        });
+
+        document.getElementById("c9-1-cont").addEventListener("click", function() {
+            window.location.href = "http://10.0.0.125/planner.php";
+        });
+
+        document.getElementById("c10-cont").addEventListener("click", function() {
+            window.location.href = "http://10.0.0.164/planner.php";
+        });
 
         const dashboardNames = {
             "10.0.0.189": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
@@ -833,9 +863,7 @@
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
         }
-    </script>
 
-    <script> 
         async function loadImages() {
             try {
                 const response = await fetch('server_display.php');
@@ -1174,11 +1202,6 @@
         function edit() {
             document.getElementById("update-container").style.display = "block";
         }
-
-
-
-
-
            /*        function convertToPDF(base64Image) {
 
                     const { jsPDF } = window.jspdf;
@@ -1258,9 +1281,8 @@
             loadPerson()
         })
 
-        
-
     </script>
+    
 </body>
 
 </html>
