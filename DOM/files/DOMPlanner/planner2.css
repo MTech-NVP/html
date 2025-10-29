@@ -2,11 +2,11 @@
         box-sizing: border-box;
         padding: 0;
         margin: 0;
+        font-family: sans-serif;
     }
 
     body,
     html {
-        font-family: 'Roboto', sans-serif;
         background: linear-gradient(135deg, #e0eafc, #cfdef3);
         margin: 0;
         padding: 0;
@@ -80,12 +80,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 550px;
+        width: 575px;
         justify-content: space-between;
         align-content: center;
         margin: 0px 0px 0px 50px;
-        font-weight: 900;
         color: white;
+        font-weight: bold;
     }
 
     .prod-line-container{

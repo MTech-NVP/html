@@ -25,7 +25,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
     // Execute query
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
-            echo "<script>alert('File updated successfully!'); window.location.href='planner.php';</script>";
+            echo "<script>alert('File updated successfully!'); window.location.href='../planner.php';</script>";
         } else {
             echo "File not found or no changes made.";
         }

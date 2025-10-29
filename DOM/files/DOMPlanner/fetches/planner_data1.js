@@ -2,19 +2,19 @@
         document.addEventListener("DOMContentLoaded", () => {
             const updateBars = () => {
                 // Step 1: Fetch totalPlan and totalCount
-                fetch("/planner_fetch/planner_data.php")
+                fetch("fetches/planner_data.php")
                     .then(response => response.text())
                     .then(value => {
                         const [totalPlan, totalCount] = value.split(" ").map(Number);
 
                         // Step 2: Fetch downtime count
-                        const downtimeCountPromise = fetch("tablePlanServer.php?action=get_downtime_total")
+                        const downtimeCountPromise = fetch("fetches/tablePlanServer.php?action=get_downtime_total")
                             .then(res => res.json())
                             .then(data => data.total_time || 0)
                             .catch(() => 0);
 
                         // Step 3: Fetch downtime duration and compute total time
-                        const downtimeDurationPromise = fetch("tablePlanServer.php?action=get_downtime_duration")
+                        const downtimeDurationPromise = fetch("fetches/tablePlanServer.php?action=get_downtime_total")
                             .then(res => res.json())
                             .then(data => {
                                 let totalSeconds = 0;
@@ -39,7 +39,7 @@
                             .catch(() => "00:00:00");
 
                         // Step 4: Fetch product model name
-                        const modelNamePromise = fetch("/planner_fetch/planner_data.php", {
+                        const modelNamePromise = fetch("/DOM/files/DOMPlanner/fetches/planner_data.php", {
                             method: "POST",
                             headers: { "Content-Type": "application/x-www-form-urlencoded" },
                             body: new URLSearchParams({ action: "get_plan_value" })
@@ -220,7 +220,7 @@
         });
 
         function loadOverviewPlan() {
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                 method: 'POST',
                 body: new URLSearchParams({ action: 'get_by_plan_id_value' })
             })
@@ -350,7 +350,7 @@
         function updateBarHeights() {
             if (!window.currentPlan) return;
 
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                 method: 'POST',
                 body: new URLSearchParams({ action: 'get_countPerHr' })
             })
@@ -385,7 +385,7 @@
         }
 
         function updateDowntimeBars() {
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                 method: 'POST',
                 body: new URLSearchParams({ action: 'get_downtime_data' })
             })
@@ -407,7 +407,7 @@
         }
 
         function updateOverviewPlan() {
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                 method: 'POST',
                 body: new URLSearchParams({ action: 'get_by_plan_id_value' })
             })

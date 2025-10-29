@@ -5,11 +5,11 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planner Platform</title>
+    <title>DOM | Planner</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="icon" type="image/ico" href="public/assets/images/nichivi-logo.ico">
-    <link rel="stylesheet" href="public/assets/css/planner1.css">
+    <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
+    <link rel="stylesheet" href="planner2.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -20,11 +20,11 @@
 
     <nav class="side-nav" id="side-nav-menu">
         <div class="title-dashboard" id="title-with-dom-number">
-            <div style="height: 25px;">
-                <img width="35" height="25" src="public/assets/images/nichivi_logo_white.png" alt="logo">
+            <div>
+                <img width="35" src="../../media/icons/nichivi_logo_white.png" alt="logo">
             </div>
-            <div style="height: 17px; display: flex;">
-                <span style="font-size: 0.9rem;">NICHIVI PHILIPPINES CORPORATION</span>
+            <div style="font-size: 0.9rem;">
+                NICHIVI PHILIPPINES CORPORATION
             </div>
             <div class="line-nav"></div>
             <div class="prod-line-container">
@@ -219,7 +219,7 @@
                     <div id="line2"></div>
                     
                     <div id="form-container">
-                        <form action="formhandler.inc.php" method="post">
+                        <form action="/fetches/formhandler.inc.php" method="post">
                             
                             <div class="section-header" id="section-header1">Product Information</div>
                             <div class="product-info" id="product-tab">
@@ -308,7 +308,7 @@
                                 </div>
                             </form>
                             -->
-                            <form action="upload_file_swp.php" method="post" enctype="multipart/form-data">
+                            <form action="fetches/upload_file_swp.php" method="post" enctype="multipart/form-data">
                                 <div class="upload-section">
                                     <label for="file">Select file:</label>
                                     <input type="file" name="file" id="file">
@@ -504,44 +504,44 @@
                 </div>
                 <div class="checkbox-container">
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-1">
                         <span>Cutting</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-2">
                         <span>Assembly</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-3">
                         <span>Cutting</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-4">
                         <span>Installation pad</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-5">
                         <span>Manual Seimitsu</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-6">
                         <span>Retainer Putting</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-7">
                         <span>Manual Valve Check</span>
                     </div>
                     <div class="checkbox-input">
-                        <input type="checkbox">
+                        <input type="checkbox" id="update-op-check-8">
                         <span>Final Inspection</span>
                     </div>
                     <div class="date-input">
                         <label>Last Certification Date</label>
-                        <input type="date">
+                        <input type="date" id="update-op-date-1">
                     </div>
                     <div class="date-input">
                         <label>Re-Certification Date</label>
-                        <input type="date">
+                        <input type="date" id="update-op-date-2">
                     </div>
                 </div>
                 <div class="submit-update-btn">
@@ -553,7 +553,7 @@
         <div class="operator-cover" id="upload-operator-div">
             <div class="upload-pic-container" id="pic-container-div">
                 <button class="exit-btn" onclick="exitForm()">&times;</button>
-                <form action="inserSigna.php" method="POST" enctype="multipart/form-data">
+                <form action="/fetches/inserSigna.php" method="POST" enctype="multipart/form-data">
                     <div class="upload-section">
                         <label class="upload-label-pic">
                             Upload PIC Picture
@@ -585,7 +585,7 @@
 
     </div> 
 
-    <script src="/planner_fetch/planner_data.js"></script>
+    <script src="fetches/planner_data1.js"></script>
 
     <script> 
         document.addEventListener("DOMContentLoaded", () => {
@@ -713,7 +713,7 @@
             "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE",
             "10.0.0.164": "TUBE ASSEMBLY: C10 PRODUCTION LINE",
             "localhost": "ADMINISTRATOR",
-            "192.168.0.225": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
+            "192.168.0.228": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
         }
 
         const currentIP = window.location.hostname;
@@ -866,7 +866,7 @@
 
         async function loadImages() {
             try {
-                const response = await fetch('server_display.php');
+                const response = await fetch('fetches/server_display.php');
                 const images = await response.json();
 
                 const tableBody = document.querySelector('#imagesTable tbody');
@@ -901,7 +901,7 @@
 
         async function loadPerson() {
             try {
-                const response = await fetch('person_display_server.php');
+                const response = await fetch('fetches/person_display_server.php');
                 const persons = await response.json();
 
                 const tableBody = document.querySelector('#table-person tbody');
@@ -924,7 +924,7 @@
         }
 
         function loadPlans() {
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                 method: 'POST',
                 body: new URLSearchParams({ action: 'read' })
             })
@@ -1039,7 +1039,7 @@
             formData.append('action', 'update'); // always update
             formData.append('planId', document.getElementById('planId').value);
 
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                     method: 'POST',
                     body: formData
                 })
@@ -1088,7 +1088,7 @@
 
         function deletePlan(id) {
             if (!confirm('Delete this plan?')) return;
-            fetch('tablePlanServer.php', {
+            fetch('fetches/tablePlanServer.php', {
                     method: 'POST',
                     body: new URLSearchParams({
                         action: 'delete',
