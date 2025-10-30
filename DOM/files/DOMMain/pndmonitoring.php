@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
     <title>DOM | Tube Assembly</title>
-    <link rel="stylesheet" href="pnddesignnnn.css">
+    <link rel="stylesheet" href="pnddesign.css">
 </head>
 <body>
 
@@ -79,6 +79,123 @@
                 </tbody>
             </table>
         </div>
+
+
+        <div id="production-table">
+            <div id="plan-data-container" class="data-container">
+                <table id="plan-data-table" class="data-table">
+                    <tr>
+                        <th colspan="4" class="actual-title">PLAN</th>
+                    </tr>
+                    <tr>
+                        <th class="actual-header">TIME</th>
+                        <th class="actual-header">CYCLE TIME</th>
+                        <th class="actual-header">MINUTES</th>
+                        <th class="actual-header">PLAN OUTPUT</th>
+                    </tr>
+                    </tr>
+                    <tr>
+                        <td>06:00 - 07:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>07:00 - 08:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>08:00 - 09:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>09:00 - 10:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>10:00 - 11:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>11:00 - 12:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>12:00 - 13:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>13:00 - 14:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>14:00 - 15:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>15:00 - 16:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>16:00 - 17:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>17:00 - 18:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>18:00 - 19:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>19:00 - 20:00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>   
+                </table>
+            </div>
+            <div id="actual-data-container" class="data-container">
+                <table id="actual-data-table" class="data-table">
+                    <tr>
+                        <th colspan="6" class="actual-title">ACTUAL</th>
+                    </tr>
+                    <tr>
+                        <th class="actual-header">ACTUAL OUTPUT</th>
+                        <th class="actual-header">PERCENTAGE</th>
+                        <th class="actual-header">TOTAL</th>
+                        <th class="actual-header">DOWNTIME</th>
+                        <th class="actual-header">NG QUANTITY</th>
+                        <th class="actual-header">REMARKS</th>                 
+                </table>
+            </div>            
+        </div>
+
         <!--<div id="downtime_container">
             <table id="downtime_data_table">
                 <thead>
