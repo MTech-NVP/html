@@ -26,7 +26,7 @@
             <div id="line-nav"></div>
             <div id="site-title">
                 <div>
-                    DOM - PRODUCTION OUTPUT AND DOWNTIME MONITORING <span>(生産管理板)</span>
+                    DOM - PRODUCTION OUTPUT AND DOWNTIME MONITORING
                 </div>
                 <div id="production_line_name">
                     Loading...
@@ -49,6 +49,283 @@
             </button>
         </div>
     </nav>
+    <div id="dashboard-container">
+        <div id="details">
+            <div id="details-container">
+                <div id="product-container">
+                    <div id="">
+
+                    </div>
+                    <div id="product-picture">
+                    </div>
+                    <div id="product-details">
+                        <span>Model:</span> <span>-</span>
+                        <span>Balance:</span> <span>-</span>
+                        <span>Manpower:</span> <span>-</span>
+                        <span>Delivery Date:</span> <span>-</span>
+                        <span>Cycle Time as of:</span> <span>-</span>
+                        <span>Expiration Date:</span> <span>-</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="center-contents">
+            <div id="production-table">
+                <div id="table-data-container" class="data-container">
+                    <table id="quota-data-table" class="data-table">
+                        <tr>
+                            <th colspan="4" class="actual-title">PLAN</th>
+                            <th colspan="6" class="actual-title">ACTUAL</th>
+                        </tr>
+                        <tr>
+                            <th class="actual-header">TIME</th>
+                            <th class="actual-header">CYCLE TIME</th>
+                            <th class="actual-header">MINUTES</th>
+                            <th class="actual-header">PLAN OUTPUT <br><span>(Per hour)</span></th>
+                            <th class="actual-header">ACTUAL <br> OUTPUT</th>
+                            <th class="actual-header">PERCENTAGE</th>
+                            <th class="actual-header">TOTAL</th>
+                            <th class="actual-header">TOTAL <br>DOWNTIME</th>
+                            <th class="actual-header">NG <br> QUANTITY</th>
+                            <th class="actual-header">REMARKS</th>  
+                        </tr>
+                        </tr>
+                            <tr>
+                                <td>06:00 - 07:00</td>
+                                <td>999.99</td>
+                                <td>60</td>
+                                <td>89</td>
+                                <td>81</td>
+                                <td>
+                                    <div class="percent-bar-data">
+                                        100%
+                                    </div>
+                                </td>
+                                <td>81</td>
+                                <td>120:00</td>
+                                <td>2</td>
+                                <td>Done</td>
+                            </tr>
+                            <tr>
+                                <td>07:00 - 08:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>08:00 - 09:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>09:00 - 10:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>10:00 - 11:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>11:00 - 12:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>12:00 - 13:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>13:00 - 14:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>14:00 - 15:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>15:00 - 16:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>16:00 - 17:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>17:00 - 18:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>18:00 - 19:00</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>
+                                    <div class="percent-bar-data">
+
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                            <td>19:00 - 20:00</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>
+                                <div class="percent-bar-data">
+
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>   
+                    </table>
+                </div>        
+            </div>
+            <div id="graph-table">
+                sad
+            </div>           
+        </div>
+
+    </div>
+
+<!--
     <div id="data_container">
         <div id="output_container">
             <table id="actual_output_table">
@@ -78,123 +355,8 @@
 
                 </tbody>
             </table>
-        </div>
+        </div>  -->
 
-
-        <div id="production-table">
-            <div id="plan-data-container" class="data-container">
-                <table id="plan-data-table" class="data-table">
-                    <tr>
-                        <th colspan="4" class="actual-title">PLAN</th>
-                    </tr>
-                    <tr>
-                        <th class="actual-header">TIME</th>
-                        <th class="actual-header">CYCLE TIME</th>
-                        <th class="actual-header">MINUTES</th>
-                        <th class="actual-header">PLAN OUTPUT</th>
-                    </tr>
-                    </tr>
-                    <tr>
-                        <td>06:00 - 07:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>07:00 - 08:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>08:00 - 09:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>09:00 - 10:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>10:00 - 11:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>11:00 - 12:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>12:00 - 13:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>13:00 - 14:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>14:00 - 15:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>15:00 - 16:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>16:00 - 17:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>17:00 - 18:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>18:00 - 19:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>19:00 - 20:00</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>   
-                </table>
-            </div>
-            <div id="actual-data-container" class="data-container">
-                <table id="actual-data-table" class="data-table">
-                    <tr>
-                        <th colspan="6" class="actual-title">ACTUAL</th>
-                    </tr>
-                    <tr>
-                        <th class="actual-header">ACTUAL OUTPUT</th>
-                        <th class="actual-header">PERCENTAGE</th>
-                        <th class="actual-header">TOTAL</th>
-                        <th class="actual-header">DOWNTIME</th>
-                        <th class="actual-header">NG QUANTITY</th>
-                        <th class="actual-header">REMARKS</th>                 
-                </table>
-            </div>            
-        </div>
 
         <!--<div id="downtime_container">
             <table id="downtime_data_table">
@@ -249,13 +411,13 @@
         });
 
         const dashboardNames = {
-            "10.0.0.189": "TUBE ASSEMBLY: C4 PRODUCTION LINE (チューブ組立：C4 生産ライン)",
-            "10.0.0.102": "TUBE ASSEMBLY: C7 PRODUCTION LINE (チューブ組立：C7 生産ライン)",
-            "10.0.0.136": "TUBE ASSEMBLY: C9 PRODUCTION LINE (チューブ組立：C9 生産ライン)",
-            "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE (チューブ組立：C9-1 生産ライン)",
-            "10.0.0.164": "TUBE ASSEMBLY: C10 PRODUCTION LINE (チューブ組立：C10 生産ライン)",
-            "localhost": "ADMINISTRATOR (管理者)",
-            "192.168.0.228": "TUBE ASSEMBLY: C4 PRODUCTION LINE (チューブ組立：C4 生産ライン)"
+            "10.0.0.189": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
+            "10.0.0.102": "TUBE ASSEMBLY: C7 PRODUCTION LINE",
+            "10.0.0.136": "TUBE ASSEMBLY: C9 PRODUCTION LINE",
+            "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE",
+            "10.0.0.164": "TUBE ASSEMBLY: C10 PRODUCTION LINE",
+            "localhost": "ADMINISTRATOR",
+            "192.168.0.228": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
         }
 
         const currentIP = window.location.hostname;

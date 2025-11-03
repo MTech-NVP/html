@@ -20,7 +20,7 @@ nav{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 760px;
+    width: 685px;
     margin-left: 50px;
     color: white;
     font-weight: bold;
@@ -166,32 +166,120 @@ nav{
   }
 }
 
+#dashboard-container{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 60px);
+  overflow: auto;
+}
+
+#details{
+  display: flex;
+  height: 120px;
+  width: 100%;
+  padding: 5px 15px;
+}
+#details-container{
+  display: flex;
+  background-color: #007bff;
+  align-items: center;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+#product-container{
+  padding-left: 20px;
+  display: flex;
+  width: 40%;
+}
+
+#product-picture{
+  width: 200px;
+  background-color: white;
+  box-shadow: 0px 5px 10px #0b0c0ca6;
+  overflow: visible;
+}
+
+#product-details {
+  padding-left: 20px;
+  display: grid;
+  grid-template-columns: auto 1fr; 
+  column-gap: 10px; 
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+}
+
+
+
+
+
+#center-contents{
+  display: flex;
+  width: 100%;
+}
+
 #production-table{
   display: flex;
-  gap: 5px;
+  width: 65%;
+  overflow-x: hidden, visible;
+  padding: 0px 15px 5px 15px;
 }
 
 .data-container{
-  border: 3px solid #00356e;
   border-radius: 5px;
+  overflow-x: hidden;
+  border: 1px solid #00000062;
+  width: 100%;
   color: black;
+  box-shadow: 0px 5px 10px #0b0c0ca6;
 }
 
-
 .data-table{
+  width: 100%;
   border-collapse: collapse;
 }
 
 .data-table th{
-  padding: 5px 10px 5px 10px;
+  padding: 5px;
   border-bottom: 2px solid rgba(0, 0, 0, 0.6);
+
 }
+
 .data-table td{
   font-size: 0.8rem;
   font-weight: bold;
   text-align: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
-  padding: 8px;
+  border-bottom: 1px solid #00000062;
+  padding: 4.5px;
+}
+
+.data-table td:nth-child(4){
+  border-right: 2px solid #00000062;
+}
+
+.data-table td:nth-child(4),
+.data-table th:nth-child(1){
+  width: 300px;
+}
+
+.data-table th:nth-child(2){
+  width: 200px;
+}
+
+.data-table th:nth-child(10){
+  width: 150px;
+}
+
+.data-table tr:nth-of-type(1) th:nth-child(1) {
+  border-right: 2px solid #00000062;
+  width: 35%;
+}
+
+.data-table tr:nth-of-type(2) th:nth-child(4) {
+  border-right: 2px solid #00000062;
 }
 
 .actual-title{
@@ -201,7 +289,20 @@ nav{
 }
 
 .actual-header{
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: bold;
 }
 
+.percent-bar-data{
+  border: 2px solid;
+  height: 15px;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 0.675rem;
+}
+
+#graph-table{
+  width: 35%;
+  height: auto;
+  padding: 15px;
+}
