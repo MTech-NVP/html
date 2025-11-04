@@ -53,24 +53,33 @@
         <div id="details">
             <div id="details-container">
                 <div id="product-container">
+                    <div id="product-picture">
+                        <img width="200" height="100"  src="../../media/img/ahh.png"> 
+                    </div> 
+                    <div id="product">
+                        <div id="product-part">
+                            <h4>Part Number:</h4> &nbsp; <h4>-</h4>
+                        </div>
+                        <div id="product-details">  
+                            <span>Model:</span> <span>-</span>
+                            <span>Delivery Date:</span> <span>-</span>
+                            <span>Balance:</span> <span>-</span>
+                            <span>Cycle Time:</span> <span>-</span>
+                            <span>Manpower:</span> <span>-</span>
+                            <span>Cycle Time as of:</span> <span>-</span>
+                            <span>Production Hours:</span> <span>-</span>
+                            <span>Expiration Date:</span> <span>-</span>
+                        </div>
+                    </div>
                     <div id="">
 
-                    </div>
-                    <div id="product-picture">
-                    </div>
-                    <div id="product-details">
-                        <span>Model:</span> <span>-</span>
-                        <span>Balance:</span> <span>-</span>
-                        <span>Manpower:</span> <span>-</span>
-                        <span>Delivery Date:</span> <span>-</span>
-                        <span>Cycle Time as of:</span> <span>-</span>
-                        <span>Expiration Date:</span> <span>-</span>
                     </div>
                 </div>
             </div>
 
         </div>
         <div id="center-contents">
+
             <div id="production-table">
                 <div id="table-data-container" class="data-container">
                     <table id="quota-data-table" class="data-table">
@@ -86,26 +95,26 @@
                             <th class="actual-header">ACTUAL <br> OUTPUT</th>
                             <th class="actual-header">PERCENTAGE</th>
                             <th class="actual-header">TOTAL</th>
-                            <th class="actual-header">TOTAL <br>DOWNTIME</th>
+                            <th class="actual-header">DOWNTIME <br>(MINS)</th>
                             <th class="actual-header">NG <br> QUANTITY</th>
                             <th class="actual-header">REMARKS</th>  
                         </tr>
                         </tr>
                             <tr>
                                 <td>06:00 - 07:00</td>
-                                <td>999.99</td>
-                                <td>60</td>
-                                <td>89</td>
-                                <td>81</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-                                        100%
+                                        0%
                                     </div>
                                 </td>
-                                <td>81</td>
-                                <td>120:00</td>
-                                <td>2</td>
-                                <td>Done</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
                             </tr>
                             <tr>
                                 <td>07:00 - 08:00</td>
@@ -115,7 +124,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -131,7 +140,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -147,7 +156,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -163,7 +172,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -179,7 +188,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -195,7 +204,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -211,7 +220,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -227,7 +236,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -243,7 +252,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -259,7 +268,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -275,7 +284,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -291,7 +300,7 @@
                                 <td>-</td>
                                 <td>
                                     <div class="percent-bar-data">
-
+                                        0%
                                     </div>
                                 </td>
                                 <td>-</td>
@@ -307,7 +316,7 @@
                             <td>-</td>
                             <td>
                                 <div class="percent-bar-data">
-
+                                    0%
                                 </div>
                             </td>
                             <td>-</td>
@@ -319,8 +328,26 @@
                 </div>        
             </div>
             <div id="graph-table">
-                sad
-            </div>           
+                <div id="graph-table-container">
+                    <div id="graph-header">
+                        PRODUCTION GRAPH
+                    </div>
+                    <div id="graph"></div>
+
+                    <!-- ✅ Legend Section -->
+                    <div id="graph-legend">
+                        <div class="legend-item">
+                            <span class="legend-color green"></span>
+                            <span class="legend-text">Target Reached</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color red"></span>
+                            <span class="legend-text">Incomplete</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
         </div>
 
     </div>
@@ -430,6 +457,67 @@
                 titleSpan.textContent = dashboardTitle;
             }
         });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const data = [12, 34, 23, 56, 10, 9, 60, 33, 21, 49, 57, 23, 12, 5];
+            const startHour = 6; // starting at 06:00
+            const labels = Array.from({ length: 14 }, (_, i) => {
+                const start = startHour + i;
+                const end = start + 1;
+                const format = h => String(h).padStart(2, "0") + ":00";
+                return `${format(start)}-${format(end)}`;
+            });            
+            const container = document.getElementById("graph");
+            const max = Math.max(...data);
+
+            data.forEach((value, index) => {
+                const wrap = document.createElement("div");
+                wrap.classList.add("bar-wrap");
+
+                // Bar container for height scaling
+                const barContainer = document.createElement("div");
+                barContainer.classList.add("bar-container");
+
+                const bar = document.createElement("div");
+                bar.classList.add("bar");
+                bar.dataset.height = (value / max * 100) + "%";
+                bar.title = `Bar ${index + 1}: ${value}`;
+
+                // Place value inside the bar
+                const val = document.createElement("div");
+                val.classList.add("bar-value");
+                val.textContent = value;
+
+                bar.appendChild(val);
+                barContainer.appendChild(bar);
+
+                const label = document.createElement("div");
+                label.classList.add("bar-label");
+                label.textContent = labels[index];
+
+                wrap.appendChild(barContainer);
+                wrap.appendChild(label);
+                container.appendChild(wrap);
+            });
+
+            // 🔥 Animate after DOM paint
+            setTimeout(() => {
+                document.querySelectorAll(".bar").forEach((bar, i) => {
+                    setTimeout(() => {
+                        // Step 1: animate the bar growing
+                        bar.style.height = bar.dataset.height;
+
+                        // Step 2: fade in value AFTER bar animation
+                        const val = bar.querySelector(".bar-value");
+                        setTimeout(() => {
+                            val.classList.add("show");
+                        }, 800); // delay after bar finishes (matches transition duration)
+                    }, i * 100); // staggered animation per bar
+                });
+            }, 100);
+        });
+
+
 </script>
 
 </html>
