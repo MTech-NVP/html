@@ -54,7 +54,7 @@
             <div id="details-container">
                 <div id="product-container">
                     <div id="product-picture">
-                        <img width="200" height="100"  src="../../media/img/ahh.png"> 
+                        <img id="pic" width="200" height="100"  src="../../media/img/ahh.png"> 
                     </div> 
                     <div id="product">
                         <div id="product-part">
@@ -347,9 +347,132 @@
                     </div>
                 </div>
             </div>
-          
         </div>
+        <div id="bottom-contents">
+            <div id="btm-container">
+                <div id="downtime-graph-container">
+                    <div id="downtime-graph-header" class="bottom-header">DOWNTIME GRAPH (Per Hour)</div>
+                    <div id="downtime-graph">
+                    <!-- LEFT COLUMN: 06:00–12:00 -->
+                        <div class="bar2-column">
+                            <div class="bar2-row">
+                                <div class="time-label">06:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">07:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">08:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">09:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">10:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">11:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">12:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 a" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- RIGHT COLUMN: 13:00–19:00 -->
+                        <div class="bar2-column">
+                            <div class="bar2-row">
+                                <div class="time-label">13:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">14:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">15:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">16:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">17:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">18:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                            <div class="bar2-row">
+                                <div class="time-label">19:00</div>
+                                <div class="bar-container2">
+                                    <div class="bar2 b" style="width: 0%;">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
 
+                <div id="summary">
+                    <div id="plan-summary">
+                        <div id="planned-summary-container">
+                            <div id="planned-summary-header">
+
+                            </div>
+                            <div id="planned-summary-body" class="bottom-header">
+                                PLANNED SUMMARY
+                            </div>
+                        </div>
+                    </div>
+                    <div id="actual-summary">
+                        <div id="actual-summary-container">
+                            <div id="actual-summary-header" class="bottom-header">
+                                ACTUAL SUMMARY
+                            </div>
+                            <div id="actual-summary-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pie-graph"></div>
+            </div>
+        </div>
     </div>
 
 <!--
@@ -452,70 +575,106 @@
         const dashboardTitle = dashboardNames[currentIP] || "PRODUCTION LINE";
         
         document.addEventListener("DOMContentLoaded", function() {
-            const titleSpan = document.querySelector("#production_line_name");
-            if (titleSpan) {
-                titleSpan.textContent = dashboardTitle;
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const data = [12, 34, 23, 56, 10, 9, 60, 33, 21, 49, 57, 23, 12, 5];
-            const startHour = 6; // starting at 06:00
-            const labels = Array.from({ length: 14 }, (_, i) => {
-                const start = startHour + i;
-                const end = start + 1;
-                const format = h => String(h).padStart(2, "0") + ":00";
-                return `${format(start)}-${format(end)}`;
-            });            
-            const container = document.getElementById("graph");
-            const max = Math.max(...data);
-
-            data.forEach((value, index) => {
-                const wrap = document.createElement("div");
-                wrap.classList.add("bar-wrap");
-
-                // Bar container for height scaling
-                const barContainer = document.createElement("div");
-                barContainer.classList.add("bar-container");
-
-                const bar = document.createElement("div");
-                bar.classList.add("bar");
-                bar.dataset.height = (value / max * 100) + "%";
-                bar.title = `Bar ${index + 1}: ${value}`;
-
-                // Place value inside the bar
-                const val = document.createElement("div");
-                val.classList.add("bar-value");
-                val.textContent = value;
-
-                bar.appendChild(val);
-                barContainer.appendChild(bar);
-
-                const label = document.createElement("div");
-                label.classList.add("bar-label");
-                label.textContent = labels[index];
-
-                wrap.appendChild(barContainer);
-                wrap.appendChild(label);
-                container.appendChild(wrap);
+                const titleSpan = document.querySelector("#production_line_name");
+                if (titleSpan) {
+                    titleSpan.textContent = dashboardTitle;
+                }
             });
 
-            // 🔥 Animate after DOM paint
-            setTimeout(() => {
-                document.querySelectorAll(".bar").forEach((bar, i) => {
-                    setTimeout(() => {
-                        // Step 1: animate the bar growing
-                        bar.style.height = bar.dataset.height;
-
-                        // Step 2: fade in value AFTER bar animation
-                        const val = bar.querySelector(".bar-value");
-                        setTimeout(() => {
-                            val.classList.add("show");
-                        }, 800); // delay after bar finishes (matches transition duration)
-                    }, i * 100); // staggered animation per bar
-                });
-            }, 100);
+        document.addEventListener("DOMContentLoaded", () => {
+        /*** 🔹 FIRST GRAPH (Vertical) ***/
+        const data1 = [12, 34, 23, 56, 10, 9, 60, 33, 21, 49, 57, 23, 12, 5];
+        const startHour = 6; // starting at 06:00
+        const labels = Array.from({ length: data1.length }, (_, i) => {
+            const start = startHour + i;
+            const end = start + 1;
+            const format = h => String(h).padStart(2, "0") + ":00";
+            return `${format(start)}-${format(end)}`;
         });
+
+        const container1 = document.getElementById("graph");
+        const max1 = Math.max(...data1);
+
+        data1.forEach((value, index) => {
+            const wrap = document.createElement("div");
+            wrap.classList.add("bar-wrap");
+
+            const barContainer = document.createElement("div");
+            barContainer.classList.add("bar-container");
+
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.dataset.height = (value / max1 * 100) + "%";
+
+            const val = document.createElement("div");
+            val.classList.add("bar-value");
+            val.textContent = value;
+
+            bar.appendChild(val);
+            barContainer.appendChild(bar);
+
+            const label = document.createElement("div");
+            label.classList.add("bar-label");
+            label.textContent = labels[index];
+
+            wrap.appendChild(barContainer);
+            wrap.appendChild(label);
+            container1.appendChild(wrap);
+        });
+
+        // Animate the vertical bars
+        setTimeout(() => {
+            document.querySelectorAll(".bar").forEach((bar, i) => {
+                setTimeout(() => {
+                    bar.style.height = bar.dataset.height;
+                    const val = bar.querySelector(".bar-value");
+                    setTimeout(() => {
+                        val.classList.add("show");
+                    }, 800);
+                }, i * 150);
+            });
+        }, 100);
+
+
+
+        /*** 🔹 SECOND GRAPH (Horizontal Downtime) ***/
+        const data2 = [45, 50, 70, 40, 80, 65, 55, 5, 70, 100, 50, 60, 40, 75];
+        const max2 = Math.max(...data2);
+        const bars2 = document.querySelectorAll("#downtime-graph .bar2");
+
+        bars2.forEach((bar, i) => {
+            const value = data2[i] ?? 0;
+            const widthPercent = (value / max2) * 100;
+
+            // Format: "Xm Ys" or "Xs"
+            let timeText = "";
+            if (value < 60) {
+                timeText = `${value}s`;
+            } else {
+                const minutes = Math.floor(value / 60);
+                const seconds = value % 60;
+                timeText = `${minutes}m ${seconds}s`;
+            }
+
+            bar.dataset.width = widthPercent + "%";
+            bar.textContent = timeText;
+            bar.style.width = "0"; // start from 0 for animation
+        });
+
+        // Animate the horizontal bars
+        setTimeout(() => {
+            bars2.forEach((bar, i) => {
+                setTimeout(() => {
+                    bar.style.transition = "width 0.8s ease";
+                    bar.style.width = bar.dataset.width;
+                }, i * 150);
+            });
+        }, 100);
+    });
+
+
+
+
 
 
 </script>
