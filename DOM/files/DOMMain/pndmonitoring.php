@@ -76,10 +76,9 @@
                     </div>
                 </div>
             </div>
-
         </div>
-        <div id="center-contents">
 
+        <div id="center-contents">
             <div id="production-table">
                 <div id="table-data-container" class="data-container">
                     <table id="quota-data-table" class="data-table">
@@ -348,6 +347,7 @@
                 </div>
             </div>
         </div>
+
         <div id="bottom-contents">
             <div id="btm-container">
                 <div id="downtime-graph-container">
@@ -448,26 +448,45 @@
                 </div>
 
                 <div id="summary">
-                    <div id="plan-summary">
-                        <div id="planned-summary-container">
-                            <div id="planned-summary-header">
-
-                            </div>
-                            <div id="planned-summary-body" class="bottom-header">
-                                PLANNED SUMMARY
-                            </div>
-                        </div>
-                    </div>
-                    <div id="actual-summary">
-                        <div id="actual-summary-container">
-                            <div id="actual-summary-header" class="bottom-header">
-                                ACTUAL SUMMARY
-                            </div>
-                            <div id="actual-summary-body">
-
+                    <div id="summary-container">
+                        <div id="plan-summary">
+                            <div id="planned-summary-container">
+                                <div id="planned-summary-header" class="bottom-header2">
+                                    PLANNED SUMMARY
+                                </div>
+                                <div id="planned-summary-body" class="summary-body">
+                                    <span>PLAN PRODUCTION HOURS:</span>
+                                    <span>99.99</span>
+                                    <span>PLAN OUTPUT:</span>
+                                    <span>999</span>
+                                    <span>PLAN MANPOWER:</span>
+                                    <span>9</span>
+                                </div>
                             </div>
                         </div>
+                        <div id="actual-summary">
+                            <div id="actual-summary-container">
+                                <div id="actual-summary-header" class="bottom-header2">
+                                    ACTUAL SUMMARY
+                                </div>
+                                <div id="actual-summary-body" class="summary-body">
+                                    <span>ACTUAL PRODUCTION HOURS:</span>
+                                    <span>99.99</span>
+                                    <span>ACTUAL OUTPUT:</span>
+                                    <span>999</span>
+                                    <span>ACTUAL MANPOWER:</span>
+                                    <span>9</span>
+                                </div>
+                            </div>
+                        </div>                       
                     </div>
+                    <div id="overview-container">
+                        <span>BREAKTIME:</span> <span>-</span>
+                        <span>TOTAL DOWNTIME:</span> <span>-</span>
+                        <span>GOOD QUANTITY:</span> <span>-</span>
+                        <span>TOTAL NG:</span> <span>-</span>
+                    </div>
+
                 </div>
 
                 <div id="pie-graph"></div>
