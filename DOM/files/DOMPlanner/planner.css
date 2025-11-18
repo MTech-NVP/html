@@ -979,6 +979,7 @@
     }
 
     #table-person{
+        font-family: sans-serif;
         width: 90%;
         height: 100%;
         border-collapse: collapse;

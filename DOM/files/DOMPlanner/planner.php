@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
-    <link rel="stylesheet" href="planner2.css">
+    <link rel="stylesheet" href="planner.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -707,11 +707,11 @@
         });
 
         const dashboardNames = {
-            "10.0.0.189": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
-            "10.0.0.102": "TUBE ASSEMBLY: C7 PRODUCTION LINE",
-            "10.0.0.136": "TUBE ASSEMBLY: C9 PRODUCTION LINE",
-            "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE",
-            "10.0.0.164": "TUBE ASSEMBLY: C10 PRODUCTION LINE",
+            "10.0.0.189": "TUBE ASSEMBLY: C4 TUBE LINE",
+            "10.0.0.102": "TUBE ASSEMBLY: C7 TUBE LINE",
+            "10.0.0.136": "TUBE ASSEMBLY: C9 TUBE LINE",
+            "10.0.0.125": "TUBE ASSEMBLY: C9-1 TUBE LINE",
+            "10.0.0.164": "TUBE ASSEMBLY: C10 TUBE LINE",
             "localhost": "ADMINISTRATOR",
             "192.168.0.228": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
         }

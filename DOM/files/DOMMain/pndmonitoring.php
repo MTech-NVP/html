@@ -489,7 +489,19 @@
 
                 </div>
 
-                <div id="pie-graph"></div>
+                <div id="pie-graph">
+                    <div id="dandt">
+                        <span id="time">--:-- --</span>
+                        <span id="date">-- --, ----</span>
+                    </div>
+
+                    <div id="pie-graphs">
+                        <div class="pie-text">0%</div>
+                    </div>                        
+
+
+                    <button id="save-btn">Save Data</button>
+                </div>
             </div>
         </div>
     </div>
@@ -580,13 +592,13 @@
         });
 
         const dashboardNames = {
-            "10.0.0.189": "TUBE ASSEMBLY: C4 PRODUCTION LINE",
-            "10.0.0.102": "TUBE ASSEMBLY: C7 PRODUCTION LINE",
-            "10.0.0.136": "TUBE ASSEMBLY: C9 PRODUCTION LINE",
-            "10.0.0.125": "TUBE ASSEMBLY: C9-1 PRODUCTION LINE",
-            "10.0.0.164": "TUBE ASSEMBLY: C10 PRODUCTION LINE",
+            "10.0.0.189": "TUBE ASSEMBLY: C4 TUBE LINE",
+            "10.0.0.102": "TUBE ASSEMBLY: C7 TUBE LINE",
+            "10.0.0.136": "TUBE ASSEMBLY: C9 TUBE LINE",
+            "10.0.0.125": "TUBE ASSEMBLY: C9-1 TUBE LINE",
+            "10.0.0.164": "TUBE ASSEMBLY: C10 TUBE LINE",
             "localhost": "ADMINISTRATOR",
-            "192.168.0.228": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
+            "192.168.0.228": "TUBE ASSEMBLY: C4 TUBE LINE"
         }
 
         const currentIP = window.location.hostname;
@@ -691,10 +703,43 @@
         }, 100);
     });
 
+function updatePie(percent) {
+    const pie = document.querySelector('#pie-graphs');
+    const text = document.querySelector('.pie-text');
+    pie.style.setProperty('--percent', percent);
+    text.textContent = percent + '%';
+}
 
+// Smoothly animate percentage to target
+let percentage = 0;
+const targetPercentage = 96;
 
+function animatePie() {
+    if (percentage < targetPercentage) {
+        percentage++;
+        updatePie(percentage);
+        requestAnimationFrame(animatePie); // smooth animation
+    }
+}
+animatePie();
 
+// Live time and date
+function updateTimeDate() {
+    const timeEl = document.getElementById('time');
+    const dateEl = document.getElementById('date');
+    const now = new Date();
 
+    const hours = now.getHours() % 12 || 12;
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+    timeEl.textContent = `${hours}:${minutes} ${ampm}`;
+
+    const options = { month: 'long', day: 'numeric', year: 'numeric' };
+    dateEl.textContent = now.toLocaleDateString('en-US', options);
+}
+
+setInterval(updateTimeDate, 1000);
+updateTimeDate();
 
 </script>
 
