@@ -165,6 +165,7 @@ nav{
   border-radius: 5px;
   overflow-x: hidden;
   border: 1px solid #00000062;
+  height: 418px;
   width: 100%;
   color: black;
   box-shadow: 0px 5px 10px #0b0c0ca6;
@@ -172,6 +173,7 @@ nav{
 
 .data-table{
   width: 100%;
+  height: 100%;
   border-collapse: collapse;
 }
 
@@ -232,7 +234,14 @@ nav{
   border-radius: 5px;
   width: 100%;
   font-size: 0.675rem;
+  background: linear-gradient(
+    to right,
+    green calc(var(--percent) * 1%),
+    transparent 0
+  );
+  transition: background 0.6s ease;
 }
+
 
 #graph-table{
   width: 35%;
@@ -403,29 +412,32 @@ nav{
 }
 
 #downtime-graph {
-  display: flex;
-  padding-top: 5px;
-  height: 100%;
-  align-items: center;
-  gap: 15px;
+    display: grid;
+    grid-template-rows: repeat(7, auto); /* 7 rows per column, since 14 items / 2 columns */
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    grid-auto-flow: column; /* fill top-to-bottom first, then next column */
+    gap: 6px;
+    width: 100%;
+    height: 100%;
 }
 
-/* Each half column */
+
+
+
+
+/* Each column: MUST span 7 equal rows */
 .bar2-column {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 45%;
-  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);  /* 7 perfect rows */
   gap: 4px;
+  width: 100%;
 }
 
 /* Time + bar in one row */
 .bar2-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: calc(100% / 7);
+  gap: 8px;
 }
 
 /* Time label */
@@ -436,34 +448,29 @@ nav{
   color: #333;
 }
 
-/* Bar itself */
+/* Bar container */
+.bar-container2{
+  height: 100%;
+  width: 100%;
+}
+
+/* The bars */
 .bar2 {
-  height: 100%; /* fixed thickness — adjust as needed */
+  height: 100%;
   border-radius: 5px;
   color: black;
+    background-color: #007bff;
+
   font-size: 0.75rem;
   font-weight: bold;
   padding-left: 5px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  white-space: nowrap; /* prevent wrapping */
-  overflow: hidden; /* avoid expansion */
+  white-space: nowrap;
+  overflow: hidden;
   transition: width 0.3s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.bar2.a {
-  background-color: #007bff;
-}
-
-.bar2.b {
-  background-color: #007bff;
-}
-
-.bar-container2{
-  height: 100%;
-  width: 100%;
 }
 
 #summary{
