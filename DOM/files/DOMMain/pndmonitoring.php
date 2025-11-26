@@ -34,6 +34,14 @@
             </div>
         </div>
         <button id="menu-toggle">☰</button>
+        <div id="fullscreen-button">
+            <div id="fullscreen-icon">
+                <span class="corner top-left"></span>
+                <span class="corner top-right"></span>
+                <span class="corner bottom-left"></span>
+                <span class="corner bottom-right"></span>
+            </div>
+        </div>
         <div id="nav-buttons">
             <button class="nav-btns">
                 Dashboard
@@ -72,8 +80,56 @@
                             <span>Expiration Date:</span> <span>-</span>
                         </div>
                     </div>
-                    <div id="">
 
+                </div>
+                <div id="staffs-container">
+                    <div id="line-leader" class="line-staff">
+                        <div class="person-details">
+                            <div class="picture-box">
+                                
+                            </div>
+                            <div class="infos">
+                                <div class="name">Raven</div>
+                                <div class="person-title">
+                                    Line Leader
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="prod-staff" class="line-staff">
+                        <div class="person-details">
+                            <div class="picture-box">
+                                
+                            </div>
+                            <div class="infos">
+                                <div class="name">1</div>
+                                <div class="person-title">
+                                    Process 3
+                                </div>
+                            </div>
+                        </div>
+                        <div class="person-details">
+                            <div class="picture-box">
+                                
+                            </div>
+                            <div class="infos">
+                                <div class="name">2</div>
+                                <div class="person-title">
+                                    Process 2
+                                </div>
+                            </div>
+                        </div>
+                        <div class="person-details">
+                            <div class="picture-box">
+                                
+                            </div>
+                            <div class="infos">
+                                <div class="name">3</div>
+                                <div class="person-title">
+                                    Final
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -441,11 +497,11 @@
                                 </div>
                                 <div id="planned-summary-body" class="summary-body">
                                     <span>PLAN PRODUCTION HOURS:</span>
-                                    <span>99.99</span>
+                                    <span>-</span>
                                     <span>PLAN OUTPUT:</span>
-                                    <span>999</span>
+                                    <span>-</span>
                                     <span>PLAN MANPOWER:</span>
-                                    <span>9</span>
+                                    <span>-</span>
                                 </div>
                             </div>
                         </div>
@@ -456,17 +512,17 @@
                                 </div>
                                 <div id="actual-summary-body" class="summary-body">
                                     <span>ACTUAL PRODUCTION HOURS:</span>
-                                    <span>99.99</span>
+                                    <span>-</span>
                                     <span>ACTUAL OUTPUT:</span>
-                                    <span>999</span>
+                                    <span>-</span>
                                     <span>ACTUAL MANPOWER:</span>
-                                    <span>9</span>
+                                    <span>-</span>
                                 </div>
                             </div>
                         </div>                       
                     </div>
                     <div id="overview-container">
-                        <span>BREAKTIME:</span> <span>-</span>
+                        <span>BREAKTIME:</span> <span>1h 40m</span>
                         <span>TOTAL DOWNTIME:</span> <span>-</span>
                         <span>GOOD QUANTITY:</span> <span>-</span>
                         <span>TOTAL NG:</span> <span>-</span>
@@ -551,472 +607,6 @@
     
 </body>
 
-<script>
-
-    ////////////////////////////////////////////////////////////////
-    //mobile version
-    const menuToggle = document.getElementById('menu-toggle');
-    const navButtons = document.getElementById('nav-buttons');
-
-    menuToggle.addEventListener('click', (event) => {
-        event.stopPropagation(); 
-        navButtons.classList.toggle('active');
-    });
-
-    document.addEventListener('click', (event) => {
-        const isClickInsideMenu = navButtons.contains(event.target);
-        const isClickOnToggle = menuToggle.contains(event.target);
-
-        if (!isClickInsideMenu && !isClickOnToggle) {
-        navButtons.classList.remove('active');
-        }
-    });
-
-    const buttons = document.querySelectorAll('.nav-btns');
-    buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-        navButtons.classList.remove('active');
-        });
-    });
-    
-    //mobile version
-    ////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////
-    // LINE NAMES
-    const dashboardNames = {
-        "10.0.0.189": "TUBE ASSEMBLY: C4 TUBE LINE",
-        "10.0.0.102": "TUBE ASSEMBLY: C7 TUBE LINE",
-        "10.0.0.136": "TUBE ASSEMBLY: C9 TUBE LINE",
-        "10.0.0.125": "TUBE ASSEMBLY: C9-1 TUBE LINE",
-        "10.0.0.164": "TUBE ASSEMBLY: C10 TUBE LINE",
-        "localhost": "ADMINISTRATOR",
-        "192.168.0.228": "TUBE ASSEMBLY: C4 TUBE LINE"
-    }
-
-    const currentIP = window.location.hostname;
-
-    const dashboardTitle = dashboardNames[currentIP] || "PRODUCTION LINE";
-    
-    document.addEventListener("DOMContentLoaded", function() {
-            const titleSpan = document.querySelector("#production_line_name");
-            if (titleSpan) {
-                titleSpan.textContent = dashboardTitle;
-            }
-        });
-    //LINE NAMES
-    ////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////
-    // PRODUCTION AND DOWNTIME GRAPH
-    document.addEventListener("DOMContentLoaded", () => {
-        /*** FIRST GRAPH (Vertical) ***/
-        const container1 = document.getElementById("graph");
-        const startHour = 6;
-
-        // Initialize graph bars and labels
-        function initializeGraph(length) {
-            const labels = Array.from({ length }, (_, i) => {
-                const start = startHour + i;
-                const end = start + 1;
-                const format = h => String(h).padStart(2, "0") + ":00";
-                return `${format(start)}-${format(end)}`;
-            });
-
-            for (let i = 0; i < length; i++) {
-                const wrap = document.createElement("div");
-                wrap.classList.add("bar-wrap");
-
-                const barContainer = document.createElement("div");
-                barContainer.classList.add("bar-container");
-
-                const bar = document.createElement("div");
-                bar.classList.add("bar");
-                bar.style.height = "0%";
-                bar.style.transition = "height 0.8s ease";
-
-                const val = document.createElement("div");
-                val.classList.add("bar-value");
-                val.textContent = "0";
-                val.style.opacity = 0; // hidden initially
-                val.style.transition = "opacity 0.5s ease";
-
-                bar.appendChild(val);
-                barContainer.appendChild(bar);
-
-                const label = document.createElement("div");
-                label.classList.add("bar-label");
-                label.textContent = labels[i];
-
-                wrap.appendChild(barContainer);
-                wrap.appendChild(label);
-                container1.appendChild(wrap);
-            }
-        }
-
-        // Update bars with new data
-        function updateGraph(data) {
-            const bars = container1.querySelectorAll(".bar");
-            const max = Math.max(...data, 1); // avoid division by 0
-
-            bars.forEach((bar, i) => {
-                const value = data[i] || 0;
-
-                // If value is 0 → hide the whole bar-wrap (grandparent)
-                const barWrap = bar.parentElement.parentElement;
-                if (value === 0) {
-                    barWrap.style.display = "none"; // hide entire bar-wrap
-                } else {
-                    barWrap.style.display = ""; // make visible
-                    const height = (value / max * 100) + "%";
-
-                    setTimeout(() => {
-                        bar.style.height = height;
-
-                        const val = bar.querySelector(".bar-value");
-                        val.textContent = value;
-                        val.style.opacity = 1; // show the number
-                    }, i * 100);
-                }
-            });
-        }
-
-        // Fetch data from PHP and update chart
-
-        ////////////////////////////////////////////////////////////////
-
-
-        /*** 🔹 SECOND GRAPH (Horizontal Downtime) ***/
-        const bars2 = document.querySelectorAll("#downtime-graph .bar2");
-
-            // Helper: convert "HH:MM:SS" or "MM:SS" or "SS" to total seconds
-        function timeToSeconds(timeStr) {
-            const parts = timeStr.split(":").map(Number);
-            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-            if (parts.length === 2) return parts[0] * 60 + parts[1];
-            if (parts.length === 1) return parts[0];
-            return 0;
-        }
-
-        // Update downtime graph
-        function updateDowntimeGraph(data) {
-            const bars2 = document.querySelectorAll("#downtime-graph .bar2");
-            const data2 = data.map(row => timeToSeconds(row.dt_mins));
-
-            // Find last non-zero value
-            let lastNonZeroIndex = -1;
-            data2.forEach((v, i) => { if (v > 0) lastNonZeroIndex = i; });
-
-            // Collect only visible bars and count hidden bars
-            let hiddenCount = 0;
-            const visibleBars = [];
-            bars2.forEach((bar, i) => {
-                const barWrap = bar.parentElement.parentElement;
-                if (i <= lastNonZeroIndex) {
-                    barWrap.style.display = "";
-                    visibleBars.push(barWrap);
-                } else {
-                    barWrap.style.display = "none";
-                    hiddenCount++;
-                }
-            });
-
-            // If no visible bars, hide grid and return
-            const grid = document.getElementById("downtime-graph");
-            if (visibleBars.length === 0) {
-                grid.style.display = "none";
-                return;
-            } else {
-                grid.style.display = "grid";
-            }
-
-            // ===== FIX: Dynamically set grid-template-rows based only on visible bars =====
-            const numRows = Math.ceil(visibleBars.length / 2); // 2 columns
-            grid.style.gridTemplateRows = `repeat(${numRows}, auto)`;
-
-            const max2 = Math.max(...data2, 1);
-
-            // Update each visible bar
-            visibleBars.forEach((barWrap, i) => {
-                const bar = barWrap.querySelector(".bar2");
-                const value = data2[i] ?? 0;
-                const widthPercent = (value / max2) * 100;
-                bar.dataset.width = widthPercent + "%";
-
-                // Format time text
-                let timeText = "";
-                if (value < 60) timeText = `${value}s`;
-                else if (value < 3600) timeText = `${Math.floor(value / 60)}m ${value % 60}s`;
-                else {
-                    const hours = Math.floor(value / 3600);
-                    const minutes = Math.floor((value % 3600) / 60);
-                    const seconds = value % 60;
-                    timeText = `${hours}h ${minutes}m ${seconds}s`;
-                }
-
-                bar.textContent = ""; // removes raw text
-                let valSpan = bar.querySelector(".bar-value2");
-                if (!valSpan) {
-                    valSpan = document.createElement("span");
-                    valSpan.className = "bar-value2";
-                    bar.appendChild(valSpan);
-                }
-                valSpan.textContent = timeText;
-                valSpan.style.opacity = 0;
-
-                
-                // Animate
-                bar.style.width = "0";
-                setTimeout(() => {
-                    bar.style.transition = "width 0.8s ease";
-                    bar.style.width = bar.dataset.width;
-                    valSpan.style.transition = "opacity 0.5s ease";
-                    valSpan.style.opacity = 1;
-                }, i * 150);
-            });
-
-            console.log("Visible bars:", visibleBars.length, "Hidden bars:", hiddenCount, "Grid rows:", numRows);
-        }
-        
-        // Fetch dt_mins data from PHP
-        function fetchDowntimeData() {
-            fetch('fetches1/domfetch.php', {
-                method: 'POST',
-                body: new URLSearchParams({ action: 'fetch' })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data || data.length === 0) return;
-
-                const data2 = data.map(row => timeToSeconds(row.dt_mins));
-
-                // Find index of last value > 0
-                let lastNonZeroIndex = -1;
-                data2.forEach((v, i) => { if (v > 0) lastNonZeroIndex = i; });
-
-                const bars = document.querySelectorAll("#downtime-graph .bar2");
-
-                // If all zero → hide all bars
-                if (lastNonZeroIndex === -1) {
-                    bars.forEach(bar => bar.parentElement.parentElement.style.display = "none");
-                    return;
-                }
-
-                const max2 = Math.max(...data2, 1);
-
-                bars.forEach((bar, i) => {
-                    const value = data2[i] ?? 0;
-                    const barWrap = bar.parentElement.parentElement;
-
-                    // Hide bars after last non-zero value
-                    if (i > lastNonZeroIndex) {
-                        barWrap.style.display = "none";
-                        return;
-                    }
-
-                    // Show this bar
-                    barWrap.style.display = "";
-
-                    const widthPercent = (value / max2) * 100;
-                    bar.dataset.width = widthPercent + "%";
-
-                    // Format as time text
-                    let timeText = "";
-                    if (value < 60) timeText = `${value}s`;
-                    else if (value < 3600) timeText = `${Math.floor(value / 60)}m ${value % 60}s`;
-                    else {
-                        const hours = Math.floor(value / 3600);
-                        const minutes = Math.floor((value % 3600) / 60);
-                        const seconds = value % 60;
-                        timeText = `${hours}h ${minutes}m ${seconds}s`;
-                    }
-
-                    bar.textContent = timeText;
-                    bar.style.width = "0"; // reset animation start
-                });
-
-                // Animate bars
-                setTimeout(() => {
-                    bars.forEach((bar, i) => {
-                        if (i <= lastNonZeroIndex) {
-                            setTimeout(() => {
-                                bar.style.transition = "width 0.8s ease";
-                                bar.style.width = bar.dataset.width;
-                            }, i * 150);
-                        }
-                    });
-                }, 100);
-                updateDowntimeGraph(data);
-            })
-            .catch(err => console.error("Failed to fetch downtime data:", err));
-        }
-
-        fetchDowntimeData();
-        //setInterval(fetchDowntimeData, 1000);
-        
-        /////////////////////////////////////////////////////////////////////
-        function fetchGraphData() {
-            fetch('fetches1/domfetch.php', {
-                method: 'POST',
-                body: new URLSearchParams({ action: 'fetch' })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data || data.length === 0) return;
-
-                // --- Actual Output Graph ---
-                const actualOutputData = data.map(row => Number(row.actual_output) || 0);
-
-                if (container1.children.length === 0) {
-                    initializeGraph(actualOutputData.length);
-
-                    // Initial animation after DOM is ready
-                    setTimeout(() => updateGraph(actualOutputData), 100);
-                } else {
-                    updateGraph(actualOutputData);
-                }
-
-            })
-            .catch(err => console.error(err));
-        }
-
-
-        fetchGraphData();
-        setInterval(fetchGraphData, 1000);
-    });
-    ////////////////////////////////////////////////////////////////
-
-    function updatePie(percent) {
-        const pie = document.querySelector('#pie-graphs');
-        const text = document.querySelector('.pie-text');
-        pie.style.setProperty('--percent', percent);
-        text.textContent = percent + '%';
-    }
-
-    // Smoothly animate percentage to target
-    let percentage = 0;
-    const targetPercentage = 96;
-
-    function animatePie() {
-        if (percentage < targetPercentage) {
-            percentage++;
-            updatePie(percentage);
-            requestAnimationFrame(animatePie); // smooth animation
-        }
-    }
-    animatePie();
-
-    // Live time and date
-    function updateTimeDate() {
-        const timeEl = document.getElementById('time');
-        const dateEl = document.getElementById('date');
-        const now = new Date();
-
-        const hours = now.getHours() % 12 || 12;
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-        timeEl.textContent = `${hours}:${minutes} ${ampm}`;
-
-        const options = { month: 'long', day: 'numeric', year: 'numeric' };
-        dateEl.textContent = now.toLocaleDateString('en-US', options);
-    }
-
-    setInterval(updateTimeDate, 1000);
-    updateTimeDate();
-
-    function updateTable(){
-        fetch('fetches1/domfetch.php', {
-            method: 'POST',
-            body: new URLSearchParams({ action: 'fetch' })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (!data || data.length === 0) return;
-
-            const table = document.getElementById('quota-data-table');
-            const rows = table.querySelectorAll('tr');
-
-            // Find last row index in data that has any value
-            
-            let lastDataIndex = -1;
-            for (let d = 0; d < data.length; d++) {
-                const row = data[d];
-
-                // Check row data EXCLUDING `ct`
-                const isEmpty =
-                    (!row.mins || row.mins == 0) &&
-                    (!row.plan_output || row.plan_output == 0) &&
-                    (!row.actual_output || row.actual_output == 0) &&
-                    (!row.percentage || row.percentage == 0 || row.percentage === "0%") &&
-                    (!row.total || row.total == 0) &&
-                    (!row.dt_mins || row.dt_mins === "00:00:00") &&
-                    (!row.ng_quantity || row.ng_quantity == 0) &&
-                    (!row.remarks || row.remarks.trim() === "");
-
-
-                if (!isEmpty) {
-                    lastDataIndex = d; // last row that actually has data
-                }
-            }
-
-            // Skip first 2 header rows
-            for (let i = 2; i < rows.length; i++) {
-
-                // table row index mapped to data
-                const dataIndex = i - 2;
-
-                // If this row is beyond the last row with data → hide it
-                if (dataIndex > lastDataIndex) {
-                    rows[i].style.display = "none";
-                    continue;
-                } else {
-                    rows[i].style.display = ""; // make sure visible
-                }
-
-                const row = rows[i];
-                const cells = row.querySelectorAll('td');
-                const rowData = data[dataIndex] || {};
-
-                // (your existing cell filling code continues here)
-
-                cells[1].textContent = rowData.ct ?? '-';
-                cells[2].textContent = rowData.mins ?? '-';
-                cells[3].textContent = rowData.plan_output ?? '-';
-                cells[4].textContent = rowData.actual_output ?? '-';
-
-                const bar = cells[5].querySelector('.percent-bar-data');
-                const percent = rowData.percentage ?? 0;
-
-                bar.textContent = percent + '%';
-                bar.style.setProperty('--percent', percent);
-
-                if (percent == 100) {
-                    bar.style.background = `linear-gradient(
-                        to right,
-                        green calc(${percent} * 1%),
-                        transparent 0
-                    )`;
-                } else {
-                    bar.style.background = `linear-gradient(
-                        to right,
-                        yellow calc(${percent} * 1%),
-                        transparent 0
-                    )`;
-                }
-
-                cells[6].textContent = rowData.total ?? '-';
-                cells[7].textContent = rowData.dt_mins ?? '-';
-                cells[8].textContent = rowData.ng_quantity ?? '-';
-                cells[9].textContent = rowData.remarks ?? '-';
-            }
-
-        })
-        .catch(err => console.error(err));   
-    }
-    updateTable();
-    setInterval(updateTable, 1000);
-
-
-</script>
+<script src="pnd.js"></script>
 
 </html>

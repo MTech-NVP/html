@@ -13,7 +13,6 @@ nav{
     height: 60px;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0px 8px 16px #1598e4a6;
 }
 
 #nav-title{
@@ -56,6 +55,60 @@ nav{
     border: 1px solid white;
 }
 
+#fullscreen-button {
+    width: 40px;
+    height: 30px;
+    cursor: pointer;
+    position: relative;
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#fullscreen-icon {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Corner style */
+.corner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+}
+
+.corner::before,
+.corner::after {
+    content: '';
+    position: absolute;
+    background-color: #007bff;
+}
+
+/* Horizontal line */
+.corner::before {
+    width: 8px;
+    height: 2px;
+}
+
+/* Vertical line */
+.corner::after {
+    width: 2px;
+    height: 8px;
+}
+
+/* Corner positions and default rotations */
+.top-left { top: 0; left: 0; transform: rotate(0deg); }
+.top-right { top: 0; right: 0; transform: rotate(90deg); }
+.bottom-left { bottom: 0; left: 0; transform: rotate(270deg); }
+.bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
+
+/* Flipped state */
+.fullscreen .top-left { transform: rotate(-180deg); }
+.fullscreen .top-right { transform: rotate(-90deg); }
+.fullscreen .bottom-left { transform: rotate(-270deg); }
+.fullscreen .bottom-right { transform: rotate(0deg); }
+
 #nav-buttons{
     margin: 0px 50px 0px 0px;
     height: 60px;
@@ -83,6 +136,7 @@ nav{
 
 #dashboard-container{
   display: flex;
+  background-color: #eee;
   flex-direction: column;
   width: 100%;
   height: calc(100vh - 60px);
@@ -91,14 +145,14 @@ nav{
 
 #details{
   display: flex;
-  height: fit-content;
+  height: 124px;
   width: 100%;
   padding: 5px 15px;
 }
 
 #details-container{
   display: flex;
-  background-color: #ddd;
+  background-color: #ffffff;
   align-items: center;
   padding: 5px;
   width: 100%;
@@ -108,7 +162,7 @@ nav{
 #product-container{
   display: flex;
   align-items: center;
-  width: 60%;
+  width: 55%;
 }
 
 #product-picture{
@@ -116,7 +170,6 @@ nav{
   max-height: 100px;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0px 5px 10px #0b0c0ca6;
   overflow: hidden;
 }
 
@@ -146,7 +199,27 @@ nav{
 
 /*not done bro*/
 
+#staffs-container{
+  width: 45%;
+  height: 100px;
+  display: flex;
+  justify-content: space-around;
+}
 
+.line-staff{
+  display: flex;
+}
+
+.person-details{
+  display: flex;
+  align-items: center;
+}
+
+.picture-box{
+  border: 2px solid gray;
+  height: 70px;
+  width: 70px;
+}
 
 #center-contents{
   display: flex;
@@ -164,11 +237,10 @@ nav{
 .data-container{
   border-radius: 5px;
   overflow-x: hidden;
-  border: 1px solid #00000062;
   height: 418px;
+  background-color: #fff;
   width: 100%;
   color: black;
-  box-shadow: 0px 5px 10px #0b0c0ca6;
 }
 
 .data-table{
@@ -180,7 +252,7 @@ nav{
 .data-table th{
   padding: 5px;
   border-bottom: 2px solid #dfdfdf;
-
+  height: 31px;
 }
 
 .data-table td{
@@ -250,10 +322,10 @@ nav{
 }
 
 #graph-table-container{
+  background-color: #fff;
   width: 100%;
   height: 99.6%;
   border-radius: 5px;
-  box-shadow: 0px 5px 10px #0b0c0ca6;
 }
 
 #graph {
@@ -394,7 +466,6 @@ nav{
   background-color: white;
   display: flex;
   height: 100%;
-  box-shadow: 0px 5px 10px #0b0c0ca6;
   border-radius: 5px;
   gap: 5px;
 }
@@ -478,9 +549,10 @@ nav{
   flex-direction: column;
   justify-content: center;
   width: 50%;
-  background-color: #eee;
+  background-color: #ffffff;
+  border-left: 5px solid #eee;
+  border-right: 5px solid #eee;
   padding: 5px;
-  box-shadow: 0px 1px 16px #000000a6;
 }
 
 #summary-container{
@@ -559,12 +631,6 @@ nav{
   font-weight: bold;
 }
 
-#pie-graph span {
-  display: block;
-  font-size: 14px;
-}
-
-
 /* PIE CONTAINER inside the 96% div */
 #pie-graphs {
   position: relative;
@@ -572,10 +638,12 @@ nav{
   height: 75px;
   border-radius: 50%;
   background: conic-gradient(
-    #4caf50 calc(var(--percent) * 1%),
+    var(--color, #ffeb3b) calc(var(--percent) * 1%),
     transparent 0
   );
-  --percent: 0; /* initial value */
+  --percent: 0;
+  --color: #ffeb3b; /* default yellow */
+  transition: --percent 1.5s ease, --color 0.3s ease;
 }
 
 #pie-graphs::before {
@@ -590,7 +658,6 @@ nav{
   transform: translate(-50%, -50%);
 }
 
-/* Text centered inside ring */
 .pie-text {
   position: absolute;
   top: 50%;
@@ -599,6 +666,13 @@ nav{
   z-index: 1;
   font-size: 15px;
   font-weight: bold;
+}
+
+
+/* optional span inside for text */
+#pie-graph span {
+  display: block;
+  font-size: 14px;
 }
 
 #save-btn{
@@ -711,6 +785,9 @@ nav{
 @media screen and (max-width: 1200px){
    #bottom-contents{
     height: auto;
+  }
+  #fullscreen-button{
+    display: none;
   }
 
   #product-container{
