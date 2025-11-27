@@ -34,14 +34,14 @@
             </div>
         </div>
         <button id="menu-toggle">☰</button>
-        <div id="fullscreen-button">
+        <!--<div id="fullscreen-button">
             <div id="fullscreen-icon">
                 <span class="corner top-left"></span>
                 <span class="corner top-right"></span>
                 <span class="corner bottom-left"></span>
                 <span class="corner bottom-right"></span>
             </div>
-        </div>
+        </div>-->
         <div id="nav-buttons">
             <button class="nav-btns">
                 Dashboard
@@ -82,38 +82,42 @@
                     </div>
 
                 </div>
+
                 <div id="staffs-container">
+                    <div id="header-staff">
+                        Persons-in-Charge
+                    </div>
+
                     <div id="line-leader" class="line-staff">
                         <div class="person-details">
                             <div class="picture-box">
-                                
+                                <img src="fetches1/domfetch.php?action=fetchLineLeaderPicture" alt="wala?" width="72" height="72">
                             </div>
                             <div class="infos">
-                                <div class="name">Raven</div>
-                                <div class="person-title">
-                                    Line Leader
-                                </div>
+                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
+                                <div class="person-title">Line Leader</div>
                             </div>
                         </div>
                     </div>
+
                     <div id="prod-staff" class="line-staff">
                         <div class="person-details">
                             <div class="picture-box">
-                                
+                                <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                             </div>
                             <div class="infos">
-                                <div class="name">1</div>
+                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
                                 <div class="person-title">
-                                    Process 3
+                                    Process 1
                                 </div>
                             </div>
                         </div>
                         <div class="person-details">
                             <div class="picture-box">
-                                
+                                <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                             </div>
                             <div class="infos">
-                                <div class="name">2</div>
+                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
                                 <div class="person-title">
                                     Process 2
                                 </div>
@@ -121,10 +125,10 @@
                         </div>
                         <div class="person-details">
                             <div class="picture-box">
-                                
+                                <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                             </div>
                             <div class="infos">
-                                <div class="name">3</div>
+                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
                                 <div class="person-title">
                                     Final
                                 </div>
@@ -547,63 +551,6 @@
         </div>
     </div>
 
-<!--
-    <div id="data_container">
-        <div id="output_container">
-            <table id="actual_output_table">
-                <thead>
-                    <tr>
-                        <th colspan="11"> <span>PRODUCTION MONITORING</span> <button class="button-81" role="button" onclick="showDown()">Downtime</button></th>
-
-                    </tr>
-                    <tr>
-                        <th colspan="5">PLAN</th>
-                        <th colspan="3">ACTUAL <button onclick="showEditform()">EDIT</button> </th>
-                        <th> <button onclick="show_ng_form()">ADD</button> </th>
-                    </tr>
-                    <tr>
-                        <th>TIME</th>
-                        <th>CYCLE TIME</th>
-                        <th>MIN</th>
-                        <th>PLAN OUTPUT/HR</th>
-                        <th>TOTAL PLAN OUTPUT</th>
-                        <th>ACTUAL OUTPUT/HR</th>
-                        <th>TOTAL OUTPUT</th>
-                        <th>ACHIEVE OUTPUT/HR</th>
-                        <th>NG-QTY</th>
-                    </tr>
-                </thead>
-                <tbody style="font-size:15px;">
-
-                </tbody>
-            </table>
-        </div>  -->
-
-
-        <!--<div id="downtime_container">
-            <table id="downtime_data_table">
-                <thead>
-                    <tr>
-                        <th id="downtime_title" colspan="7"> <span>DOWNTIME MONITORING</span> <button class="button-81" role="button" onclick="showProd()">Production</button></th>
-                    </tr>
-                    <tr>
-                        <th>TIME</th>
-                        <th>PROCESS</th>
-                        <th>DETAILS</th>
-                        <th>ACTION</th>
-                        <th>DOWNTIME</th>
-                        <th>PIC</th>
-                        <th>REMARKS</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-            </table>
-        </div> -->
-
-
-    </div>
     
 </body>
 

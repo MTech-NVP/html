@@ -43,25 +43,27 @@ const currentIP = window.location.hostname;
 
 const dashboardTitle = dashboardNames[currentIP] || "PRODUCTION LINE";
 
+
 document.addEventListener("DOMContentLoaded", function() {
         const titleSpan = document.querySelector("#production_line_name");
         if (titleSpan) {
             titleSpan.textContent = dashboardTitle;
         }
     });
+    
+/*fullscreen, just open to use
+    const fullscreenButton = document.getElementById('fullscreen-button');
+    const fullscreenIcon = document.getElementById('fullscreen-icon');
 
-const fullscreenButton = document.getElementById('fullscreen-button');
-const fullscreenIcon = document.getElementById('fullscreen-icon');
+    fullscreenButton.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }); 
 
-fullscreenButton.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
-});
-
-// Listen for fullscreen changes
+    // Listen for fullscreen changes
 document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) {
         fullscreenIcon.classList.add('fullscreen');
@@ -69,6 +71,9 @@ document.addEventListener('fullscreenchange', () => {
         fullscreenIcon.classList.remove('fullscreen');
     }
 });
+
+asd*/
+
 //LINE NAMES
 ////////////////////////////////////////////////////////////////
 

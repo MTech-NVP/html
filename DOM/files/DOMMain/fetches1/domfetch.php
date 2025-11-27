@@ -361,6 +361,80 @@ if ($conn->connect_error) {
         exit;
     }
 
+    $action = $_POST['action'] ?? $_GET['action'] ?? '';
+
+    if ($action === 'fetchLineLeaderPicture') {
+
+        $finalPicture = null;
+
+        // Try ID 2 first
+        $sql = "SELECT picture FROM line_leader_list WHERE id = 2 LIMIT 1";
+        $result = $conn->query($sql);
+
+        if ($result && $row = $result->fetch_assoc()) {
+            if (!empty($row['picture'])) {
+                $finalPicture = $row['picture'];
+            }
+        }
+
+        // Fallback to ID 1
+        if (empty($finalPicture)) {
+            $sql2 = "SELECT picture FROM line_leader_list WHERE id = 1 LIMIT 1";
+            $result2 = $conn->query($sql2);
+
+            if ($result2 && $row2 = $result2->fetch_assoc()) {
+                $finalPicture = $row2['picture'];
+            }
+        }
+
+        if (empty($finalPicture)) {
+            header("Content-Type: text/plain");
+            echo "NO IMAGE";
+            exit;
+        }
+
+        header("Content-Type: image/*");
+        echo $finalPicture;
+        exit;
+    }
+
+    if ($action === 'fetchProdStaffPicture') {
+
+        $finalPicture = null;
+
+        // Try ID 2 first
+        $sql = "SELECT picture FROM prod_staff_list WHERE id = 2 LIMIT 1";
+        $result = $conn->query($sql);
+
+        if ($result && $row = $result->fetch_assoc()) {
+            if (!empty($row['picture'])) {
+                $finalPicture = $row['picture'];
+            }
+        }
+
+        // Fallback to ID 1
+        if (empty($finalPicture)) {
+            $sql2 = "SELECT picture FROM prod_staff_list WHERE id = 1 LIMIT 1";
+            $result2 = $conn->query($sql2);
+
+            if ($result2 && $row2 = $result2->fetch_assoc()) {
+                $finalPicture = $row2['picture'];
+            }
+        }
+
+        if (empty($finalPicture)) {
+            header("Content-Type: text/plain");
+            echo "NO IMAGE";
+            exit;
+        }
+
+        header("Content-Type: image/*");
+        echo $finalPicture;
+        exit;
+    }
+    
+
+
 
 $conn->close();
 ?>

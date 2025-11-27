@@ -55,7 +55,7 @@ nav{
     border: 1px solid white;
 }
 
-#fullscreen-button {
+/*fullscreen css #fullscreen-button {
     width: 40px;
     height: 30px;
     cursor: pointer;
@@ -71,7 +71,6 @@ nav{
     position: relative;
 }
 
-/* Corner style */
 .corner {
     position: absolute;
     width: 8px;
@@ -85,29 +84,26 @@ nav{
     background-color: #007bff;
 }
 
-/* Horizontal line */
 .corner::before {
     width: 8px;
     height: 2px;
 }
 
-/* Vertical line */
 .corner::after {
     width: 2px;
     height: 8px;
 }
 
-/* Corner positions and default rotations */
 .top-left { top: 0; left: 0; transform: rotate(0deg); }
 .top-right { top: 0; right: 0; transform: rotate(90deg); }
 .bottom-left { bottom: 0; left: 0; transform: rotate(270deg); }
 .bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
 
-/* Flipped state */
 .fullscreen .top-left { transform: rotate(-180deg); }
 .fullscreen .top-right { transform: rotate(-90deg); }
 .fullscreen .bottom-left { transform: rotate(-270deg); }
 .fullscreen .bottom-right { transform: rotate(0deg); }
+*/
 
 #nav-buttons{
     margin: 0px 50px 0px 0px;
@@ -136,7 +132,7 @@ nav{
 
 #dashboard-container{
   display: flex;
-  background-color: #eee;
+  background-color: #ddd;
   flex-direction: column;
   width: 100%;
   height: calc(100vh - 60px);
@@ -154,7 +150,6 @@ nav{
   display: flex;
   background-color: #ffffff;
   align-items: center;
-  padding: 5px;
   width: 100%;
   border-radius: 5px;
 }
@@ -162,7 +157,9 @@ nav{
 #product-container{
   display: flex;
   align-items: center;
-  width: 55%;
+  width: 46%;
+  padding: 5px;
+  border-right: 4px solid #ddd;
 }
 
 #product-picture{
@@ -189,7 +186,7 @@ nav{
 
 #product-details {
   display: grid;
-  grid-template-columns: auto 1.3fr 1fr 1fr; 
+  grid-template-columns: auto 0.5fr 1.3fr 1fr; 
   grid-template-rows: auto 0.5fr auto 1fr;
   column-gap: 10px; 
   font-size: 0.8rem;
@@ -200,25 +197,70 @@ nav{
 /*not done bro*/
 
 #staffs-container{
-  width: 45%;
+  width: 54%;
   height: 100px;
+  padding: 5px;
+  gap: 5px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
+}
+
+#header-staff{
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  height: min-content;
 }
 
 .line-staff{
   display: flex;
+  justify-content: space-around;
+  height: min-content;
+}
+#line-leader{
+  border-right: 2px solid #ddd;
+  width: 29%;
+}
+#prod-staff{
+  width: 70%;
 }
 
 .person-details{
   display: flex;
+  gap: 5px;
   align-items: center;
 }
 
 .picture-box{
-  border: 2px solid gray;
-  height: 70px;
-  width: 70px;
+  border: 2px solid #007bff;
+  min-height: 73px;
+  min-width: 73px;
+  max-height: 73px;
+  max-width: 73px;
+}
+
+.picture-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* scale image to fit inside box without stretching */
+    display: block;
+}
+
+.name{
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.name span:nth-child(2) {
+    font-size: 0.75rem;
+}
+
+
+.person-title{
+  font-size: 0.65rem;
 }
 
 #center-contents{
@@ -547,11 +589,11 @@ nav{
 #summary{
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content:flex-start;
   width: 50%;
   background-color: #ffffff;
-  border-left: 5px solid #eee;
-  border-right: 5px solid #eee;
+  border-left: 5px solid #ddd;
+  border-right: 5px solid #ddd;
   padding: 5px;
 }
 
@@ -595,13 +637,14 @@ nav{
 
 .bottom-header2{
   font-weight: bold;
+  margin-bottom: 15px;
 }
 
 #overview-container{
   display: grid;
-  grid-template-columns: 0.9fr 0.6fr 1fr 0.5fr;
+  grid-template-columns: 0.9fr 0.65fr 1fr 0.5fr;
   font-size: 0.8rem;
-  padding: 5px;
+  padding: 3px;
   height: fit-content;
 }
 
