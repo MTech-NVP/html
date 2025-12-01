@@ -690,3 +690,95 @@ function updateOverview() {
 }
 updateOverview();
 setInterval(updateOverview, 3000);
+
+loadProdStaff();
+
+function loadProdStaff() {
+    const container = document.getElementById("prod-staff");
+    container.innerHTML = ""; // clear previous staff
+
+    // 1️⃣ Fetch staff JSON (names, title, id)
+    fetch("fetches1/domfetch.php?action=fetchProdStaff")
+        .then(res => res.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                container.innerHTML = "<p>No staff available</p>";
+                return;
+            }
+
+            data.forEach(staff => {
+                // Combine first + middle name
+                const fullFirstName = staff.fn + (staff.mn ? " " + staff.mn : "");
+
+                // Create staff HTML
+                const staffDiv = document.createElement("div");
+                staffDiv.className = "person-details";
+
+                // Picture box
+                const pictureBox = document.createElement("div");
+                pictureBox.className = "picture-box";
+
+                const img = document.createElement("img");
+                // Set the src to the separate PHP action for raw image
+                img.src = `fetches1/domfetch.php?action=fetchProdStaffPicture&id=${staff.id}`;
+                img.width = 72;
+                img.height = 72;
+                img.alt = "wala?";
+
+                pictureBox.appendChild(img);
+
+                // Infos
+                const infos = document.createElement("div");
+                infos.className = "infos";
+
+                const nameDiv = document.createElement("div");
+                nameDiv.className = "name";
+                nameDiv.innerHTML = `<span>${staff.ln}</span><span>${fullFirstName}</span>`;
+
+                const titleDiv = document.createElement("div");
+                titleDiv.className = "person-title";
+                titleDiv.textContent = staff.title;
+
+                infos.appendChild(nameDiv);
+                infos.appendChild(titleDiv);
+
+                // Append to staffDiv
+                staffDiv.appendChild(pictureBox);
+                staffDiv.appendChild(infos);
+
+                // Append staffDiv to container
+                container.appendChild(staffDiv);
+            });
+        })
+        .catch(err => console.error("Error loading staff:", err));
+}
+
+
+// Fetch line leader data
+// Fetch names and title
+LineLeader();
+
+function LineLeader(){
+    fetch("fetches1/domfetch.php?action=fetchLineLeader")
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.warn(data.error);
+                return;
+            }
+
+            // Combine first + middle name
+            const fullFirstName = data.fn + (data.mn ? " " + data.mn : "");
+            document.getElementById("ll-fn").textContent = fullFirstName;
+            document.getElementById("ll-ln").textContent = data.ln;
+            document.getElementById("ll-title").textContent = data.title;
+        })
+        .catch(err => console.error("Error fetching line leader:", err));
+
+    // Fetch picture separately
+    document.getElementById("ll-picture").src = "fetches1/domfetch.php?action=fetchLineLeaderPicture";
+}
+
+
+
+

@@ -363,17 +363,102 @@ if ($conn->connect_error) {
 
     $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
+
+    if ($action === 'fetchLineLeader') {
+
+        $planId = 0;
+        $leaderId = 0;
+
+        // 1️⃣ Get selected plan ID
+        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+        $resultPlan = $conn->query($sqlPlan);
+        if ($resultPlan && $resultPlan->num_rows > 0) {
+            $rowPlan = $resultPlan->fetch_assoc();
+            $planId = intval($rowPlan['plan']);
+        }
+
+        // 2️⃣ Get lineleader ID from PlanOutput
+        if ($planId > 0) {
+            $sqlOutput = "SELECT lineleader FROM PlanOutput WHERE id = $planId LIMIT 1";
+            $resultOutput = $conn->query($sqlOutput);
+            if ($resultOutput && $resultOutput->num_rows > 0) {
+                $rowOutput = $resultOutput->fetch_assoc();
+                $leaderId = intval($rowOutput['lineleader']);
+            }
+        }
+
+        // 3️⃣ Fetch main leader data (names & title)
+        $finalData = null;
+        if ($leaderId > 0) {
+            $sql = "SELECT fn, mn, ln, title, picture FROM line_leader_list WHERE id = $leaderId LIMIT 1";
+            $result = $conn->query($sql);
+            if ($result && $row = $result->fetch_assoc()) {
+                $finalData = $row;
+            }
+        }
+
+        if (!$finalData) {
+            echo json_encode(["error" => "LEADER NOT FOUND"]);
+            exit;
+        }
+
+        // 4️⃣ Picture with fallback to ID 1
+        $finalPicture = $finalData['picture'] ?? null;
+
+        if (empty($finalPicture)) {
+            $sqlFallback = "SELECT picture FROM line_leader_list WHERE id = 1 LIMIT 1";
+            $resultFallback = $conn->query($sqlFallback);
+            if ($resultFallback && $rowFallback = $resultFallback->fetch_assoc() && !empty($rowFallback['picture'])) {
+                $finalPicture = $rowFallback['picture'];
+            }
+        }
+
+        // 5️⃣ Return JSON for names and title
+        $response = [
+            "fn" => $finalData['fn'],
+            "mn" => $finalData['mn'],
+            "ln" => $finalData['ln'],
+            "title" => $finalData['title']
+        ];
+
+        header("Content-Type: application/json");
+        echo json_encode($response);
+        exit;
+    }
+
     if ($action === 'fetchLineLeaderPicture') {
 
+        $planId = 0;
+        $leaderId = 0;
+
+        // Get selected plan ID
+        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+        $resultPlan = $conn->query($sqlPlan);
+        if ($resultPlan && $resultPlan->num_rows > 0) {
+            $rowPlan = $resultPlan->fetch_assoc();
+            $planId = intval($rowPlan['plan']);
+        }
+
+        // Get lineleader ID from PlanOutput
+        if ($planId > 0) {
+            $sqlOutput = "SELECT lineleader FROM PlanOutput WHERE id = $planId LIMIT 1";
+            $resultOutput = $conn->query($sqlOutput);
+            if ($resultOutput && $resultOutput->num_rows > 0) {
+                $rowOutput = $resultOutput->fetch_assoc();
+                $leaderId = intval($rowOutput['lineleader']);
+            }
+        }
+
+        // Fetch leader picture
         $finalPicture = null;
+        if ($leaderId > 0) {
+            $sql = "SELECT picture FROM line_leader_list WHERE id = $leaderId LIMIT 1";
+            $result = $conn->query($sql);
 
-        // Try ID 2 first
-        $sql = "SELECT picture FROM line_leader_list WHERE id = 2 LIMIT 1";
-        $result = $conn->query($sql);
-
-        if ($result && $row = $result->fetch_assoc()) {
-            if (!empty($row['picture'])) {
-                $finalPicture = $row['picture'];
+            if ($result && $row = $result->fetch_assoc()) {
+                if (!empty($row['picture'])) {
+                    $finalPicture = $row['picture'];
+                }
             }
         }
 
@@ -393,35 +478,107 @@ if ($conn->connect_error) {
             exit;
         }
 
+        // Output raw image
         header("Content-Type: image/*");
         echo $finalPicture;
         exit;
     }
 
+    if ($action === 'fetchProdStaff') {
+
+        $planId = 0;
+        $manpowerCount = 0;
+
+        // 1️⃣ Get selected plan ID
+        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+        $resultPlan = $conn->query($sqlPlan);
+        if ($resultPlan && $resultPlan->num_rows > 0) {
+            $rowPlan = $resultPlan->fetch_assoc();
+            $planId = intval($rowPlan['plan']);
+        }
+
+        if ($planId <= 0) {
+            echo json_encode(["error" => "No plan selected"]);
+            exit;
+        }
+
+        // 2️⃣ Get manpower count and IDs from PlanOutput
+        $sqlOutput = "SELECT manpower, manpower1, manpower2, manpower3 FROM PlanOutput WHERE id = $planId LIMIT 1";
+        $resultOutput = $conn->query($sqlOutput);
+
+        if (!$resultOutput || $resultOutput->num_rows == 0) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $rowOutput = $resultOutput->fetch_assoc();
+        $manpowerCount = intval($rowOutput['manpower']);
+        if ($manpowerCount < 1) {
+            echo json_encode([]);
+            exit;
+        }
+
+        // Build staff IDs array based on manpowerCount
+        $staffIds = [];
+        for ($i = 1; $i <= $manpowerCount; $i++) {
+            $col = "manpower$i";
+            if (!empty($rowOutput[$col])) {
+                $staffIds[] = intval($rowOutput[$col]);
+            }
+        }
+
+        $staffList = [];
+
+        foreach ($staffIds as $id) {
+            $sqlStaff = "SELECT id, fn, mn, ln, title FROM prod_staff_list WHERE id = $id LIMIT 1";
+            $resultStaff = $conn->query($sqlStaff);
+            if ($resultStaff && $rowStaff = $resultStaff->fetch_assoc()) {
+                $staffList[] = [
+                    "id" => $rowStaff['id'],   // for picture URL
+                    "fn" => $rowStaff['fn'],
+                    "mn" => $rowStaff['mn'],
+                    "ln" => $rowStaff['ln'],
+                    "title" => $rowStaff['title']
+                ];
+            }
+        }
+
+        header("Content-Type: application/json");
+        echo json_encode($staffList);
+        exit;
+    }
+
     if ($action === 'fetchProdStaffPicture') {
+
+        // Get staff ID from query param or POST
+        $staffId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        if ($staffId <= 0) {
+            header("Content-Type: text/plain");
+            echo "NO IMAGE";
+            exit;
+        }
 
         $finalPicture = null;
 
-        // Try ID 2 first
-        $sql = "SELECT picture FROM prod_staff_list WHERE id = 2 LIMIT 1";
+        // 1️⃣ Try to get the staff picture
+        $sql = "SELECT picture FROM prod_staff_list WHERE id = $staffId LIMIT 1";
         $result = $conn->query($sql);
-
         if ($result && $row = $result->fetch_assoc()) {
             if (!empty($row['picture'])) {
                 $finalPicture = $row['picture'];
             }
         }
 
-        // Fallback to ID 1
+        // 2️⃣ Fallback to ID 1 picture
         if (empty($finalPicture)) {
-            $sql2 = "SELECT picture FROM prod_staff_list WHERE id = 1 LIMIT 1";
-            $result2 = $conn->query($sql2);
-
-            if ($result2 && $row2 = $result2->fetch_assoc()) {
-                $finalPicture = $row2['picture'];
+            $sqlFallback = "SELECT picture FROM prod_staff_list WHERE id = 1 LIMIT 1";
+            $resultFallback = $conn->query($sqlFallback);
+            if ($resultFallback && $rowFallback = $resultFallback->fetch_assoc()) {
+                $finalPicture = $rowFallback['picture'];
             }
         }
 
+        // 3️⃣ Output
         if (empty($finalPicture)) {
             header("Content-Type: text/plain");
             echo "NO IMAGE";
@@ -432,7 +589,36 @@ if ($conn->connect_error) {
         echo $finalPicture;
         exit;
     }
-    
+
+
+    if ($action === 'fetchManpowerCount') {
+
+        // 1️⃣ Get selected plan ID (same method as fetchPlanSummary)
+        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+        $resultPlan = $conn->query($sqlPlan);
+
+        $planId = 0;
+        if ($resultPlan && $resultPlan->num_rows > 0) {
+            $rowPlan = $resultPlan->fetch_assoc();
+            $planId = intval($rowPlan['plan']);
+        }
+
+        $manpower = 0;
+
+        // 2️⃣ Fetch manpower from selected PlanOutput
+        if ($planId > 0) {
+            $sql = "SELECT manpower FROM PlanOutput WHERE id = $planId LIMIT 1";
+            $result = $conn->query($sql);
+
+            if ($result && $row = $result->fetch_assoc()) {
+                $manpower = intval($row['manpower']);
+            }
+        }
+
+        echo json_encode(["manpower" => $manpower]);
+        exit;
+    }
+
 
 
 

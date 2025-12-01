@@ -91,11 +91,14 @@
                     <div id="line-leader" class="line-staff">
                         <div class="person-details">
                             <div class="picture-box">
-                                <img src="fetches1/domfetch.php?action=fetchLineLeaderPicture" alt="wala?" width="72" height="72">
+                                <img id="ll-picture" src="" alt="wala?" width="72" height="72">
                             </div>
                             <div class="infos">
-                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
-                                <div class="person-title">Line Leader</div>
+                                <div class="name">
+                                    <span id="ll-ln"></span>
+                                    <span id="ll-fn"></span>
+                                </div>
+                                <div class="person-title" id="ll-title"></div>
                             </div>
                         </div>
                     </div>
@@ -112,7 +115,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="person-details">
+                    </div>
+                </div>
+            </div>
+        </div>
+                        <!--<div class="person-details">
                             <div class="picture-box">
                                 <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                             </div>
@@ -122,23 +129,18 @@
                                     Process 2
                                 </div>
                             </div>
-                        </div>
-                        <div class="person-details">
-                            <div class="picture-box">
-                                <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                             </div>
-                            <div class="infos">
-                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
-                                <div class="person-title">
-                                    Final
+                            <div class="person-details">
+                                <div class="picture-box">
+                                    <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+                                <div class="infos">
+                                    <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
+                                    <div class="person-title">
+                                        Final
+                                    </div>
+                                </div>
+                            </div>-->
         <div id="center-contents">
             <div id="production-table">
                 <div id="table-data-container" class="data-container">
@@ -544,8 +546,11 @@
                         <div class="pie-text">0%</div>
                     </div>                        
 
-
-                    <button id="save-btn">Save Data</button>
+                    <div>
+                        <button id="save-btn" class="final-btn">Save Data</button>
+                        <button id="edit-btn" class="final-btn">Settings</button>   
+                    </div>
+                   
                 </div>
             </div>
         </div>
