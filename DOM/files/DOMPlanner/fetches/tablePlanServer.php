@@ -1,6 +1,10 @@
 <?php
 // Show all errors for debugging
 header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -8,19 +12,55 @@ ini_set('display_errors', 1);
 $host = "localhost";
 $user = "root";
 $pass = "123";
-$db   = "lcd_dbs";
+$db   = "monitoring";
 
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     die(json_encode(["error" => $conn->connect_error]));
 }
 
+
 // Get action
 $action = $_REQUEST['action'] ?? '';
 
+    function updateAllPlanOutputFromCT($conn) {
+        $sqlGet = "SELECT ctime, ctao, ed FROM ct ORDER BY id DESC LIMIT 1";
+        $result = $conn->query($sqlGet);
+
+        if (!$result || $result->num_rows === 0) {
+            return ["error" => "No data found in ct table"];
+        }
+
+        $row = $result->fetch_assoc();
+        $ctime = (float)$row['ctime'];
+        $asof  = $row['ctao'];
+        $ed    = $row['ed'];
+
+        $sqlUpdate = "UPDATE PlanOutput SET cycletime = ?, cycletimeasof = ?, expirationdate = ?";
+        $stmt = $conn->prepare($sqlUpdate);
+        if (!$stmt) return ["error" => "Prepare failed: " . $conn->error];
+
+        $stmt->bind_param("dss", $ctime, $asof, $ed);
+
+        if ($stmt->execute()) {
+            return [
+                "success" => true,
+                "cycletime" => $ctime,
+                "cycletimeasof" => $asof,
+                "expirationdate" => $ed,
+                "message" => "All rows updated"
+            ];
+        } else {
+            return ["error" => "Update failed: " . $stmt->error];
+        }
+    }
+
+    if ($action === 'updatePlanOutputLive') {
+        echo json_encode(updateAllPlanOutputFromCT($conn));
+    }
     function reorderIds($conn) {
         // Check existing IDs
-        $result = $conn->query("SELECT id FROM details_product ORDER BY id ASC");
+        $result = $conn->query("SELECT id FROM PlanOutput ORDER BY id ASC");
         $existing = [];
         while ($row = $result->fetch_assoc()) {
             $existing[] = (int)$row['id'];
@@ -31,15 +71,15 @@ $action = $_REQUEST['action'] ?? '';
             $max = max($existing);
             for ($i = 1; $i <= $max; $i++) {
                 if (!in_array($i, $existing)) {
-                    $conn->query("INSERT INTO details_product (part_no, model, line) VALUES ('Missing $i', '', '')");
+                    $conn->query("INSERT INTO PlanOutput (partnumber, model, cycletime) VALUES ('Missing $i', '', '')");
                 }
             }
         }
 
         // Reorder the IDs
         $conn->query("SET @count = 0");
-        $conn->query("UPDATE details_product SET id = @count := @count + 1 ORDER BY id");
-        $conn->query("ALTER TABLE details_product AUTO_INCREMENT = 1");
+        $conn->query("UPDATE PlanOutput SET id = @count := @count + 1 ORDER BY id");
+        $conn->query("ALTER TABLE PlanOutput AUTO_INCREMENT = 1");
     }
 
 
@@ -47,7 +87,7 @@ $action = $_REQUEST['action'] ?? '';
         // Ensure IDs start from 1 (auto fix)
         reorderIds($conn);
 
-        $result = $conn->query("SELECT * FROM details_product ORDER BY id ASC");
+        $result = $conn->query("SELECT * FROM PlanOutput ORDER BY id ASC");
         $rows = [];
         while ($row = $result->fetch_assoc()) {
             $rows[] = $row;
@@ -57,7 +97,7 @@ $action = $_REQUEST['action'] ?? '';
     }
 
     if ($action === 'get_countPerHr') {
-        $result = $conn->query("SELECT countPerHr FROM actualCountData");
+        $result = $conn->query("SELECT actual_output FROM OutputTable");
         
         if (!$result) {
             die(json_encode(["error" => $conn->error]));
@@ -65,7 +105,7 @@ $action = $_REQUEST['action'] ?? '';
 
         $values = [];
         while ($row = $result->fetch_assoc()) {
-            $values[] = $row['countPerHr'];
+            $values[] = $row['actual_output'];
         }
 
         echo json_encode($values);
@@ -74,7 +114,7 @@ $action = $_REQUEST['action'] ?? '';
 
     if ($action === 'get_by_plan_id_value') {
         // Get the latest plan_id from plan_id_value
-        $stmt = $conn->prepare("SELECT id_value FROM plan_id_value WHERE id = 1");
+        $stmt = $conn->prepare("SELECT plan FROM PlanSelection LIMIT 1");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -83,10 +123,10 @@ $action = $_REQUEST['action'] ?? '';
             die(json_encode(["error" => "No plan found"]));
         }
 
-        $id_value = $row['id_value'];
+        $id_value = $row['plan'];
 
         // Fetch the corresponding row from details_product
-        $stmt2 = $conn->prepare("SELECT * FROM details_product WHERE id = ?");
+        $stmt2 = $conn->prepare("SELECT partnumber, model, balance, manpower, prodhrs, deliverydate, cycletime, cycletimeasof, expirationdate FROM PlanOutput WHERE id = ?");
         $stmt2->bind_param("i", $id_value);
         $stmt2->execute();
         $result2 = $stmt2->get_result();
@@ -100,139 +140,191 @@ $action = $_REQUEST['action'] ?? '';
         exit;
     }
 
+    if ($action === 'fetchPlanOutput') {
+        header('Content-Type: application/json');
 
+        // Fetch first 14 rows from plan_output column
+        $stmt = $conn->prepare("SELECT plan_output FROM OutputTable ORDER BY id ASC LIMIT 14");
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-if ($action === 'update') {
-    // Make sure id exists
-    $id = $_POST['planId'] ?? null;
-    if (!$id) {
-        die(json_encode(["error" => "ID missing"]));
+        $outputs = [];
+        while ($row = $result->fetch_assoc()) {
+            $outputs[] = $row['plan_output'];
+        }
+
+        echo json_encode($outputs);
+        exit;
     }
 
-    // Collect form data
-    $part_no  = $_POST['part_no'] ?? '';
-    $model    = $_POST['model'] ?? '';
-    $line     = $_POST['line'] ?? '';
-    $del_date = $_POST['delDate'];
-    $ctasof   = $_POST['ctasof'] ;
-    $expdate  = $_POST['expdate'];
-    $manpower = $_POST['manpower'];
-    $prodhrs  = $_POST['prodhrs'] ;
-    $plan1    = $_POST['plan1'] ?? '';
-    $plan2    = $_POST['plan2'] ?? '';
-    $plan3    = $_POST['plan3'] ?? '';
-    $plan4    = $_POST['plan4'] ?? '';
-    $plan5    = $_POST['plan5'] ?? '';
-    $plan6    = $_POST['plan6'] ?? '';
-    $plan7    = $_POST['plan7'] ?? '';
-    $plan8    = $_POST['plan8'] ?? '';
-    $plan9    = $_POST['plan9'] ?? '';
-    $plan10   = $_POST['plan10'] ?? '';
-    $plan11   = $_POST['plan11'] ?? '';
-    $plan12   = $_POST['plan12'] ?? '';
-    $plan13   = $_POST['plan13'] ?? '';
-    $plan14   = $_POST['plan14'] ?? '';
+    if ($action === 'update') {
+        // Make sure id exists
+        $id = $_POST['planId'] ?? null;
+        if (!$id) {
+            die(json_encode(["error" => "ID missing"]));
+        }
 
-    // Prepare statement
-    $stmt = $conn->prepare("UPDATE details_product
-        SET part_no=?, model=?, line=?, del_date=?, ct_as_of=?, exp_date=?, man_power=?, prod_hrs=?,
-            plan_1=?, plan_2=?, plan_3=?, plan_4=?, plan_5=?, plan_6=?, plan_7=?, plan_8=?, plan_9=?, plan_10=?, plan_11=?, plan_12=?, plan_13=?, plan_14=?
-        WHERE id=?");
+        // Collect form data
+        $part_no  = $_POST['partnumber'] ?? '';
+        $model    = $_POST['model'] ?? '';
+        $del_date = date('Y-m-d', strtotime($_POST['deliverydate']));
+        $manpower = $_POST['manpower'];
+        $prodhrs  = $_POST['prodhrs'] ;
+        $plan1    = $_POST['mins1'] ?? '';
+        $plan2    = $_POST['mins2'] ?? '';
+        $plan3    = $_POST['mins3'] ?? '';
+        $plan4    = $_POST['mins4'] ?? '';
+        $plan5    = $_POST['mins5'] ?? '';
+        $plan6    = $_POST['mins6'] ?? '';
+        $plan7    = $_POST['mins7'] ?? '';
+        $plan8    = $_POST['mins8'] ?? '';
+        $plan9    = $_POST['mins9'] ?? '';
+        $plan10   = $_POST['mins10'] ?? '';
+        $plan11   = $_POST['mins11'] ?? '';
+        $plan12   = $_POST['mins12'] ?? '';
+        $plan13   = $_POST['mins13'] ?? '';
+        $plan14   = $_POST['mins14'] ?? '';
+ 
+        // Prepare statement
+        $stmt = $conn->prepare("UPDATE PlanOutput
+            SET partnumber=?, model=?, deliverydate=?, manpower=?, prodhrs=?,
+                mins1=?, mins2=?, mins3=?, mins4=?, mins5=?, mins6=?, mins7=?, mins8=?, mins9=?, mins10=?, mins11=?, mins12=?, mins13=?, mins14=?
+            WHERE id=?");
 
-    // Bind parameters (22 strings + 1 integer)
-    $stmt->bind_param(
-        "ssssssssssssssssssssssi",
-        $part_no, $model, $line, $del_date, $ctasof, $expdate, $manpower, $prodhrs,
-        $plan1, $plan2, $plan3, $plan4, $plan5, $plan6, $plan7, $plan8, $plan9, $plan10,
-        $plan11, $plan12, $plan13, $plan14, $id
-    );
+        // Bind parameters (22 strings + 1 integer)
+        $stmt->bind_param(
+            "sssidiiiiiiiiiiiiiii",
+            $part_no, $model, $del_date, $manpower, $prodhrs,
+            $plan1, $plan2, $plan3, $plan4, $plan5, $plan6, $plan7, $plan8, $plan9, $plan10,
+            $plan11, $plan12, $plan13, $plan14, $id
+        );
+        if (!$del_date) {
+            die(json_encode(["error" => "Invalid date format"]));
+        }
+        if (!$stmt->execute()) {
+            die(json_encode(["error" => $stmt->error]));
+        }
 
-    if (!$stmt->execute()) {
-        die(json_encode(["error" => $stmt->error]));
-    }
-    $stmt->execute();
-    echo json_encode(["status" => "success"]);
-    exit;
-}
+        echo json_encode(["status" => "success"]);
+        exit;
 
-// ------------------ DELETE ------------------
-if ($action === 'delete') {
-    $id = $_POST['id'] ?? null;
-    if (!$id) {
-        die(json_encode(["error" => "ID missing"]));
-    }
-
-    $stmt = $conn->prepare("DELETE FROM details_product WHERE id=?");
-    $stmt->bind_param("i", $id);
-
-    if (!$stmt->execute()) {
-        die(json_encode(["error" => $stmt->error]));
     }
 
-    // Reorder the IDs
-    $conn->query("SET @count = 0");
-    $conn->query("UPDATE details_product SET id = @count:=@count+1 ORDER BY id");
+    // ------------------ DELETE ------------------
+    if ($action === 'delete') {
+        
+        $id = $_POST['id'] ?? null;
+        if (!$id) {
+            die(json_encode(["error" => "ID missing"]));
+        }
 
-    // Reset auto increment to match new max id
-    $conn->query("ALTER TABLE details_product AUTO_INCREMENT = 1");
+        $stmt = $conn->prepare("DELETE FROM PlanOutput WHERE id=?");
+        $stmt->bind_param("i", $id);
 
-    echo json_encode(["status" => "deleted and reordered"]);
-    exit;
-}
+        if (!$stmt->execute()) {
+            die(json_encode(["error" => $stmt->error]));
+        }
 
-if ($action === 'get_downtime_data') {
-    $result = $conn->query("SELECT id, time_num FROM downtime_data ORDER BY id ASC");
+        // Reorder the IDs
+        $conn->query("SET @count = 0");
+        $conn->query("UPDATE PlanOutput SET id = @count:=@count+1 ORDER BY id");
 
-    if (!$result) {
-        die(json_encode(["error" => $conn->error]));
+        // Reset auto increment to match new max id
+        $conn->query("ALTER TABLE PlanOutput AUTO_INCREMENT = 1");
+
+        echo json_encode(["status" => "deleted and reordered"]);
+        exit;
     }
 
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        // Make sure time_num is an integer in the JSON output
-        $row['time_num'] = (int)$row['time_num'];
-        $row['id'] = (int)$row['id'];
-        $rows[] = $row;
+    if ($action === 'get_downtime_data') {
+        $result = $conn->query("SELECT id, time_num FROM downtime_data ORDER BY id ASC");
+
+        if (!$result) {
+            die(json_encode(["error" => $conn->error]));
+        }
+
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            // Make sure time_num is an integer in the JSON output
+            $row['time_num'] = (int)$row['time_num'];
+            $row['id'] = (int)$row['id'];
+            $rows[] = $row;
+        }
+
+        echo json_encode($rows);
+        exit;
     }
 
-    echo json_encode($rows);
-    exit;
-}
+    if ($action === 'get_downtime_total') {
+        $result = $conn->query("SELECT SUM(time_num) AS total_time FROM downtime_data");
 
-if ($action === 'get_downtime_total') {
-    $result = $conn->query("SELECT SUM(time_num) AS total_time FROM downtime_data");
+        if (!$result) {
+            die(json_encode(["error" => $conn->error]));
+        }
 
-    if (!$result) {
-        die(json_encode(["error" => $conn->error]));
+        $row = $result->fetch_assoc();
+        $totalTime = (int)$row['total_time'];
+
+        echo json_encode(["total_time" => $totalTime]);
+        exit;
     }
 
-    $row = $result->fetch_assoc();
-    $totalTime = (int)$row['total_time'];
+    if ($action === 'get_downtime_duration') {
+        $result = $conn->query("SELECT id, time_Elapse FROM downtime_data ORDER BY id ASC");
 
-    echo json_encode(["total_time" => $totalTime]);
-    exit;
-}
+        if (!$result) {
+            die(json_encode(["error" => $conn->error]));
+        }
 
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            // id as integer, time_Elapse kept as string
+            $row['id'] = (int)$row['id'];
+            $row['time_Elapse'] = (string)$row['time_Elapse'];
+            $rows[] = $row;
+        }
 
-if ($action === 'get_downtime_duration') {
-    $result = $conn->query("SELECT id, time_Elapse FROM downtime_data ORDER BY id ASC");
-
-    if (!$result) {
-        die(json_encode(["error" => $conn->error]));
+        echo json_encode($rows);
+        exit;
     }
 
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        // id as integer, time_Elapse kept as string
-        $row['id'] = (int)$row['id'];
-        $row['time_Elapse'] = (string)$row['time_Elapse'];
-        $rows[] = $row;
+    $action = $_POST['action'] ?? $_GET['action'] ?? '';
+
+    if ($action === 'ctfetch') {
+        // Fetch the latest row
+        $sql = "SELECT ctime, ctao, ed FROM ct ORDER BY id DESC LIMIT 1";
+        $result = $conn->query($sql);
+
+        if ($result && $result->num_rows > 0) {
+            echo json_encode($result->fetch_assoc());
+        } else {
+            echo json_encode(["ctime" => "", "ctao" => "", "ed" => ""]);
+        }
+
+    } elseif ($action === 'ctupdate') {
+        // Update the latest row or insert if none exists
+        $ctime = $_POST['ctime'] ?? null;
+        $ctao  = $_POST['ctao'] ?? null;
+        $ed    = $_POST['ed'] ?? null;
+
+        $check = $conn->query("SELECT id FROM ct ORDER BY id DESC LIMIT 1");
+        if ($check && $check->num_rows > 0) {
+            $row = $check->fetch_assoc();
+            $stmt = $conn->prepare("UPDATE ct SET ctime=?, ctao=?, ed=? WHERE id=?");
+            $stmt->bind_param("sssi", $ctime, $ctao, $ed, $row['id']);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO ct (ctime, ctao, ed) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $ctime, $ctao, $ed);
+        }
+
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["error" => $stmt->error]);
+        }
+
+    } else {
+        echo json_encode(["error" => "Invalid action"]);
     }
-
-    echo json_encode($rows);
-    exit;
-}
-
-
 
 ?>

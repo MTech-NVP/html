@@ -543,15 +543,21 @@ function updateTable() {
 
             // --- Determine remark ---
             let remarkText = "";
+
             if (planOutput === 0) {
                 remarkText = "BREAK";
             } else if (now >= rowEndTime) {
-                remarkText = (planOutput === actualOutput) ? "COMPLETED" : "INCOMPLETE";
+                if (actualOutput > planOutput) {
+                    remarkText = "EXCEEDED";   // Over 100%
+                } else if (actualOutput === planOutput) {
+                    remarkText = "COMPLETED";
+                } else {
+                    remarkText = "INCOMPLETE";
+                }
             } else {
                 remarkText = "ONGOING";
             }
 
-            // Update remarks cell & DB
             cells[9].textContent = remarkText;
             sendRemarksToDB(rowData.id, remarkText);
 
@@ -563,13 +569,23 @@ function updateTable() {
 
             const percent = planOutput > 0 ? Math.round((actualOutput / planOutput) * 100) : 0;
             const bar = cells[5].querySelector('.percent-bar-data');
+
             if (bar) {
                 bar.textContent = percent + '%';
                 bar.style.setProperty('--percent', percent);
-                bar.style.background = percent >= 100
-                    ? `linear-gradient(to right, #58ff58 ${percent}%, transparent 0)` 
-                    : `linear-gradient(to right, yellow ${percent}%, transparent 0)`;
+
+                if (percent > 100) {
+                    // EXCEEDED – RED
+                    bar.style.background = `linear-gradient(to right, red ${percent}%, transparent 0)`;
+                } else if (percent === 100) {
+                    // EXACT – GREEN
+                    bar.style.background = `linear-gradient(to right, #58ff58 ${percent}%, transparent 0)`;
+                } else {
+                    // BELOW – YELLOW
+                    bar.style.background = `linear-gradient(to right, yellow ${percent}%, transparent 0)`;
+                }
             }
+
             sendPercentToDB(rowData.id, percent);
 
             // --- Cumulative total ---

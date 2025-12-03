@@ -219,21 +219,18 @@
                     <div id="line2"></div>
                     
                     <div id="form-container">
-                        <form action="/fetches/formhandler.inc.php" method="post">
+                        <form action="fetches/formhandler.inc.php" method="post">
                             
                             <div class="section-header" id="section-header1">Product Information</div>
                             <div class="product-info" id="product-tab">
                                 <label for="part_no">Part Number:</label>
-                                <input type="text" id="part_no" name="part_no" placeholder="Enter part number">
+                                <input type="text" id="part_no" name="partnumber" placeholder="Enter part number">
 
                                 <label for="model">Model:</label>
                                 <input type="text" id="model" name="model" placeholder="Enter model name">
 
-                                <label for="line-label">Line:</label>
-                                <input type="text" id="line-label" name="line" placeholder="Enter line name">
-
                                 <label for="del_date">Delivery Date:</label>
-                                <input type="date" id="del_date" name="del_date">
+                                <input type="date" id="del_date" name="deliverydate">
 
                                 <label for="balance">Balance:</label>
                                 <input type="number" id="balance" name="balance" placeholder="Enter balance">
@@ -241,56 +238,38 @@
                                 <label for="man_power">Manpower:</label>
                                 <input type="number" id="man_power" name="man_power" placeholder="Enter manpower count">
 
-                                <label for="ct_as_of">Ct. as of:</label>
-                                <input type="date" id="ct_as_of" name="ct_as_of">
+                                <label for="prod_hrs">Production Hours:</label>
+                                <input type="text" id="prod_hrs" name="prod_hrs" placeholder="Enter Production Hours">
 
-                                <label for="exp_date">Exp. Date:</label>
-                                <input type="date" id="exp_date" name="exp_date">
-
-                                <div class="merged">
-                                    <label for="prod_hrs">Production Hours:</label>
-                                    <input type="text" id="prod_hrs" name="prod_hrs" placeholder="Enter Production Hours">
-                                </div>
                             </div>
-                                                
-                            
-                            
-                            <div class="section-header" id="section-header2">Production Hours</div>
                             <div id="plan-hr-container">
-
-                                <div class="plan-hr" id="plan-tab">
-                                    <input type="number" name="plan1" placeholder="6am - 7am" />
-                                    <input type="number" name="plan2" placeholder="7am - 8am" />
-                                    <input type="number" name="plan3" placeholder="8am - 9am" />
-                                    <input type="number" name="plan4" placeholder="9am - 10am" />
-                                    <input type="number" name="plan5" placeholder="10am - 11am" />
-                                    <input type="number" name="plan6" placeholder="11am - 12nn" />
-                                    <input type="number" name="plan7" placeholder="12nn - 1pm" />
-                                    <input type="number" name="plan8" placeholder="1pm - 2pm" />
-                                    <input type="number" name="plan9" placeholder="2pm - 3pm" />
-                                    <input type="number" name="plan10" placeholder="3pm - 4pm" />
-                                    <input type="number" name="plan11" placeholder="4pm - 5pm" />
-                                    <input type="number" name="plan12" placeholder="5pm - 6pm" />
-                                    <input type="number" name="plan13" placeholder="6pm - 7pm" />
-                                    <input type="number" name="plan14" placeholder="7pm - 8pm" /> 
+                                <div class="section-header">
+                                    Minutes Allotted Per Hour
                                 </div>
-
+                                <div class="plan-hr" id="plan-tab">
+                                    <input type="number" name="mins1" placeholder="6am-7am" />
+                                    <input type="number" name="mins2" placeholder="7am-8am" />
+                                    <input type="number" name="mins3" placeholder="8am-9am" />
+                                    <input type="number" name="mins4" placeholder="9am-10am" />
+                                    <input type="number" name="mins5" placeholder="10am-11am" />
+                                    <input type="number" name="mins6" placeholder="11am-12nn" />
+                                    <input type="number" name="mins7" placeholder="12nn-1pm" />
+                                    <input type="number" name="mins8" placeholder="1pm-2pm" />
+                                    <input type="number" name="mins9" placeholder="2pm-3pm" />
+                                    <input type="number" name="mins10" placeholder="3pm-4pm" />
+                                    <input type="number" name="mins11" placeholder="4pm-5pm" />
+                                    <input type="number" name="mins12" placeholder="5pm-6pm" />
+                                    <input type="number" name="mins13" placeholder="6pm-7pm" />
+                                    <input type="number" name="mins14" placeholder="7pm-8pm" /> 
+                                </div>
                             </div>
 
                             <div class="submit-btn-container" id="submit-btn">
                                 <button type="submit">Submit</button>
-                            </div>
+                            </div>                    
+
                         </form>
 
-                        <div class="next-back-button-container">
-                            <div class="next-btn-container" id="next-btn">
-                                <button>Next</button>
-                            </div> 
-                            
-                            <div class="back-btn-container" id="back-btn">
-                                <button>Back</button>
-                            </div> 
-                        </div>
                     </div>
 
                     <div id="form-swp-container">
@@ -369,7 +348,33 @@
                             <span class="line-prod-number3" style="font-size: 0.7rem; font-family:Arial"></span>
                         </div>
 
-
+                        <div id="ct-details">
+                            <div id="ct-containers">
+                                <div class="ct-container">
+                                    <label for="cycletime">Cycle Time:</label>
+                                    <input type="number" id="ct" name="cycletime" class="ct-input" placeholder="Cycle Time">
+                                </div>
+                                <div class="ct-container">
+                                    <label for="ctao">Cycle Time as of:</label>
+                                    <input type="date" id="ctao" name="ctao" class="ct-input" placeholder="Cycle Time as of">
+                                </div>
+                                <div class="ct-container">
+                                    <label for="expdate">Expiration Date:</label>
+                                    <input type="date" id="expdate" name="expdate" class="ct-input" placeholder="Expiration Date">
+                                </div>                               
+                            </div>
+                            <div id="ct-buttons">
+                                <button id="edit-ct" class="ct-btn">
+                                    Edit
+                                </button>
+                                <button id="submit-ct" class="ct-btn">
+                                    Submit
+                                </button>
+                                <button id="back-ct" class="ct-btn">
+                                    Back
+                                </button>                            
+                            </div>
+                        </div>
                         <div id="append-data-plan">
                         </div>
 
@@ -386,31 +391,19 @@
 
                                         <div class="edit-field-input">
                                             <label for="partno">Part Number</label>
-                                            <input type="text" id="partno" name="part_no" placeholder="Enter Part number">
+                                            <input type="text" id="partno" name="partnumber" placeholder="Enter Part number">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="model">Model</label>
                                             <input type="text" id="modelnumber" name="model" placeholder="Enter Model">
                                         </div>
                                         <div class="edit-field-input">
-                                            <label for="line-edit">Line</label>
-                                            <input type="text" id="line-edit" name="line" placeholder="Enter Line">
-                                        </div>
-                                        <div class="edit-field-input">
                                             <label for="delDate">Delivery Date</label>
-                                            <input type="text" id="delDate" name="delDate">
+                                            <input type="date" id="delDate" name="deliverydate">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="manpower">Manpower</label>
                                             <input type="text" id="manpower" name="manpower" placeholder="Enter Number Manpower">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="ctasof">CT.AS.OF</label>
-                                            <input type="text" id="ctasof" name="ctasof">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="expdate">Exp.Date</label>
-                                            <input type="text" id="expdate" name="expdate">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="prodhrs">Production Hours</label>
@@ -421,59 +414,59 @@
                                     <div class="table-plan-edit-form">
                                         <div class="edit-field-input">
                                             <label for="plan1">6am-7am</label>
-                                            <input type="number" id="plan1" name="plan1" placeholder="6am-7am">
+                                            <input type="number" id="plan1" name="mins1" placeholder="6am-7am">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan2">7am-8am</label>
-                                            <input type="number" id="plan2" name="plan2" placeholder="7am-8am">
+                                            <input type="number" id="plan2" name="mins2" placeholder="7am-8am">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan3">8am-9am</label>
-                                            <input type="number" id="plan3" name="plan3" placeholder="8am-9am">
+                                            <input type="number" id="plan3" name="mins3" placeholder="8am-9am">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan4">9am-10am</label>
-                                            <input type="text" id="plan4" name="plan4" placeholder="9am-10am">
+                                            <input type="text" id="plan4" name="mins4" placeholder="9am-10am">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan5">10am-11am</label>
-                                            <input type="number" id="plan5" name="plan5" placeholder="10am-11am">
+                                            <input type="number" id="plan5" name="mins5" placeholder="10am-11am">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan6">11am-12nn</label>
-                                            <input type="number" id="plan6" name="plan6" placeholder="11am-12nn">
+                                            <input type="number" id="plan6" name="mins6" placeholder="11am-12nn">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan7">12nn-1pm</label>
-                                            <input type="number" id="plan7" name="plan7" placeholder="12nn-1pm">
+                                            <input type="number" id="plan7" name="mins7" placeholder="12nn-1pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan8">1pm-2pm</label>
-                                            <input type="number" id="plan8" name="plan8" placeholder="1pm-2pm">
+                                            <input type="number" id="plan8" name="mins8" placeholder="1pm-2pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan9">2pm-3pm</label>
-                                            <input type="text" id="plan9" name="plan9" placeholder="2pm-3pm">
+                                            <input type="text" id="plan9" name="mins9" placeholder="2pm-3pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan10">3pm-4pm</label>
-                                            <input type="number" id="plan10" name="plan10" placeholder="3pm-4pm">
+                                            <input type="number" id="plan10" name="mins10" placeholder="3pm-4pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan11">4pm-5pm</label>
-                                            <input type="number" id="plan11" name="plan11" placeholder="4pm-5pm">
+                                            <input type="number" id="plan11" name="mins11" placeholder="4pm-5pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan12">5pm-6pm</label>
-                                            <input type="number" id="plan12" name="plan12" placeholder="5pm-6pm">
+                                            <input type="number" id="plan12" name="mins12" placeholder="5pm-6pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan13">6pm-7pm</label>
-                                            <input type="number" id="plan13" name="plan13" placeholder="6pm-7pm">
+                                            <input type="number" id="plan13" name="mins13" placeholder="6pm-7pm">
                                         </div>
                                         <div class="edit-field-input">
                                             <label for="plan14">7pm-8pm</label>
-                                            <input type="number" id="plan14" name="plan14" placeholder="7pm-8pm">
+                                            <input type="number" id="plan14" name="mins14" placeholder="7pm-8pm">
                                         </div>
                                     </div>
 
@@ -585,7 +578,7 @@
 
     </div> 
 
-    <script src="fetches/planner_data1.js"></script>
+    <script src="fetches/planner_data.js"></script>
 
     <script> 
         document.addEventListener("DOMContentLoaded", () => {
@@ -687,7 +680,7 @@
         }
 
         document.getElementById("c4-cont").addEventListener("click", function() {
-            window.location.href = "http://10.0.0.189/planner.php";
+            window.location.href = "http://10.0.0.189/DOM/files/DOMPlanner/planner.php";
         });
 
         document.getElementById("c7-cont").addEventListener("click", function() {
@@ -835,27 +828,6 @@
             planDiv.scrollTop = 0;
         }
 
-        document.querySelector('.next-btn-container button').addEventListener('click', function() {
-            document.getElementById('section-header1').style.display = 'none';
-            document.getElementById('product-tab').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('back-btn').style.display = 'flex';
-            document.getElementById('section-header2').style.display = 'block';
-            document.getElementById('plan-tab').style.display = 'grid';
-            document.getElementById('submit-btn').style.display = 'flex';
-        });
-
-        document.querySelector('.back-btn-container button').addEventListener('click', function() {
-            document.getElementById('section-header1').style.display = 'flex';
-            document.getElementById('product-tab').style.display = 'grid    ';
-            document.getElementById('next-btn').style.display = 'flex';
-            document.getElementById('back-btn').style.display = 'none';
-            document.getElementById('section-header2').style.display = 'none';
-            document.getElementById('plan-tab').style.display = 'none';
-            document.getElementById('submit-btn').style.display = 'none';
-        });
-
-
         function openNav() {
             document.getElementById("mySidenav").style.width = "200px";
         }
@@ -941,25 +913,23 @@
                         </div>
                         <div class="plan-section" id="information-plan-title">Product Information</div>
                         <div class="information-plan">
-                            <div><label>Part No:&nbsp;</label> ${row.part_no}</div>
+                            <div><label>Part No:&nbsp;</label> ${row.partnumber}</div>
                             <div><label>Model:&nbsp;</label> ${row.model}</div>
-                            <div><label>Line:&nbsp;</label> ${row.line}</div>
-                            <div><label>Delivery Date:&nbsp;</label> ${row.del_date}</div>
-                            <div><label>CT As Of:&nbsp;</label> ${row.ct_as_of}</div>
-                            <div><label>Exp. Date:&nbsp;</label> ${row.exp_date}</div>
-                            <div><label>Man Power:&nbsp;</label> ${row.man_power}</div>
-                            <div><label>Prod Hours:&nbsp;</label> ${row.prod_hrs}</div>                            
+                            <div><label>Delivery Date:&nbsp;</label> ${row.deliverydate}</div>
+                            <div><label>Balance:&nbsp;</label> ${row.balance}</div>
+                            <div><label>Man Power:&nbsp;</label> ${row.manpower}</div>
+                            <div><label>Production Hours:&nbsp;</label> ${row.prodhrs}</div>                            
                         </div>
 
-                        <div class="plan-section" id="time-plan-title">Plan Output Per Hour</div>
+                        <div class="plan-section" id="time-plan-title">Minutes Allotted Per Hour</div>
 
                         <div class="time-plan">
                             ${(() => {
                                 const plans = [
-                                    row.plan_1, row.plan_2, row.plan_3, row.plan_4,
-                                    row.plan_5, row.plan_6, row.plan_7, row.plan_8,
-                                    row.plan_9, row.plan_10, row.plan_11, row.plan_12,
-                                    row.plan_13, row.plan_14
+                                    row.mins1, row.mins2, row.mins3, row.mins4,
+                                    row.mins5, row.mins6, row.mins7, row.mins8,
+                                    row.mins9, row.mins10, row.mins11, row.mins12,
+                                    row.mins13, row.mins14
                                 ];
                                 const times = [
                                     "6AM–7AM", "7AM–8AM", "8AM–9AM", "9AM–10AM",
@@ -995,28 +965,25 @@
                         <div id="plan-buttons">
                             <button class="editbtn-table" onclick="editPlan(
                                 ${row.id},
-                                '${row.part_no}',
+                                '${row.partnumber}',
                                 '${row.model}', 
-                                '${row.line}',
-                                '${row.del_date}',
-                                '${row.ct_as_of}',
-                                '${row.exp_date}',
-                                '${row.man_power}',
-                                '${row.prod_hrs}',
-                                '${row.plan_1}',
-                                '${row.plan_2}',
-                                '${row.plan_3}',
-                                '${row.plan_4}',
-                                '${row.plan_5}',
-                                '${row.plan_6}',
-                                '${row.plan_7}',
-                                '${row.plan_8}',
-                                '${row.plan_9}',
-                                '${row.plan_10}',
-                                '${row.plan_11}',
-                                '${row.plan_12}',
-                                '${row.plan_13}',
-                                '${row.plan_14}'
+                                '${row.deliverydate}',
+                                '${row.manpower}',
+                                '${row.prodhrs}',
+                                '${row.mins1}',
+                                '${row.mins2}',
+                                '${row.mins3}',
+                                '${row.mins4}',
+                                '${row.mins5}',
+                                '${row.mins6}',
+                                '${row.mins7}',
+                                '${row.mins8}',
+                                '${row.mins9}',
+                                '${row.mins10}',
+                                '${row.mins11}',
+                                '${row.mins12}',
+                                '${row.mins13}',
+                                '${row.mins14}'
                             )">Edit</button>
 
                             <button class="deletebtn-table" onclick="deletePlan(${row.id})">Delete</button>
@@ -1036,6 +1003,10 @@
             e.preventDefault();
 
             let formData = new FormData(this);
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+          
             formData.append('action', 'update'); // always update
             formData.append('planId', document.getElementById('planId').value);
 
@@ -1050,40 +1021,43 @@
                     document.getElementById('editForm').style.display = "none";
                     document.getElementById('append-data-plan').style.display = "flex";
                 });
+                    fetch('fetches/tablePlanServer.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => console.log(data));
         });
 
-        function editPlan(id, part_no, model, line, del_date,
-            ctasof, expdate, manpower, prodhrs, plan1, plan2,
-            plan3, plan4, plan5, plan6, plan7, plan8, plan9, plan10,
-            plan11, plan12, plan13, plan14
+        function editPlan(id, partnumber, model, deliverydate, 
+            manpower, prodhrs, mins1, mins2,
+            mins3, mins4, mins5, mins6, mins7, mins8, mins9, mins10,
+            mins11, mins12, mins13, mins14
         ) {
             const deli = document.getElementById('delDate').value;
-            console.log(deli)
+            console.log(`Delivery Date: ${deli}`);
             document.getElementById('editForm').style.display = "flex";
             document.getElementById('append-data-plan').style.display = "none";
             document.getElementById('planId').value = id;
-            document.getElementById('partno').value = part_no;
+            document.getElementById('partno').value = partnumber;
             document.getElementById('modelnumber').value = model;
-            document.getElementById('line-edit').value = line;
-            document.getElementById('delDate').value = del_date;
-            document.getElementById('ctasof').value = ctasof;
-            document.getElementById('expdate').value = expdate;
+            document.getElementById('delDate').value = deliverydate;
             document.getElementById('manpower').value = manpower;
             document.getElementById('prodhrs').value = prodhrs;
-            document.getElementById('plan1').value = plan1;
-            document.getElementById('plan2').value = plan2;
-            document.getElementById('plan3').value = plan3;
-            document.getElementById('plan4').value = plan4;
-            document.getElementById('plan5').value = plan5;
-            document.getElementById('plan6').value = plan6;
-            document.getElementById('plan7').value = plan7;
-            document.getElementById('plan8').value = plan8;
-            document.getElementById('plan9').value = plan9;
-            document.getElementById('plan10').value = plan10;
-            document.getElementById('plan11').value = plan11;
-            document.getElementById('plan12').value = plan12;
-            document.getElementById('plan13').value = plan13;
-            document.getElementById('plan14').value = plan14;
+            document.getElementById('plan1').value = mins1;
+            document.getElementById('plan2').value = mins2;
+            document.getElementById('plan3').value = mins3;
+            document.getElementById('plan4').value = mins4;
+            document.getElementById('plan5').value = mins5;
+            document.getElementById('plan6').value = mins6;
+            document.getElementById('plan7').value = mins7;
+            document.getElementById('plan8').value = mins8;
+            document.getElementById('plan9').value = mins9;
+            document.getElementById('plan10').value = mins10;
+            document.getElementById('plan11').value = mins11;
+            document.getElementById('plan12').value = mins12;
+            document.getElementById('plan13').value = mins13;
+            document.getElementById('plan14').value = mins14;
         }
 
         function deletePlan(id) {
@@ -1100,7 +1074,7 @@
         }
 
         // Auto refresh every 5 seconds
-        setInterval(loadPlans, 2000);
+        setInterval(loadPlans, 5000);
 
         // Initial load
         loadPlans();
@@ -1118,7 +1092,7 @@
         }
 
         function sendDataToServer(data) {
-            fetch('updatePerson.php', {
+            fetch('fetches/updatePerson.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -221,12 +221,12 @@ nav{
 
 #line-leader{
   border-right: 2px solid #ddd;
-  width: 26%;
-  margin-right: 2px;
+  width: 27%;
+  margin-right: 5px;
 }
 
 #prod-staff{
-  width: 73%;
+  width: 72%;
   overflow: auto;
   gap: 10px;
 }
