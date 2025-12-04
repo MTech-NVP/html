@@ -11,6 +11,8 @@ if ($conn->connect_error) {
     echo json_encode([]);
     exit;
 }
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+
 
 // Check if action is set
     $action = $_POST['action'] ?? '';
@@ -66,7 +68,7 @@ if ($conn->connect_error) {
                 $data = [
                     "partnumber"     => $row['partnumber'] ?: "-",
                     "model"          => $row['model'] ?: "-",
-                    "balance"        => $row['balance'] ?: "-",
+                    "balance"        => $row['balance'] ?: "0",
                     "manpower"       => $row['manpower'] ?: "-",
                     "prodhrs"        => $row['prodhrs'] ?: "-",
                     "deliverydate"   => $row['deliverydate'] ?: "-",
@@ -80,6 +82,58 @@ if ($conn->connect_error) {
         echo json_encode($data);
     }
 
+    if ($action === 'update_output_durations') {
+        header('Content-Type: application/json');
+
+        // Update OutputTable.dt_mins based on sum of durations from dt_details
+        $sql = "
+            UPDATE OutputTable o
+            LEFT JOIN (
+                SELECT dt_id, SEC_TO_TIME(SUM(TIME_TO_SEC(duration))) AS total_duration
+                FROM dt_details
+                WHERE DATE(time_occurred) = CURDATE()
+                GROUP BY dt_id
+            ) d ON o.id = d.dt_id
+            SET o.dt_mins = IFNULL(d.total_duration, '00:00:00')
+        ";
+
+        if (!$conn->query($sql)) {
+            echo json_encode([
+                "success" => false,
+                "error" => $conn->error
+            ]);
+            exit;
+        }
+
+        // Fetch the updated data
+        $result = $conn->query("SELECT id, dt_mins FROM OutputTable");
+        $updatedData = [];
+        while ($row = $result->fetch_assoc()) {
+            $updatedData[] = $row;
+        }
+
+        echo json_encode([
+            "success" => true,
+            "message" => "OutputTable.dt_mins updated successfully.",
+            "data" => $updatedData
+        ]);
+        exit;
+    }
+
+    if ($action === 'get_downtime_count') {
+        $dt_id = $_POST['dt_id'] ?? null;
+        if (!$dt_id) {
+            echo json_encode(["count" => 0]);
+            exit;
+        }
+
+        $stmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM dt_details WHERE dt_id = ? AND DATE(time_occurred) = CURDATE()");
+        $stmt->bind_param("i", $dt_id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        echo json_encode(["count" => $result['cnt'] ?? 0]);
+        exit;
+    }
 
     if ($action === 'fetchPlanSummary') {
 
@@ -298,11 +352,11 @@ if ($conn->connect_error) {
             $stmt->bind_param("di", $percent, $id);
 
             if ($stmt->execute()) {
-                echo json_encode([
+         /*       echo json_encode([
                     "status" => "success",
                     "id" => $id,
                     "percent" => $percent
-                ]);
+                ]);*/
             } else {
                 echo json_encode([
                     "status" => "error",

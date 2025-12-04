@@ -119,28 +119,7 @@
                 </div>
             </div>
         </div>
-                        <!--<div class="person-details">
-                            <div class="picture-box">
-                                <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
-                            </div>
-                            <div class="infos">
-                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
-                                <div class="person-title">
-                                    Process 2
-                                </div>
-                            </div>
-                            </div>
-                            <div class="person-details">
-                                <div class="picture-box">
-                                    <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
-                                </div>
-                                <div class="infos">
-                                    <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
-                                    <div class="person-title">
-                                        Final
-                                    </div>
-                                </div>
-                            </div>-->
+
         <div id="center-contents">
             <div id="production-table">
                 <div id="table-data-container" class="data-container">
@@ -176,7 +155,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -192,7 +171,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -208,7 +187,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -224,7 +203,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -240,7 +219,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -256,7 +235,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -272,7 +251,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -288,7 +267,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -304,7 +283,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -320,7 +299,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -336,7 +315,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -352,7 +331,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -368,7 +347,7 @@
                                     </div>
                                 </td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>- | -</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -384,7 +363,7 @@
                                 </div>
                             </td>
                             <td>-</td>
-                            <td>-</td>
+                            <td>- | -</td>
                             <td>-</td>
                             <td>-</td>
                         </tr>   

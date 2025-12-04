@@ -10,13 +10,21 @@
                         // Step 2: Fetch downtime count
                         const downtimeCountPromise = fetch("fetches/tablePlanServer.php?action=get_downtime_total")
                             .then(res => res.json())
-                            .then(data => data.total_time || 0)
-                            .catch(() => 0);
+                            .then(data => {
+                                return data.total_time || 0;
+                            })
+                            .catch(err => {
+                                console.error("Error fetching downtime:", err);
+                                return 0;
+                            });
+
 
                         // Step 3: Fetch downtime duration and compute total time
-                        const downtimeDurationPromise = fetch("fetches/tablePlanServer.php?action=get_downtime_total")
+                        const downtimeDurationPromise = fetch("fetches/tablePlanServer.php?action=get_downtime_duration")
                             .then(res => res.json())
                             .then(data => {
+                                console.log("Data received from server:", data); // <-- Add this to see the raw data
+
                                 let totalSeconds = 0;
 
                                 data.forEach(item => {
@@ -36,7 +44,11 @@
                                     .toString()
                                     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
                             })
-                            .catch(() => "00:00:00");
+                            .catch(err => {
+                                console.error(err);
+                                return "00:00:00";
+                            });
+
 
                         // Step 4: Fetch product model name
                         const modelNamePromise = fetch("/DOM/files/DOMPlanner/fetches/planner_data.php", {
@@ -97,10 +109,10 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const barEndpoints = {
-                "c7": "http://10.0.0.102/planner_fetch/planner_data.php",
-                "c9": "http://10.0.0.136/planner_fetch/planner_data.php",
-                "c9one": "http://10.0.0.125/planner_fetch/planner_data.php",
-                "c10": "http://10.0.0.164/planner_fetch/planner_data.php"
+                "c7": "http://10.0.0.102/fetches/planner_data.php",
+                "c9": "http://10.0.0.136/fetches/planner_data.php",
+                "c9one": "http://10.0.0.125/fetches/planner_data.php",
+                "c10": "http://10.0.0.164/fetches/planner_data.php"
             };
 
             const barLabels = {
@@ -142,9 +154,7 @@
                         // Downtime count
                         const countResponse = await fetch(`${baseURL}/tablePlanServer.php?action=get_downtime_total`);
                         const countData = await countResponse.json();
-                        // Get total_time value from JSON (not .length)
                         downtimeCount = countData.total_time || 0;
-
 
                         // Downtime duration
                         const durationResponse = await fetch(`${baseURL}/tablePlanServer.php?action=get_downtime_duration`);

@@ -367,12 +367,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (firstLoad) {
                 firstLoad = false;
-                initializeDowntimeAnimation(data);  // One-time animation
+
+                // Call pre-setup which updates output durations first
+                preDowntimeSetup().then(() => {
+                    // Once done, run the original animation
+                    initializeDowntimeAnimation(data);
+                });
             } else {
+                preDowntimeSetup();
                 updateDowntimeGraph(data); // Live updates
             }
         })
         .catch(err => console.error("Failed to fetch downtime data:", err));
+    }
+
+    // New function that calls update_output_durations action
+    function preDowntimeSetup() {
+        return fetch('fetches1/domfetch.php', {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'update_output_durations' })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                console.log("Updated OutputTable data:", result.data);
+            } else {
+                console.error("Failed to update OutputTable:", result.error);
+            }
+        })
+        .catch(err => console.error("Error in preDowntimeSetup:", err));
     }
 
     fetchDowntimeData();
@@ -594,7 +617,25 @@ function updateTable() {
             sendTotalToDB(rowData.id, cumulativeTotal);
 
             // --- Other cells ---
-            cells[7].textContent = rowData.dt_mins ?? '-';
+// --- Downtime count ---
+            const dtId = rowData.id;
+            if (dtId) {
+                fetch('fetches1/domfetch.php', {
+                    method: 'POST',
+                    body: new URLSearchParams({ action: 'get_downtime_count', dt_id: dtId })
+                })
+                .then(res => res.json())
+                .then(downtimeData => {
+                    const count = downtimeData.count ?? 0;
+                    cells[7].textContent = count + ' | ' + (rowData.dt_mins ?? '-');
+                    sendDowntimeCountToDB(dtId, count); // optional: save to DB
+                })
+                .catch(err => console.error(err));
+            } else {
+                // fallback if no dt_id
+                cells[7].textContent = '0 | ' + (rowData.dt_mins ?? '-');
+            }
+
             cells[8].textContent = rowData.ng_quantity ?? '-';
         }
     })
@@ -769,9 +810,6 @@ function loadProdStaff() {
         .catch(err => console.error("Error loading staff:", err));
 }
 
-
-// Fetch line leader data
-// Fetch names and title
 LineLeader();
 
 function LineLeader(){

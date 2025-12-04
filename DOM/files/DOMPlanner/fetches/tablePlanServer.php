@@ -237,51 +237,70 @@ $action = $_REQUEST['action'] ?? '';
     }
 
     if ($action === 'get_downtime_data') {
-        $result = $conn->query("SELECT id, time_num FROM downtime_data ORDER BY id ASC");
-
-        if (!$result) {
-            die(json_encode(["error" => $conn->error]));
-        }
 
         $rows = [];
-        while ($row = $result->fetch_assoc()) {
-            // Make sure time_num is an integer in the JSON output
-            $row['time_num'] = (int)$row['time_num'];
-            $row['id'] = (int)$row['id'];
-            $rows[] = $row;
+
+        for ($i = 1; $i <= 14; $i++) {
+
+            $stmt = $conn->prepare("SELECT COALESCE(COUNT(*), 0) AS total_count
+                FROM dt_details
+                WHERE dt_id = ? AND DATE(time_occurred) = CURDATE()
+            ");
+            $stmt->bind_param("i", $i);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+
+            $rows[] = [
+                "dt_id" => $i,
+                "time_num" => (int)$result['total_count'] // number of records per dt_id
+            ];
         }
 
         echo json_encode($rows);
         exit;
     }
 
+
+
     if ($action === 'get_downtime_total') {
-        $result = $conn->query("SELECT SUM(time_num) AS total_time FROM downtime_data");
 
-        if (!$result) {
-            die(json_encode(["error" => $conn->error]));
-        }
+        $stmt = $conn->prepare("
+            SELECT COUNT(dt_id) AS total_count
+            FROM dt_details
+            WHERE dt_id BETWEEN 1 AND 14
+            AND DATE(time_occurred) = CURDATE()
+        ");
 
-        $row = $result->fetch_assoc();
-        $totalTime = (int)$row['total_time'];
+        $stmt->execute();
+        $stmt->bind_result($total_count);
+        $stmt->fetch();
 
-        echo json_encode(["total_time" => $totalTime]);
+        echo json_encode([
+            "success" => true,
+            "total_time" => (int)$total_count
+        ]);
         exit;
     }
 
+
     if ($action === 'get_downtime_duration') {
-        $result = $conn->query("SELECT id, time_Elapse FROM downtime_data ORDER BY id ASC");
-
-        if (!$result) {
-            die(json_encode(["error" => $conn->error]));
-        }
-
         $rows = [];
-        while ($row = $result->fetch_assoc()) {
-            // id as integer, time_Elapse kept as string
-            $row['id'] = (int)$row['id'];
-            $row['time_Elapse'] = (string)$row['time_Elapse'];
-            $rows[] = $row;
+
+        for ($i = 1; $i <= 14; $i++) {
+
+            $stmt = $conn->prepare("
+                SELECT 
+                    COALESCE(SEC_TO_TIME(SUM(TIME_TO_SEC(duration))), '00:00:00') AS total_duration
+                FROM dt_details
+                WHERE dt_id = ? AND DATE(time_occurred) = CURDATE()
+            ");
+            $stmt->bind_param("i", $i);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+
+            $rows[] = [
+                "time_Elapse" => $result['total_duration']  // <-- use a descriptive key
+            ];
         }
 
         echo json_encode($rows);
