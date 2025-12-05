@@ -346,11 +346,11 @@ document.addEventListener("DOMContentLoaded", () => {
             valSpan.textContent = timeText;
         });
 
-        console.log(
+      /*  console.log(
             "Visible bars:", visibleBars.length,
             "Hidden:", hiddenCount,
             "Grid rows:", numRows
-        );
+        );*/
     }
 
     // =========================================
@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(res => res.json())
         .then(result => {
             if (result.success) {
-                console.log("Updated OutputTable data:", result.data);
+                //console.log("Updated OutputTable data:", result.data);
             } else {
                 console.error("Failed to update OutputTable:", result.error);
             }
@@ -628,7 +628,7 @@ function updateTable() {
                 .then(downtimeData => {
                     const count = downtimeData.count ?? 0;
                     cells[7].textContent = count + ' | ' + (rowData.dt_mins ?? '-');
-                    sendDowntimeCountToDB(dtId, count); // optional: save to DB
+                    //sendDowntimeCountToDB(dtId, count); // optional: save to DB
                 })
                 .catch(err => console.error(err));
             } else {
@@ -694,8 +694,8 @@ fetch("fetches1/domfetch.php", {
     method: "POST",
     body: new URLSearchParams({ action: "copyPlanMinutesToOutputTable" })
 })
-.then(res => res.json())
-.then(d => console.log(d));
+.then(res => res.json());
+//.then(d => console.log(d));
 
 function sendPercentToDB(rowId, percent) {
 
@@ -705,7 +705,7 @@ function sendPercentToDB(rowId, percent) {
         body: new URLSearchParams({ id: rowId, percentage: percent })
     })
     .then(res => res.text())
-        .then(resp => console.log(resp))
+        //.then(resp => console.log(resp))
         .catch(err => console.error(err));
 }
 
@@ -832,6 +832,21 @@ function LineLeader(){
     // Fetch picture separately
     document.getElementById("ll-picture").src = "fetches1/domfetch.php?action=fetchLineLeaderPicture";
 }
+
+const editBtn = document.getElementById("edit-btn");
+const settingsOverlay = document.getElementById("settings-overlay");
+
+// Open modal
+editBtn.addEventListener("click", () => {
+    settingsOverlay.classList.add("active");
+});
+
+// Close modal
+function closeSettings() {
+    settingsOverlay.classList.remove("active");
+}
+
+
 
 
 

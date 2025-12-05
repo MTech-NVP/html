@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
     <title>DOM | Tube Assembly</title>
-    <link rel="stylesheet" href="pnddesign.css">
+    <link rel="stylesheet" href="pnddesign
+    .css">
 </head>
 <body>
 
@@ -532,6 +533,15 @@
                    
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="settings-overlay" id="settings-overlay">
+        <div class="modal" id="settings-modal">
+            <button class="exit-btn" onclick="closeSettings()">&times;</button>
+            <h1>Settings</h1>
+            <!-- Add your settings content here -->
+            <p>Settings content goes here...</p>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 <?php
 // Show all errors for debugging
+ob_clean();
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -57,6 +58,7 @@ $action = $_REQUEST['action'] ?? '';
 
     if ($action === 'updatePlanOutputLive') {
         echo json_encode(updateAllPlanOutputFromCT($conn));
+        exit;
     }
     function reorderIds($conn) {
         // Check existing IDs

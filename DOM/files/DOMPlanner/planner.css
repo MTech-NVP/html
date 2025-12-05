@@ -718,8 +718,7 @@
         padding: 0px 30px;
         width: 75%;
         height: calc(100vh - 60px);
-        margin: auto;
-        display: block;
+        display: none;
         overflow: auto;
         flex-direction: column;
         gap: 25px;
@@ -892,9 +891,8 @@
     #form-swp-container {
         background-color: #ffffff;
         padding: 0px 30px;
-        width: 75%;
+        width: 100%;
         height: calc(100vh - 60px);
-        margin: auto;
         display: none;
         overflow: auto;
         flex-direction: column;
@@ -967,9 +965,8 @@
     #form-pic-container {
         background-color: #ffffff;
         padding: 0px 30px;
-        width: 75%;
+        width: 100%;
         height: calc(100vh - 60px);
-        margin: auto;
         display: none;
         overflow: auto;
         flex-direction: column;
@@ -1340,13 +1337,16 @@
     #plan-table-container{
         background-color: #ffffff;
         padding: 0px 30px;
-        width: 75%;
+        width: 100%;
         height: calc(100vh - 60px);
-        margin: auto;
-        display: none;
+        display: block;
         overflow: auto;
         flex-direction: column;
         gap: 25px;
+    }
+
+    #ct{
+        width: 100px;
     }
 
     #append-data-plan{

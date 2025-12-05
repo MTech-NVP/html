@@ -16,13 +16,31 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 // Check if action is set
     $action = $_POST['action'] ?? '';
+
+    function isPlanInactive($conn) {
+        $check = $conn->query("SELECT plan FROM PlanSelection LIMIT 1");
+
+        if (!$check || $check->num_rows === 0) {
+            return true; // Treat as inactive if no record
+        }
+
+        $row = $check->fetch_assoc();
+        return ((int)$row['plan'] === 0);
+    }
+
     if ($action === 'fetch') {
+
+        // Check plan value first
+        $planCheck = $conn->query("SELECT plan FROM PlanSelection LIMIT 1");
+        $planRow = $planCheck->fetch_assoc();
+
+        // If plan is NOT 0, continue fetching data
         $sql = "SELECT * FROM OutputTable ORDER BY id ASC LIMIT 14";
         $result = $conn->query($sql);
 
         $data = [];
         if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
+            while ($row = $result->fetch_assoc()) {
                 $data[] = $row;
             }
         }
@@ -30,12 +48,14 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         echo json_encode($data);
     }
 
+
     if ($action === 'fetchPlanOutput') {
 
         // 1️⃣ Get the selected plan ID
         $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
         $resultPlan = $conn->query($sqlPlan);
 
+        
         $planId = 0;
         if ($resultPlan && $resultPlan->num_rows > 0) {
             $rowPlan = $resultPlan->fetch_assoc();
@@ -184,7 +204,6 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
     
     if ($action === 'totalng') {
-
         // 1️⃣ TOTAL NG
         $sql1 = "SELECT SUM(ng_quantity) AS total_ng FROM OutputTable";
         $result1 = $conn->query($sql1);
@@ -216,6 +235,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
         $resultPlan = $conn->query($sqlPlan);
 
+        
         $planId = 0;
         if ($resultPlan && $resultPlan->num_rows > 0) {
             $rowPlan = $resultPlan->fetch_assoc();
@@ -330,6 +350,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
     if ($action === 'fetchTotals') {
         $sql = "SELECT plan_output, actual_output FROM OutputTable";
+        
         $result = $conn->query($sql);
 
         $totals = [];
@@ -518,7 +539,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
         // Fallback to ID 1
         if (empty($finalPicture)) {
-            $sql2 = "SELECT picture FROM line_leader_list WHERE id = 1 LIMIT 1";
+            $sql2 = "SELECT picture FROM line_leader_list WHERE id = 0 LIMIT 1";
             $result2 = $conn->query($sql2);
 
             if ($result2 && $row2 = $result2->fetch_assoc()) {
@@ -625,7 +646,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
         // 2️⃣ Fallback to ID 1 picture
         if (empty($finalPicture)) {
-            $sqlFallback = "SELECT picture FROM prod_staff_list WHERE id = 1 LIMIT 1";
+            $sqlFallback = "SELECT picture FROM prod_staff_list WHERE id = 0 LIMIT 1";
             $resultFallback = $conn->query($sqlFallback);
             if ($resultFallback && $rowFallback = $resultFallback->fetch_assoc()) {
                 $finalPicture = $rowFallback['picture'];
