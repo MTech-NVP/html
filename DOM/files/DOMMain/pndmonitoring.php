@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
     <title>DOM | Tube Assembly</title>
-    <link rel="stylesheet" href="pnddesign
-    .css">
+    <link rel="stylesheet" href="pnddesign.css">
 </head>
 <body>
 
@@ -397,7 +396,9 @@
             <div id="btm-container">
                 <div id="downtime-graph-container">
                     <div id="downtime-graph-header" class="bottom-header">DOWNTIME GRAPH (Per Hour)</div>
-
+                    <div id="no-downtime">
+                        No downtime as of today.
+                    </div>
                     <div id="downtime-graph">
                         <!-- Times 06:00 to 19:00 -->
                         <div class="bar2-row" data-time="06:00">
@@ -508,7 +509,7 @@
                         </div>                       
                     </div>
                     <div id="overview-container">
-                        <span>BREAKTIME:</span> <span>1h 40m</span>
+                        <span>BREAKTIME:</span> <span>-</span>
                         <span>TOTAL DOWNTIME:</span> <span>-</span>
                         <span>GOOD QUANTITY:</span> <span>-</span>
                         <span>TOTAL NG:</span> <span>-</span>

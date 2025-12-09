@@ -13,23 +13,28 @@ if ($conn->connect_error) {
 }
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
+function isPlan
+($conn) {
+    $check = $conn->query("SELECT plan FROM PlanSelection LIMIT 1");
+
+    if (!$check || $check->num_rows === 0) {
+        return true; // Treat as inactive if no record
+    }
+
+    $row = $check->fetch_assoc();
+    return ((int)$row['plan'] === 0);
+}
 
 // Check if action is set
     $action = $_POST['action'] ?? '';
 
-    function isPlanInactive($conn) {
-        $check = $conn->query("SELECT plan FROM PlanSelection LIMIT 1");
-
-        if (!$check || $check->num_rows === 0) {
-            return true; // Treat as inactive if no record
-        }
-
-        $row = $check->fetch_assoc();
-        return ((int)$row['plan'] === 0);
-    }
-
     if ($action === 'fetch') {
 
+        if (isPlan($conn)) {
+            echo json_encode([]);
+            exit;
+        }
+        
         // Check plan value first
         $planCheck = $conn->query("SELECT plan FROM PlanSelection LIMIT 1");
         $planRow = $planCheck->fetch_assoc();
@@ -102,10 +107,88 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         echo json_encode($data);
     }
 
+    if ($action === 'updateSummary') {
+        header('Content-Type: application/json');
+
+        // 1️⃣ Get the selected plan ID
+        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+        $resultPlan = $conn->query($sqlPlan);
+        $planId = 0;
+        if ($resultPlan && $resultPlan->num_rows > 0) {
+            $rowPlan = $resultPlan->fetch_assoc();
+            $planId = intval($rowPlan['plan']);
+        }
+
+        // Default values
+        $planProdHrs = 0;
+        $planManpower = 0;
+        $planOutput = 0;
+
+        // 2️⃣ Fetch plan values and calculate total_plan_output if plan exists
+        if ($planId > 0) {
+            $sql = "SELECT prodhrs, manpower, cycletime, mins1, mins2, mins3, mins4, mins5, mins6, mins7, mins8, mins9, mins10, mins11, mins12, mins13, mins14
+                    FROM PlanOutput
+                    WHERE id = $planId
+                    LIMIT 1";
+            $result = $conn->query($sql);
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $planProdHrs = intval($row['prodhrs']); // convert to integer
+                $planManpower = intval($row['manpower']);
+
+                $cycletime = floatval($row['cycletime']) ?: 1; // prevent division by zero
+                $planOutput = 0;
+                for ($i = 1; $i <= 14; $i++) {
+                    $mins = intval($row["mins$i"]); // treat NULL as 0
+                    $planOutput += intval(($mins * 60) / $cycletime); // integer division
+                }
+            }
+        }
+
+        // 3️⃣ Ensure a row with id = 1 exists
+        $conn->query("
+            INSERT INTO summary (id) 
+            VALUES (1) 
+            ON DUPLICATE KEY UPDATE id=id
+        ");
+
+        // 4️⃣ Update summary table: actual = plan for prodhrs & manpower only
+        $updateSummary = $conn->prepare("
+            UPDATE summary
+            SET plan_prodhrs = ?, plan_manpower = ?, plan_output = ?, 
+                actual_prodhrs = ?, actual_manpower = ?
+            WHERE id = 1
+        ");
+        $updateSummary->bind_param(
+            "diiii",
+            $planProdHrs, $planManpower, $planOutput,
+            $planProdHrs, $planManpower
+        );
+        $success = $updateSummary->execute();
+
+        echo json_encode([
+            "success" => $success,
+            "plan_prodhrs" => $planProdHrs,
+            "plan_manpower" => $planManpower,
+            "plan_output" => $planOutput,
+            "actual_prodhrs" => $planProdHrs,
+            "actual_manpower" => $planManpower
+        ]);
+        exit;
+    }
+
     if ($action === 'update_output_durations') {
         header('Content-Type: application/json');
 
-        // Update OutputTable.dt_mins based on sum of durations from dt_details
+        // Step 1: Reorder dt_details.id to remove gaps
+        $conn->query("SET @seq := 0;");
+        $conn->query("
+            UPDATE dt_details
+            SET id = (@seq := @seq + 1)
+            ORDER BY id ASC
+        ");
+
+        // Step 2: Update OutputTable.dt_mins based on sum of durations from dt_details
         $sql = "
             UPDATE OutputTable o
             LEFT JOIN (
@@ -126,7 +209,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         }
 
         // Fetch the updated data
-        $result = $conn->query("SELECT id, dt_mins FROM OutputTable");
+        $result = $conn->query("SELECT id, dt_mins FROM OutputTable ORDER BY id ASC");
         $updatedData = [];
         while ($row = $result->fetch_assoc()) {
             $updatedData[] = $row;
@@ -134,7 +217,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
         echo json_encode([
             "success" => true,
-            "message" => "OutputTable.dt_mins updated successfully.",
+            "message" => "dt_details IDs compacted and OutputTable.dt_mins updated successfully.",
             "data" => $updatedData
         ]);
         exit;
@@ -157,6 +240,15 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
     if ($action === 'fetchPlanSummary') {
 
+        if (isPlan($conn)) {
+            echo json_encode([
+                "prodhrs" => 0,
+                "total_plan_output" => 0,
+                "manpower" => 0
+            ]);
+            exit;
+        }
+        
         // 1️⃣ Get selected plan ID
         $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
         $resultPlan = $conn->query($sqlPlan);
@@ -167,118 +259,198 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
             $planId = intval($rowPlan['plan']);
         }
 
-        // 2️⃣ SUM of plan_output from OutputTable
-        $sql1 = "SELECT SUM(plan_output) AS total_plan_output FROM OutputTable";
-        $result1 = $conn->query($sql1);
-        $sumOutput = "-";
-
-        if ($result1 && $row1 = $result1->fetch_assoc()) {
-            $sumOutput = $row1['total_plan_output'] ?: "-";
-        }
-
         // Default values
         $manpower = "-";
         $prodhrs  = "-";
+        $total_plan_output = "-";
 
-        // 3️⃣ If we have a valid plan ID, fetch details from PlanOutput
+        // 2️⃣ If we have a valid plan ID, fetch details from PlanOutput
         if ($planId > 0) {
-            $sql2 = "SELECT manpower, prodhrs 
-                    FROM PlanOutput 
+            $sql = "SELECT manpower, prodhrs, cycletime, mins1, mins2, mins3, mins4, mins5, mins6, mins7, mins8, mins9, mins10, mins11, mins12, mins13, mins14
+                    FROM PlanOutput
                     WHERE id = $planId
                     LIMIT 1";
-            $result2 = $conn->query($sql2);
+            $result = $conn->query($sql);
 
-            if ($result2 && $row2 = $result2->fetch_assoc()) {
-                $manpower = $row2['manpower'] ?: "-";
-                $prodhrs  = $row2['prodhrs']  ?: "-";
+            if ($result && $row = $result->fetch_assoc()) {
+                $manpower = $row['manpower'] ?: "-";
+                $prodhrs  = $row['prodhrs']  ?: "-";
+                $cycletime = floatval($row['cycletime']) ?: 1; // prevent division by zero
+
+                // 3️⃣ Calculate total_plan_output from mins1 to mins14
+                $total_plan_output = 0;
+                for ($i = 1; $i <= 14; $i++) {
+                    $mins = intval($row["mins$i"]); // treat NULL as 0 automatically
+                    $total_plan_output += intval(($mins * 60) / $cycletime); // integer division
+                }
             }
         }
 
         // 4️⃣ Return JSON
         echo json_encode([
-            "prodhrs"            => $prodhrs,
-            "total_plan_output"  => $sumOutput,
-            "manpower"           => $manpower
+            "prodhrs"           => $prodhrs,
+            "total_plan_output" => $total_plan_output,
+            "manpower"          => $manpower
         ]);
     }
-
     
     if ($action === 'totalng') {
-        // 1️⃣ TOTAL NG
-        $sql1 = "SELECT SUM(ng_quantity) AS total_ng FROM OutputTable";
-        $result1 = $conn->query($sql1);
-        $total_ng = $result1->fetch_assoc()['total_ng'] ?? 0;
+        $activeRows = isset($_POST['activeRows']) ? intval($_POST['activeRows']) : 14;
 
-        // 2️⃣ GOOD QUANTITY (sum of actual_output)
-        $sql2 = "SELECT SUM(actual_output) AS total_good FROM OutputTable";
-        $result2 = $conn->query($sql2);
-        $total_good = $result2->fetch_assoc()['total_good'] ?? 0;
+        if (isPlan($conn)) {
+            echo json_encode([
+                "breaktime" => "00:00",
+                "totaldowntime" => "00:00:00",
+                "good_qty" => 0,
+                "total_ng" => 0
+            ]);
+            exit;
+        }
+        
+        // 1️⃣ Get selected plan
+        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+        $planId = 0;
+        $resultPlan = $conn->query($sqlPlan);
+        if ($resultPlan && $rowPlan = $resultPlan->fetch_assoc()) {
+            $planId = intval($rowPlan['plan']);
+        }
 
-        // 3️⃣ TOTAL DOWNTIME (sum of dt_mins – in `HH:MM` format)
-        $sql3 = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(dt_mins))) AS total_downtime FROM OutputTable";
-        $result3 = $conn->query($sql3);
-        $total_downtime = $result3->fetch_assoc()['total_downtime'] ?? "00:00";
+        $breaktime = 0;
+        $total_ng = 0;
+        $good_qty = 0;
 
-        // Return as JSON
+        if ($planId > 0) {
+            $columns = [];
+            for ($i = 1; $i < $activeRows; $i++) { // exclude last column
+                $columns[] = "mins$i";
+            }
+            $colsStr = implode(",", $columns);
+
+            $sqlMins = "SELECT $colsStr FROM PlanOutput WHERE id = $planId LIMIT 1";
+            $resultMins = $conn->query($sqlMins);
+
+            if ($resultMins && $rowMins = $resultMins->fetch_assoc()) {
+                foreach ($columns as $col) {
+                    $mins = intval($rowMins[$col]);
+                    $breaktime += (60 - $mins); // remaining minutes per row
+                }
+            }
+
+            $breakHours = floor($breaktime / 60);
+            $breakMins  = $breaktime % 60;
+            $breaktimeStr = sprintf("%02d:%02d", $breakHours, $breakMins);
+
+            // 2️⃣ Get totals from OutputTable
+            $sqlTotals = "SELECT 
+                            SUM(ng_quantity) AS total_ng, 
+                            SUM(actual_output) AS total_actual 
+                        FROM OutputTable";
+            $resultTotals = $conn->query($sqlTotals);
+
+            if ($resultTotals && $rowTotals = $resultTotals->fetch_assoc()) {
+                $total_ng     = intval($rowTotals['total_ng'] ?? 0);
+                $total_actual = intval($rowTotals['total_actual'] ?? 0);
+                $good_qty     = $total_actual - $total_ng;
+            }
+        } else {
+            $breaktimeStr = "00:00";
+        }
+
+        // 3️⃣ Ensure summary row exists
+        $conn->query("INSERT INTO summary (id) VALUES (1) ON DUPLICATE KEY UPDATE id=id");
+
+        // 4️⃣ Update summary table
+        $stmt = $conn->prepare("
+            UPDATE summary
+            SET breaktime = ?, 
+                totaldowntime = SEC_TO_TIME((SELECT SUM(TIME_TO_SEC(dt_mins)) FROM OutputTable)),
+                good_qty = ?, 
+                total_ng = ?
+            WHERE id = 1
+        ");
+        $stmt->bind_param("sii", $breaktimeStr, $good_qty, $total_ng);
+        $stmt->execute();
+
+        // 5️⃣ Fetch from summary and return
+        $resultSummary = $conn->query("
+            SELECT breaktime, totaldowntime, good_qty, total_ng 
+            FROM summary 
+            WHERE id = 1
+        ");
+        $rowSummary = $resultSummary->fetch_assoc();
+
         echo json_encode([
-            "total_ng"       => $total_ng,
-            "total_good"     => $total_good,
-            "total_downtime" => $total_downtime
+            "breaktime"     => $rowSummary['breaktime'],
+            "totaldowntime" => $rowSummary['totaldowntime'],
+            "good_qty"      => $rowSummary['good_qty'],
+            "total_ng"      => $rowSummary['total_ng']
         ]);
         exit;
     }
 
     
     if ($action === 'fetchActualSummary') {
+        header('Content-Type: application/json');
 
-        // 1️⃣ Get selected plan ID from PlanSelection
-        $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
-        $resultPlan = $conn->query($sqlPlan);
-
-        
-        $planId = 0;
-        if ($resultPlan && $resultPlan->num_rows > 0) {
-            $rowPlan = $resultPlan->fetch_assoc();
-            $planId = intval($rowPlan['plan']);
+        if (isPlan($conn)) {
+            echo json_encode([
+                "actual_prodhrs" => 0,
+                "total_actual_output" => 0,
+                "actual_manpower" => 0
+            ]);
+            exit;
         }
 
-        // 2️⃣ SUM of actual_output from OutputTable
-        $sql1 = "SELECT SUM(actual_output) AS total_actual_output FROM OutputTable";
-        $result1 = $conn->query($sql1);
-        $sumOutput = "-";
+        // 1️⃣ SUM of actual_output from OutputTable
+        $sqlOutput = "SELECT SUM(actual_output) AS total_actual_output FROM OutputTable";
+        $resultOutput = $conn->query($sqlOutput);
 
-        if ($result1 && $row1 = $result1->fetch_assoc()) {
-            $sumOutput = $row1['total_actual_output'] ?: "-";
+        $totalActualOutput = 0;
+        if ($resultOutput && $rowOutput = $resultOutput->fetch_assoc()) {
+            $totalActualOutput = intval($rowOutput['total_actual_output']); // integer
         }
 
-        // Default values
-        $manpower = "-";
-        $prodhrs  = "-";
+        // 2️⃣ Update summary table with actual_output
+        $updateSummary = $conn->prepare("
+            UPDATE summary
+            SET actual_output = ?
+            WHERE id = 1
+        ");
+        $updateSummary->bind_param("i", $totalActualOutput);
+        $updateSummary->execute();
 
-        // 3️⃣ If valid plan ID, load manpower & prodhrs from PlanOutput
-        if ($planId > 0) {
-            $sql2 = "SELECT manpower, prodhrs
-                    FROM PlanOutput
-                    WHERE id = $planId
+        // 3️⃣ Fetch actual_prodhrs, actual_manpower, and actual_output from summary
+        $sqlSummary = "SELECT actual_prodhrs, actual_manpower, actual_output 
+                    FROM summary 
+                    WHERE id = 1 
                     LIMIT 1";
-            $result2 = $conn->query($sql2);
+        $resultSummary = $conn->query($sqlSummary);
 
-            if ($result2 && $row2 = $result2->fetch_assoc()) {
-                $manpower = $row2['manpower'] ?: "-";
-                $prodhrs  = $row2['prodhrs']  ?: "-";
-            }
+        $actualProdHrs = 0;
+        $actualManpower = 0;
+        $actualOutput = 0;
+
+        if ($resultSummary && $rowSummary = $resultSummary->fetch_assoc()) {
+            $actualProdHrs = intval($rowSummary['actual_prodhrs']);
+            $actualManpower = intval($rowSummary['actual_manpower']);
+            $actualOutput = intval($rowSummary['actual_output']);
         }
 
         // 4️⃣ Return JSON
         echo json_encode([
-            "actual_prodhrs"       => $prodhrs,
-            "total_actual_output"  => $sumOutput,
-            "actual_manpower"      => $manpower
+            "actual_prodhrs"      => $actualProdHrs,
+            "total_actual_output" => $actualOutput,
+            "actual_manpower"     => $actualManpower
         ]);
     }
 
     if ($action === 'copyPlanMinutesToOutputTable') {
 
+        if (isPlan($conn)) {
+            echo json_encode(["status" => "no_plan_selected"]);
+            exit;
+        }
+        
         // 1️⃣ Get selected plan ID
         $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
         $resultPlan = $conn->query($sqlPlan);
@@ -349,6 +521,12 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
     }
 
     if ($action === 'fetchTotals') {
+
+        if (isPlan($conn)) {
+            echo json_encode([]);
+            exit;
+        }
+        
         $sql = "SELECT plan_output, actual_output FROM OutputTable";
         
         $result = $conn->query($sql);
@@ -564,6 +742,11 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         $planId = 0;
         $manpowerCount = 0;
 
+        if (isPlan($conn)) {
+            echo json_encode([]);
+            exit;
+        }
+        
         // 1️⃣ Get selected plan ID
         $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
         $resultPlan = $conn->query($sqlPlan);
@@ -665,7 +848,6 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         exit;
     }
 
-
     if ($action === 'fetchManpowerCount') {
 
         // 1️⃣ Get selected plan ID (same method as fetchPlanSummary)
@@ -693,9 +875,5 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         echo json_encode(["manpower" => $manpower]);
         exit;
     }
-
-
-
-
 $conn->close();
 ?>

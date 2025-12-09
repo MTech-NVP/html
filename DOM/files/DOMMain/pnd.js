@@ -77,6 +77,7 @@ asd*/
 //LINE NAMES
 ////////////////////////////////////////////////////////////////
 
+// 1️⃣ Fetch and display plan output
 fetch('fetches1/domfetch.php', {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -84,6 +85,7 @@ fetch('fetches1/domfetch.php', {
 })
 .then(res => res.json())
 .then(data => {
+    // Display the data
     document.querySelector('#product-part h4:nth-child(2)').textContent = data.partnumber;
     const spans = document.querySelectorAll('#product-details span');
     spans[1].textContent = data.model;
@@ -94,7 +96,22 @@ fetch('fetches1/domfetch.php', {
     spans[11].textContent = data.cycletimeasof;
     spans[13].textContent = data.prodhrs;
     spans[15].textContent = data.expirationdate;
+
+    // 2️⃣ After displaying, call the new action to update the summary table
+    return fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'action=updateSummary' // <-- this is your new PHP action
+    });
+})
+.then(res => res.json())
+.then(resp => {
+    console.log('Summary table updated:', resp);
+})
+.catch(err => {
+    console.error('Error:', err);
 });
+
 
 ////////////////////////////////////////////////////////////////
 // PRODUCTION AND DOWNTIME GRAPH
@@ -225,10 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // If nothing visible
-        if (visibleBars.length === 0) {
-            grid.style.display = "none";
-            return;
-        }
 
         // Initialize grid sizing
         grid.style.display = "grid";
@@ -274,6 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 valSpan.style.transition = "opacity 0.8s ease";
                 valSpan.style.opacity = 1;
             }, baseDelay + i * 150);
+
         });
     }
 
@@ -284,13 +298,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const bars2 = document.querySelectorAll("#downtime-graph .bar2");
         const data2 = data.map(row => timeToSeconds(row.dt_mins));
 
-        // Find last non-zero
+        const grid = document.getElementById("downtime-graph");
+        const noDowntime = document.getElementById("no-downtime");
+
+        // Find last non-zero value
         let lastNonZeroIndex = -1;
         data2.forEach((v, i) => { if (v > 0) lastNonZeroIndex = i; });
 
-        let hiddenCount = 0;
         const visibleBars = [];
-        const grid = document.getElementById("downtime-graph");
+        let hiddenCount = 0;
 
         bars2.forEach((bar, i) => {
             const barWrap = bar.parentElement.parentElement;
@@ -304,19 +320,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // If nothing visible
+        // ===== Show "no downtime" if nothing visible =====
         if (visibleBars.length === 0) {
             grid.style.display = "none";
+            noDowntime.style.display = "flex";
+            console.log("No downtime to display. Grid hidden.");
             return;
+        } else {
+            grid.style.display = "grid";
+            noDowntime.style.display = "none";
         }
 
-        grid.style.display = "grid";
-
-        // Adjust grid rows dynamically
+        // ===== Adjust grid rows dynamically =====
         const numRows = Math.ceil(visibleBars.length / 2);
         grid.style.gridTemplateRows = `repeat(${numRows}, auto)`;
 
-        // Update bar widths only (no animation reset here)
+        console.log(
+            "Visible bars:", visibleBars.length,
+            "Hidden bars:", hiddenCount,
+            "Grid rows:", numRows
+        );
+
+        // ===== Update bar widths and time text =====
         const max2 = Math.max(...data2, 1);
         visibleBars.forEach((barWrap, i) => {
             const bar = barWrap.querySelector(".bar2");
@@ -345,14 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             valSpan.textContent = timeText;
         });
-
-      /*  console.log(
-            "Visible bars:", visibleBars.length,
-            "Hidden:", hiddenCount,
-            "Grid rows:", numRows
-        );*/
     }
-
     // =========================================
     // AJAX – FETCH AND UPDATE LOGIC
     // =========================================
@@ -516,34 +534,26 @@ function updateTable() {
         const table = document.getElementById('quota-data-table');
         const rows = table.querySelectorAll('tr');
 
-        // Find last row index in data that has any value
+        // --- Compute last active row index ---
         let lastDataIndex = -1;
         for (let d = 0; d < data.length; d++) {
             const row = data[d];
-            const isEmpty = (!row.plan_output || row.plan_output == 0);
-            if (!isEmpty) lastDataIndex = d;
+            const hasPlanOutput = row.plan_output && Number(row.plan_output) > 0;
+            if (hasPlanOutput) lastDataIndex = d;
         }
+        const activeRows = lastDataIndex + 1; // total number of active rows
 
-        let cumulativeTotal = 0; // initialize cumulative sum
+        let cumulativeTotal = 0;
         const hourStart = 6; // first row = 6AM
 
-        // Skip first 2 header rows
-        for (let i = 2; i < rows.length; i++) {
-
+        for (let i = 2; i < rows.length; i++) { // skip 2 header rows
             const dataIndex = i - 2;
 
-            // --- Hidden rows logic ---
             if (dataIndex > lastDataIndex) {
                 rows[i].style.display = "none";
                 const cells = rows[i].querySelectorAll('td');
                 cells[6].textContent = 0; // cumulative total
-                cells[9].textContent = ""; // remarks
-
-                const hiddenRowId = data[dataIndex]?.id;
-                if (hiddenRowId) {
-                    sendTotalToDB(hiddenRowId, 0);
-                    sendRemarksToDB(hiddenRowId, "");
-                }
+                cells[9].textContent = "";
                 continue;
             } else {
                 rows[i].style.display = "";
@@ -556,33 +566,24 @@ function updateTable() {
             const planOutput = Number(rowData.plan_output) || 0;
             const actualOutput = Number(rowData.actual_output) || 0;
 
-            // --- Determine row hour block ---
-            const rowHourStart = hourStart + dataIndex; // 6 + 0 = 6AM, etc.
+            // --- Determine remark ---
+            const rowHourStart = hourStart + dataIndex;
             const rowHourEnd = rowHourStart + 1;
-
             const now = new Date();
             const rowEndTime = new Date();
             rowEndTime.setHours(rowHourEnd, 0, 0, 0);
 
-            // --- Determine remark ---
             let remarkText = "";
-
             if (planOutput === 0) {
                 remarkText = "BREAK";
             } else if (now >= rowEndTime) {
-                if (actualOutput > planOutput) {
-                    remarkText = "EXCEEDED";   // Over 100%
-                } else if (actualOutput === planOutput) {
-                    remarkText = "COMPLETED";
-                } else {
-                    remarkText = "INCOMPLETE";
-                }
+                if (actualOutput > planOutput) remarkText = "EXCEEDED";
+                else if (actualOutput === planOutput) remarkText = "COMPLETED";
+                else remarkText = "INCOMPLETE";
             } else {
                 remarkText = "ONGOING";
             }
-
             cells[9].textContent = remarkText;
-            sendRemarksToDB(rowData.id, remarkText);
 
             // --- Fill other cells ---
             cells[1].textContent = rowData.ct ?? '-';
@@ -592,32 +593,18 @@ function updateTable() {
 
             const percent = planOutput > 0 ? Math.round((actualOutput / planOutput) * 100) : 0;
             const bar = cells[5].querySelector('.percent-bar-data');
-
             if (bar) {
                 bar.textContent = percent + '%';
                 bar.style.setProperty('--percent', percent);
-
-                if (percent > 100) {
-                    // EXCEEDED – RED
-                    bar.style.background = `linear-gradient(to right, red ${percent}%, transparent 0)`;
-                } else if (percent === 100) {
-                    // EXACT – GREEN
-                    bar.style.background = `linear-gradient(to right, #58ff58 ${percent}%, transparent 0)`;
-                } else {
-                    // BELOW – YELLOW
-                    bar.style.background = `linear-gradient(to right, yellow ${percent}%, transparent 0)`;
-                }
+                if (percent > 100) bar.style.background = `linear-gradient(to right, red ${percent}%, transparent 0)`;
+                else if (percent === 100) bar.style.background = `linear-gradient(to right, #58ff58 ${percent}%, transparent 0)`;
+                else bar.style.background = `linear-gradient(to right, yellow ${percent}%, transparent 0)`;
             }
 
-            sendPercentToDB(rowData.id, percent);
-
-            // --- Cumulative total ---
             cumulativeTotal += actualOutput;
             cells[6].textContent = cumulativeTotal;
-            sendTotalToDB(rowData.id, cumulativeTotal);
 
-            // --- Other cells ---
-// --- Downtime count ---
+            // --- Downtime ---
             const dtId = rowData.id;
             if (dtId) {
                 fetch('fetches1/domfetch.php', {
@@ -628,19 +615,21 @@ function updateTable() {
                 .then(downtimeData => {
                     const count = downtimeData.count ?? 0;
                     cells[7].textContent = count + ' | ' + (rowData.dt_mins ?? '-');
-                    //sendDowntimeCountToDB(dtId, count); // optional: save to DB
                 })
                 .catch(err => console.error(err));
             } else {
-                // fallback if no dt_id
                 cells[7].textContent = '0 | ' + (rowData.dt_mins ?? '-');
             }
 
             cells[8].textContent = rowData.ng_quantity ?? '-';
         }
+
+        // --- Call updateOverview after table update ---
+        updateOverview(activeRows);
     })
     .catch(err => console.error(err));
 }
+
 updateTable();
 setInterval(updateTable, 3000);
 
@@ -728,25 +717,34 @@ function sendRemarksToDB(id, remarks) {
     });
 }
 
-function updateOverview() {
+function updateOverview(activeRows) {
+    if (activeRows === undefined || activeRows <= 0) return;
+
     fetch('fetches1/domfetch.php', {
         method: 'POST',
-        body: new URLSearchParams({ action: 'totalng' })
+        body: new URLSearchParams({ 
+            action: 'totalng',
+            activeRows: activeRows
+        })
     })
     .then(res => res.json())
     .then(data => {
+        console.log("SUMMARY DATA:", data); // ✅ DEBUG
+
         if (!data) return;
 
         const overview = document.getElementById('overview-container');
         const spans = overview.querySelectorAll("span");
 
-        spans[3].textContent = data.total_downtime || "-"; // TOTAL DOWNTIME
-        spans[5].textContent = data.total_good     || "-"; // GOOD QUANTITY
-        spans[7].textContent = data.total_ng       || "-"; // TOTAL NG
-    });
+        spans[1].textContent = data.breaktime      || "-"; // ✅ BREAKTIME
+        spans[3].textContent = data.totaldowntime || "-"; // ✅ TOTAL DOWNTIME (FIXED)
+        spans[5].textContent = data.good_qty      || "-"; // ✅ GOOD QTY (FIXED)
+        spans[7].textContent = data.total_ng      || "-"; // ✅ TOTAL NG
+    })
+    .catch(err => console.error(err));
 }
-updateOverview();
-setInterval(updateOverview, 3000);
+
+
 
 loadProdStaff();
 
