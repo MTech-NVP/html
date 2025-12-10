@@ -4,7 +4,7 @@
     margin: 0;
     font-family: 'Roboto', sans-serif;
 }
-nav{
+#website-nav{
     padding: 20px;
     background-color: #007bff;
     width: 100%;
@@ -546,7 +546,7 @@ nav{
     grid-template-rows: repeat(7, auto); /* 7 rows per column, since 14 items / 2 columns */
     grid-template-columns: repeat(2, 1fr); /* 2 columns */
     grid-auto-flow: column; /* fill top-to-bottom first, then next column */
-    gap: 6px;
+    gap: 4px;
     width: 100%;
     height: 100%;
 }
@@ -775,7 +775,6 @@ nav{
 .modal {
     background: #fff;
     border-radius: 10px;
-    padding: 20px 30px;
     max-width: 800px;
     width: 90%;
     position: relative;
@@ -783,20 +782,308 @@ nav{
 }
 
 /* Close button */
+#settings-header{
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #007bff;
+  color: white;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 10px 10px 0px 0px;
+}
+
+#settings-contents{
+  display: flex;
+  height: 100%;
+  min-height: 500px;
+}
+
 .exit-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    font-size: 20px;
     background: none;
     border: none;
+    color: white;
     cursor: pointer;
+    transition: background 0.5s;
+    border-radius: 25px;
+}
+
+.exit-btn:hover{
+  background-color: #004fa3;
+}
+
+.btns-form-container {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 15px;
+    border-right: 1px solid #007bff;
+}
+
+.btns-form{
+    display: flex;
+    flex-direction: column;
+}
+
+.btns-form button {
+    position: relative;
+    text-align: left;
+    padding: 10px 15px;
+    height: 45px;
+    background: transparent;
+    color: black;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.3s ease;    
+}
+
+.btns-form button::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;  
+    width: 0%;
+    height: 2px;
+    background-color: #007bff;
+    transition: width 0.4s ease;
+}
+
+.btns-form button:hover,
+.btns-form button.active {
+    color: #007bff;
+}
+
+.btns-form button:hover::after,
+.btns-form button.active::after {
+    width: 100%;
+}
+
+#data-handling-container{
+  width: 80%;
+}
+
+#data-handling-selection{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#data-buttons{
+  display: flex;
+  flex-direction: column;
+}
+
+.edits{
+  display: flex;
+  text-align: left;
+  padding: 10px 20px 10px 10px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border: none;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+.edits:hover{
+  background-color: #ccc;
+}
+
+.title-edit{
+  font-weight: 600;
+  font-size: 1rem;
+}
+.title-edit p{
+  font-weight: lighter;
+  color: #696969;
+  font-size: 0.8rem;
+}
+
+.data-handlers{
+  height: 500px;
+}
+
+.headers-handlers{
+  height: 15%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.back-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  width: 70px;
+  height: 25px;
+  font-size: 0.9rem;
+  border: none;
+  background-color: white;
+  color: #007bff;
+  border-radius: 5px;
+}
+
+.back-btn:hover{
+  background-color: #eee;
+}
+
+.data-content{
+  display: flex;
+  height: 85%;
+  justify-content: center;
+}
+
+#timely-outputs{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  padding-top: 10px;
+  width: 50%;
+}
+
+#buttons-edit{
+  padding-top: 10px;
+  display: flex;
+  width: 50%;
+}
+
+.outputs{
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.outputs label{
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+.outputs input{
+  font-size: 0.8rem;
+  padding: 5px;
+  text-align: center;
+  width: 100px;
+  border-radius: 5px;
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#buttons-edit {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Keypad container (STATIC now) */
+#keypad {
+    margin-top: 40px;
+    width: 200px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Optional header style */
+#keypad-header {
+    text-align: right;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Button grid */
+.keypad-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+/* Keys */
+.keypad-buttons .key {
+    padding: 15px 0;
+    font-size: 16px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.keypad-buttons .key:hover {
+    background: #e0e0e0;
+}
+
+.keypad-buttons .key:active {
+    background: #ccc;
+    transform: scale(0.95);
+}
+
+.output-buttons{
+  border: none;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  width: 70px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+#edit-output:hover{
+  background-color: red; 
+}
+
+#confirm-output:hover{
+  background-color: green; 
+}
+
+#cancel-output:hover{
+  background-color: yellow; 
+}
+
+#occurred-downtime-list{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0px 20px;
+  width: 100%;
+  overflow: auto;
+}
+.append-occurred-downtime{
+  width: 90%;
+  height: 300px;
+  padding: 20px;
+  color: white;
+  font-weight: bold;
+  background-color: #0056b3;
+  border-radius: 15px;
+}
+
+#generalization-container{
+  width: 80%;
 }
 
 
 @media screen and (max-width: 900px) {
 
-  nav {
+  #website-nav {
     flex-direction: column;
     height: auto;
     padding: 10px;

@@ -523,23 +523,49 @@ function isPlan
     if ($action === 'fetchTotals') {
 
         if (isPlan($conn)) {
-            echo json_encode([]);
+            echo json_encode(["percentage" => 0]);
             exit;
         }
-        
-        $sql = "SELECT plan_output, actual_output FROM OutputTable";
+
+        // 1️⃣ Get totals
+        $sql = "SELECT 
+                    SUM(plan_output) AS total_plan, 
+                    SUM(actual_output) AS total_actual 
+                FROM OutputTable";
         
         $result = $conn->query($sql);
 
-        $totals = [];
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $totals[] = $row;
-            }
+        $totalPlan = 0;
+        $totalActual = 0;
+
+        if ($result && $row = $result->fetch_assoc()) {
+            $totalPlan   = intval($row['total_plan'] ?? 0);
+            $totalActual = intval($row['total_actual'] ?? 0);
         }
 
-        echo json_encode($totals);
+        // 2️⃣ Compute percentage (INT)
+        $percentage = 0;
+        if ($totalPlan > 0) {
+            $percentage = round(($totalActual / $totalPlan) * 100);
+        }
+
+        // 3️⃣ Store to summary table
+        $stmt = $conn->prepare("
+            UPDATE summary 
+            SET percentage = ? 
+            WHERE id = 1
+        ");
+        $stmt->bind_param("i", $percentage);
+        $stmt->execute();
+        $stmt->close();
+
+        // 4️⃣ Return only what JS needs
+        echo json_encode([
+            "percentage" => $percentage
+        ]);
+        exit;
     }
+
 
     if (isset($_POST['id']) && isset($_POST['percentage'])) {
 
@@ -875,5 +901,75 @@ function isPlan
         echo json_encode(["manpower" => $manpower]);
         exit;
     }
+
+    if ($action === 'fetch_outputs') {
+
+        if (!isset($_POST['activeRows'])) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $activeRows = intval($_POST['activeRows']);
+
+        // Safety cap to max 14 (6:00–20:00)
+        if ($activeRows > 14) {
+            $activeRows = 14;
+        }
+
+        $stmt = $conn->prepare("
+            SELECT actual_output 
+            FROM OutputTable
+            LIMIT ?
+        ");
+
+        $stmt->bind_param("i", $activeRows);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $data = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+
+        echo json_encode($data);
+        exit;
+    }
+
+    if ($action === 'update_outputs') {
+        $data = json_decode($_POST['data'] ?? '{}', true);
+
+        if (!$data) {
+            echo json_encode(['success' => false, 'message' => 'No data received']);
+            exit;
+        }
+
+        // --- Fetch all rows from OutputTable in order ---
+        $stmt = $conn->prepare("SELECT id FROM OutputTable ORDER BY id ASC LIMIT ?");
+        $activeRows = count($data);
+        $stmt->bind_param("i", $activeRows);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+        if (!$rows) {
+            echo json_encode(['success' => false, 'message' => 'No rows found']);
+            exit;
+        }
+
+        // --- Loop through rows and update actual_output ---
+        foreach ($rows as $index => $row) {
+            $inputId = $index + 1; // map 1 → activeRows
+            $value = isset($data[$inputId]) ? $data[$inputId] : null;
+            if ($value !== null) {
+                $stmtUpdate = $conn->prepare("UPDATE OutputTable SET actual_output = ? WHERE id = ?");
+                $stmtUpdate->bind_param("ii", $value, $row['id']);
+                $stmtUpdate->execute();
+            }
+        }
+
+        echo json_encode(['success' => true]);
+    }
+
 $conn->close();
 ?>

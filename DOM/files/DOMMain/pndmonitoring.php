@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <nav>
+    <nav id="website-nav">
         <div id="nav-title">
             <div id="company">
                 <div>
@@ -539,11 +539,191 @@
 
     <div class="settings-overlay" id="settings-overlay">
         <div class="modal" id="settings-modal">
-            <button class="exit-btn" onclick="closeSettings()">&times;</button>
-            <h1>Settings</h1>
-            <!-- Add your settings content here -->
-            <p>Settings content goes here...</p>
+            <div id="settings-header">
+                <h3>Settings</h3>                
+                <button class="exit-btn" onclick="closeSettings()">&times;</button>
+            </div>
+            <div id="settings-contents">
+                <div class="btns-form-container">
+                    <nav class="btns-form">
+                        <button onclick="showDataHandling()" class="active">Data Handling</button>
+                        <button onclick="showGeneralization()">Generalization</button>
+                    </nav>
+                </div>
+
+            <div id="data-handling-container">
+                <div id="data-handling-selection">
+                    <div id="data-buttons">
+                        <button class="edits" id="editsbtn1">
+                            <div class="title-edit">
+                                Edit Daily Output
+                                <p>Edits the daily count of the output created on the current day.</p>                                    
+                            </div>
+                            <div>></div>
+                        </button>
+                        <button class="edits" id="editsbtn2">
+                            <div class="title-edit">
+                                Edit Downtime Details
+                                <p>Edits the whole Downtime Details occurred on the current day.</p>                                    
+                            </div>
+                            <div>></div>
+                        </button>
+                        <button class="edits" id="editsbtn3">
+                            <div class="title-edit">
+                                Add NG (No Good) Quantity
+                                <p>Form for filling the NG in a certain time and its details.</p>                                    
+                            </div>
+                            <div>></div>
+                        </button> 
+                        <button class="edits" id="editsbtn4">
+                            <div class="title-edit">
+                                Change Manpower
+                                <p>Change the person-in-charge of the process.</p>                                    
+                            </div>
+                            <div>></div>
+                        </button>                             
+                    </div>
+                </div>
+
+                <div class="data-handlers" id="edit-daily" style="display:none;">
+                    <div class="headers-handlers">
+                        <button class="back-btn">< Back</button>
+                        <h2>Edit Daily Output</h2>
+                    </div>
+                    <div class="data-content" id="daily-output-content">
+                        <div id="timely-outputs">
+                            <div class="outputs">
+                                <label for="6">6:00 - 7:00</label>
+                                <input type="number" name="six" id="6" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="7">7:00 - 8:00</label>
+                                <input type="number" name="seven" id="7" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="8">8:00 - 9:00</label>
+                                <input type="number" name="eight" id="8" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="9">9:00 - 10:00</label>
+                                <input type="number" name="nine" id="9" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="10">10:00 - 11:00</label>
+                                <input type="number" name="ten" id="10" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="11">11:00 - 12:00</label>
+                                <input type="number" name="eleven" id="11" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="12">12:00 - 13:00</label>
+                                <input type="number" name="twelve" id="12" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="13">13:00 - 14:00</label>
+                                <input type="number" name="thirteen" id="13" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="14">14:00 - 15:00</label>
+                                <input type="number" name="fourteen" id="14" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="15">15:00 - 16:00</label>
+                                <input type="number" name="fifteen" id="15" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="16">16:00 - 17:00</label>
+                                <input type="number" name="sixteen" id="16" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="17">17:00 - 18:00</label>
+                                <input type="number" name="seventeen" id="17" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="18">18:00 - 19:00</label>
+                                <input type="number" name="eighteen" id="18" placeholder="Enter Output">
+                            </div>
+                            <div class="outputs">
+                                <label for="19">19:00 - 20:00</label>
+                                <input type="number" name="nineteen" id="19" placeholder="Enter Output">
+                            </div>
+                        </div>
+                        <div id="buttons-edit">
+                            <div id="keypad">
+                               <!-- <div id="keypad-header">&#x2630;</div> -->
+                                <div class="keypad-buttons">
+                                    <button class="key">1</button>
+                                    <button class="key">2</button>
+                                    <button class="key">3</button>
+                                    <button class="key">4</button>
+                                    <button class="key">5</button>
+                                    <button class="key">6</button>
+                                    <button class="key">7</button>
+                                    <button class="key">8</button>
+                                    <button class="key">9</button>
+                                    <button class="key">0</button>
+                                    <button class="key">.</button>
+                                    <button class="key">←</button>
+                                    <button class="key clear">C</button>
+                                </div>                   
+                             
+                            </div>  
+                            <div>
+                                <button class="output-buttons" id="edit-output">Edit</button>
+                                <button class="output-buttons" id="confirm-output">Confirm</button>
+                                <button class="output-buttons" id="cancel-output">Cancel</button>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+
+                <div class="data-handlers" id="edit-downtime" style="display:none;">
+                    <div class="headers-handlers">
+                        <button class="back-btn">< Back</button>
+                        <h2>Edit Downtime Details</h2>
+                    </div>
+                    <div class="data-content" id="daily-downtime-content">
+                        <div id="occurred-downtime-list">
+                            <div class="append-occurred-downtime">
+                                <p>Time Occurred:</p>
+                            </div>
+                            <div class="append-occurred-downtime">
+                                <p>Time Occurred:</p>
+                            </div>
+                            <div class="append-occurred-downtime">
+                                <p>Time Occurred:</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-handlers" id="add-ng" style="display:none;">
+                    <div class="headers-handlers">
+                        <button class="back-btn">< Back</button>
+                        <h2>Add NG Quantity</h2>
+                    </div>
+                    <!-- Your form goes here -->
+                </div>
+
+                <div class="data-handlers" id="change-manpower" style="display:none;">
+                    <div class="headers-handlers">
+                        <button class="back-btn">< Back</button>
+                        <h2>Change Manpower</h2>
+                    </div>
+                    <!-- Your form goes here -->
+                </div>
+
+            </div>
+
+                <div id="generalization-container" style="display:none;">
+                    <!-- Generalization content goes here -->
+                </div>
+
+            </div>
+            
         </div>
+
     </div>
 
     

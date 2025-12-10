@@ -324,7 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (visibleBars.length === 0) {
             grid.style.display = "none";
             noDowntime.style.display = "flex";
-            console.log("No downtime to display. Grid hidden.");
+            //console.log("No downtime to display. Grid hidden.");
             return;
         } else {
             grid.style.display = "grid";
@@ -480,23 +480,9 @@ function updatePieChart() {
     })
     .then(res => res.json())
     .then(data => {
-        if (!data || data.length === 0) return;
+        if (!data || data.percentage === undefined) return;
 
-        let totalPlan = 0;
-        let totalActual = 0;
-
-        data.forEach(row => {
-            totalPlan += Number(row.plan_output) || 0;
-            totalActual += Number(row.actual_output) || 0;
-        });
-
-        let targetPercentage = 0;
-        if (totalPlan > 0) {
-            targetPercentage = Math.round((totalActual / totalPlan) * 100);
-        }
-
-        // Start animation
-        animatePie(targetPercentage);
+        animatePie(data.percentage);
     })
     .catch(err => console.error(err));
 }
@@ -603,7 +589,11 @@ function updateTable() {
 
             cumulativeTotal += actualOutput;
             cells[6].textContent = cumulativeTotal;
-
+            if (rowData.id) {
+                sendPercentToDB(rowData.id, percent);
+                sendTotalToDB(rowData.id, cumulativeTotal);
+                sendRemarksToDB(rowData.id, remarkText);
+            }
             // --- Downtime ---
             const dtId = rowData.id;
             if (dtId) {
@@ -626,6 +616,10 @@ function updateTable() {
 
         // --- Call updateOverview after table update ---
         updateOverview(activeRows);
+        updateTimelyOutputs(activeRows);
+        if (!editing) {
+            fetchOutputs(activeRows);
+        }
     })
     .catch(err => console.error(err));
 }
@@ -729,7 +723,7 @@ function updateOverview(activeRows) {
     })
     .then(res => res.json())
     .then(data => {
-        console.log("SUMMARY DATA:", data); // ✅ DEBUG
+        //console.log("SUMMARY DATA:", data); // ✅ DEBUG
 
         if (!data) return;
 
@@ -839,10 +833,215 @@ editBtn.addEventListener("click", () => {
     settingsOverlay.classList.add("active");
 });
 
+
+const buttonsset = document.querySelectorAll('.btns-form button');
+
+buttonsset.forEach(btn => {
+    btn.addEventListener('click', () => {
+        buttonsset.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
+
+function resetDataHandlingSections() {
+    const sections = document.querySelectorAll('.data-handlers');
+    const selectionView = document.getElementById('data-handling-selection');
+
+    // Hide all sections
+    sections.forEach(section => section.style.display = 'none');
+    // Show selection view
+    selectionView.style.display = 'block';
+}
+
+function showDataHandling() {
+    resetDataHandlingSections(); // reset first
+    document.getElementById('data-handling-container').style.display = 'block';
+    document.getElementById('generalization-container').style.display = 'none';
+}
+
+function showGeneralization() {
+    resetDataHandlingSections(); // reset first
+    document.getElementById('data-handling-container').style.display = 'none';
+    document.getElementById('generalization-container').style.display = 'block';
+}
+
+const buttonsedit = document.querySelectorAll('.edits');
+const sections = document.querySelectorAll('.data-handlers');
+const selectionView = document.getElementById('data-handling-selection');
+
+// Show sections
+buttonsedit.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+        selectionView.style.display = 'none'; // hide selection
+        sections.forEach(section => section.style.display = 'none'); // hide all
+        sections[index].style.display = 'block'; // show clicked
+    });
+});
+
+// Back buttons inside sections
+const backBtns = document.querySelectorAll('.back-btn');
+backBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        sections.forEach(section => section.style.display = 'none'); // hide all sections
+        selectionView.style.display = 'block'; // show button selection
+    });
+});
+
+
+//////////////////////////    EDIT OUTPUT DAILY /////////////////////////////
+function updateTimelyOutputs(activeRows) {
+    const outputs = document.querySelectorAll('#timely-outputs .outputs');
+
+    outputs.forEach((div, index) => {
+        if (index < activeRows) {
+            div.style.display = "flex";   // show only needed
+        } else {
+            div.style.display = "none";    // hide the rest
+
+            // Optional: clear hidden inputs
+            const input = div.querySelector('input');
+            if (input) input.value = "";
+        }
+    });
+}
+
+let activeInput = null;
+
+// Track last focused input
+document.querySelectorAll('#timely-outputs input').forEach(input => {
+    input.addEventListener('focus', () => {
+        activeInput = input;
+    });
+});
+
+const keys = document.querySelectorAll('#keypad .key');
+
+keys.forEach(key => {
+    key.addEventListener('click', () => {
+        if (!activeInput) return; // no input selected
+
+        const keyVal = key.textContent;
+
+        if (keyVal === '←') {
+            activeInput.value = activeInput.value.slice(0, -1);
+        } 
+        else if (keyVal === 'C') {
+            activeInput.value = '';
+        } 
+        else {
+            activeInput.value += keyVal;
+        }
+
+        activeInput.focus();
+    });
+});
+
+let editing = false;
+
+// --- FETCH OUTPUTS ---
+function fetchOutputs(activeRows) {
+    if (editing) return; // do not overwrite while editing
+
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=fetch_outputs&activeRows=${activeRows}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        data.forEach((row, index) => {
+            const inputId = index + 6; // now starts from 1
+            const input = document.getElementById(inputId);
+            if (input) input.value = row.actual_output;
+        });
+    })
+    .catch(err => console.error('Fetch Error:', err));
+}
+
+// --- EDIT / CONFIRM / CANCEL ---
+document.addEventListener('DOMContentLoaded', () => {
+    const editBtn = document.getElementById('edit-output');
+    const confirmBtn = document.getElementById('confirm-output');
+    const cancelBtn = document.getElementById('cancel-output');
+    const inputs = document.querySelectorAll('#timely-outputs input');
+
+    // Initial state
+    confirmBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+    inputs.forEach(input => input.readOnly = true);
+
+    // --- EDIT BUTTON ---
+    editBtn.addEventListener('click', () => {
+        editing = true;
+        editBtn.style.display = 'none';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        inputs.forEach(input => input.readOnly = false);
+        inputs[0].focus();
+    });
+
+    // --- CANCEL BUTTON ---
+    cancelBtn.addEventListener('click', () => {
+        editing = false;
+        editBtn.style.display = 'inline-block';
+        confirmBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+        inputs.forEach(input => input.readOnly = true);
+
+        const activeRows = inputs.length;
+        fetchOutputs(activeRows);
+    });
+
+    // --- CONFIRM BUTTON ---
+    confirmBtn.addEventListener('click', () => {
+        // --- Ask user for confirmation ---
+        const proceed = confirm("Are you sure you want to save the changes?");
+        if (!proceed) return; // stop if user cancels
+
+        const data = {};
+        inputs.forEach((input, index) => {
+            const inputId = index + 1; // start from 1
+            data[inputId] = input.value;
+        });
+
+        console.log('Data to send:', data); // inspect before sending
+
+        fetch('fetches1/domfetch.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=update_outputs&data=${encodeURIComponent(JSON.stringify(data))}`
+        })
+        .then(res => res.json())
+        .then(resp => {
+            console.log('Server response:', resp); // inspect response
+            if (resp.success) {
+                alert('Data saved successfully!');
+                editing = false;
+                editBtn.style.display = 'inline-block';
+                confirmBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                inputs.forEach(input => input.readOnly = true);
+            } else {
+                alert('Error saving data.');
+            }
+        })
+        .catch(err => console.error('Save Error:', err));
+    });
+});
+/////////////////////////////////////////////////////////////////////////
+
+
+
 // Close modal
 function closeSettings() {
     settingsOverlay.classList.remove("active");
+
+    // Reset sections and selection view
+    resetDataHandlingSections();
+    // Hide both main containers
 }
+
+
 
 
 
