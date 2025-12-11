@@ -971,5 +971,66 @@ function isPlan
         echo json_encode(['success' => true]);
     }
 
+    if (isset($_POST['action']) && $_POST['action'] === 'get_today_downtime') {
+
+        $data = [];
+
+        $sql = "
+            SELECT 
+                dt_id,
+                process,
+                details,
+                countermeasure,
+                remarks,
+                duration,
+                time_occurred,
+                time_ended,
+                pic
+            FROM dt_details
+            WHERE dt_id BETWEEN 1 AND 14
+            AND DATE(time_occurred) = CURDATE()
+            ORDER BY dt_id ASC, time_occurred ASC
+        ";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+
+        echo json_encode($data);
+        exit;
+    }
+
+    $actionType = $_POST['action'] ?? '';
+
+    if ($actionType === 'update_downtime') {
+        // Get POST values and sanitize
+        $dt_id = intval($_POST['dt_id'] ?? 0);
+        $process = $conn->real_escape_string($_POST['process'] ?? '');
+        $details = $conn->real_escape_string($_POST['details'] ?? '');
+        $countermeasure = $conn->real_escape_string($_POST['countermeasure'] ?? '');
+        $remarks = $conn->real_escape_string($_POST['remarks'] ?? '');
+        $pic = $conn->real_escape_string($_POST['pic'] ?? '');
+        $time_occurred = $conn->real_escape_string($_POST['time_occurred'] ?? '');
+        $time_ended = $conn->real_escape_string($_POST['time_ended'] ?? '');
+
+        // Update query (assuming dt_id is the primary key)
+        $sql = "UPDATE dt_details
+                SET process='$process', details='$details', countermeasure='$countermeasure', 
+                    remarks='$remarks', pic='$pic', time_occurred='$time_occurred', time_ended='$time_ended' 
+                WHERE dt_id=$dt_id";
+
+        if ($conn->query($sql)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => $conn->error]);
+        }
+        exit;
+    }
+
+
 $conn->close();
 ?>

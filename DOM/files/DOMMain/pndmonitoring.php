@@ -684,17 +684,7 @@
                         <h2>Edit Downtime Details</h2>
                     </div>
                     <div class="data-content" id="daily-downtime-content">
-                        <div id="occurred-downtime-list">
-                            <div class="append-occurred-downtime">
-                                <p>Time Occurred:</p>
-                            </div>
-                            <div class="append-occurred-downtime">
-                                <p>Time Occurred:</p>
-                            </div>
-                            <div class="append-occurred-downtime">
-                                <p>Time Occurred:</p>
-                            </div>
-                        </div>
+                        <div id="occurred-downtime-list"></div>
                     </div>
                 </div>
 
@@ -723,7 +713,67 @@
             </div>
             
         </div>
-
+        <div id="keyboard" class="keyboard">
+            <div class="keyboard-row" data-row="1">
+                <button class="key">1</button>
+                <button class="key">2</button>
+                <button class="key">3</button>
+                <button class="key">4</button>
+                <button class="key">5</button>
+                <button class="key">6</button>
+                <button class="key">7</button>
+                <button class="key">8</button>
+                <button class="key">9</button>
+                <button class="key">0</button>
+                <button class="key">-</button>
+                <button class="key">=</button>
+                <button class="key backspace">⌫</button>
+            </div>
+            <div class="keyboard-row" data-row="2">
+                <button class="key">q</button>
+                <button class="key">w</button>
+                <button class="key">e</button>
+                <button class="key">r</button>
+                <button class="key">t</button>
+                <button class="key">y</button>
+                <button class="key">u</button>
+                <button class="key">i</button>
+                <button class="key">o</button>
+                <button class="key">p</button>
+                <button class="key">[</button>
+                <button class="key">]</button>
+                <button class="key">\\</button>
+            </div>
+            <div class="keyboard-row" data-row="3">
+                <button class="key shift">Shift</button>
+                <button class="key">a</button>
+                <button class="key">s</button>
+                <button class="key">d</button>
+                <button class="key">f</button>
+                <button class="key">g</button>
+                <button class="key">h</button>
+                <button class="key">j</button>
+                <button class="key">k</button>
+                <button class="key">l</button>
+                <button class="key">;</button>
+                <button class="key">'</button>
+                <button class="key enter">Enter</button>
+            </div>
+            <div class="keyboard-row" data-row="4">
+                <button class="key capslock">Caps</button>
+                <button class="key">z</button>
+                <button class="key">x</button>
+                <button class="key">c</button>
+                <button class="key">v</button>
+                <button class="key">b</button>
+                <button class="key">n</button>
+                <button class="key">m</button>
+                <button class="key">,</button>
+                <button class="key">.</button>
+                <button class="key">/</button>
+                <button class="key space" style="flex:2">Space</button>
+            </div>
+        </div>
     </div>
 
     

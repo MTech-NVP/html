@@ -335,11 +335,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const numRows = Math.ceil(visibleBars.length / 2);
         grid.style.gridTemplateRows = `repeat(${numRows}, auto)`;
 
-        console.log(
+        /*console.log(
             "Visible bars:", visibleBars.length,
             "Hidden bars:", hiddenCount,
             "Grid rows:", numRows
-        );
+        );*/
 
         // ===== Update bar widths and time text =====
         const max2 = Math.max(...data2, 1);
@@ -847,10 +847,20 @@ function resetDataHandlingSections() {
     const sections = document.querySelectorAll('.data-handlers');
     const selectionView = document.getElementById('data-handling-selection');
 
-    // Hide all sections
     sections.forEach(section => section.style.display = 'none');
-    // Show selection view
     selectionView.style.display = 'block';
+
+    const editWrappers = document.querySelectorAll('.append-occurred-downtime');
+    editWrappers.forEach(wrapper => {
+        const cancelBtn = wrapper.querySelector('.cancel-downtime-button');
+        if (cancelBtn && cancelBtn.style.display !== 'none') {
+            cancelBtn.click();
+        }
+    });
+
+    // Restore modal position
+    const modal = document.querySelector('.modal');
+    if(modal) modal.style.bottom = '';
 }
 
 function showDataHandling() {
@@ -882,10 +892,27 @@ buttonsedit.forEach((btn, index) => {
 const backBtns = document.querySelectorAll('.back-btn');
 backBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        sections.forEach(section => section.style.display = 'none'); // hide all sections
-        selectionView.style.display = 'block'; // show button selection
+        const sections = document.querySelectorAll('.data-handlers');
+        const selectionView = document.getElementById('data-handling-selection');
+
+        // Hide all sections
+        sections.forEach(section => section.style.display = 'none');
+
+        // Show selection view
+        selectionView.style.display = 'block';
+
+        // Reset any downtime rows in edit mode
+        const editWrappers = document.querySelectorAll('.append-occurred-downtime');
+        editWrappers.forEach(wrapper => {
+            const cancelBtn = wrapper.querySelector('.cancel-downtime-button');
+            if (cancelBtn && cancelBtn.style.display !== 'none') {
+                // Trigger the cancel handler programmatically
+                cancelBtn.click();
+            }
+        });
     });
 });
+
 
 
 //////////////////////////    EDIT OUTPUT DAILY /////////////////////////////
@@ -1030,16 +1057,402 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 /////////////////////////////////////////////////////////////////////////
 
+//////////////////////////////DOWNTIME EDIT//////////////////////////////
+let downtimeInterval; // global variable
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchDowntime();
+    downtimeInterval = setInterval(() => {
+     fetchDowntime();
+    }, 10000);
+});
+
+// -------------------- FETCH & DISPLAY --------------------
+
+function fetchDowntime() {
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=get_today_downtime'
+    })
+    .then(res => res.json())
+    .then(data => {
+        const container = document.getElementById('occurred-downtime-list');
+        container.innerHTML = ''; // clear existing
+        data.forEach(row => container.appendChild(createDowntimeRow(row)));
+    })
+    .catch(err => console.error('Fetch error', err));
+}
+
+function createDowntimeRow(row) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'append-occurred-downtime';
+
+    const startHour = Number(row.dt_id) + 5;
+    const endHour = startHour + 1;
+    const timeRange = `${startHour}:00 - ${endHour}:00`;
+
+    const totalSeconds = timeToSeconds(row.duration);
+    const durationText = formatDuration(totalSeconds);
+
+    const timeOcc = formatTime(row.time_occurred);
+    const timeEnd = formatTime(row.time_ended);
+
+    // Initial HTML
+    wrapper.innerHTML = `
+        <p class="p1"><label for="time-occurredv" class="time-occurred">Time Occurred:</label> <br> 
+        <span class="time-occurred-value" id="time-occurredv">${timeRange}</span>
+        </p>
+        <p class="p2"><label for="processv" class="process">Process:</label> 
+        <span class="process-value" id="processv">${escapeHtml(row.process)}</span>
+        </p>
+        <p class="p3"><label for="detailsv" class="details">Downtime Details:</label> 
+        <span class="details-value" id="detailsv">${escapeHtml(row.details)}</span>
+        </p>
+        <p class="p4"><label for="countermeasurev" class="countermeasure">Countermeasure:</label> 
+        <span class="countermeasure-value" id="countermeasurev">${escapeHtml(row.countermeasure)}</span>
+        </p>
+        <p class="p5"><label for="remarksv" class="remarks">Remarks:</label> 
+        <span class="remarks-value" id="remarksv">${escapeHtml(row.remarks)}</span>
+        </p>
+        <p class="p6"><label for="rangev" class="range">Range:</label> 
+        <span class="range-value" id="rangev">${formatTo12Hour(timeOcc)} - ${formatTo12Hour(timeEnd)}</span>
+        </p>
+        <p class="p7"><label for="durationv" class="duration">Elapsed Time:</label> 
+        <span class="duration-value" id="durationv">${durationText}</span>
+        </p>
+        <p class="p8"><label for="picv" class="pic">Person-in-Charge:</label> 
+        <span class="pic-value" id="picv">${escapeHtml(row.pic)}</span>
+        </p>
+        <button class="edit-downtime-button">Edit</button>
+        <div id="edit-container-button">
+        <button class="save-downtime-button" style="display:none;">Save</button>
+        <button class="cancel-downtime-button" style="display:none;">Cancel</button> 
+        </div>
+    `;
+
+    // Buttons
+    const editBtn = wrapper.querySelector('.edit-downtime-button');
+    const saveBtn = wrapper.querySelector('.save-downtime-button');
+    const cancelBtn = wrapper.querySelector('.cancel-downtime-button');
+
+    editBtn.addEventListener('click', () => enterEditMode(wrapper, row));
+    saveBtn.addEventListener('click', () => saveRow(wrapper, row));
+    cancelBtn.addEventListener('click', () => cancelEdit(wrapper, row));
+
+    return wrapper;
+}
+
+function enterEditMode(wrapper, row) {
+    // Move modal up
+    const modal = document.querySelector('.modal');
+    if(modal) modal.style.bottom = '100px';
+
+    // Stop live refresh while editing
+    if (downtimeInterval) clearInterval(downtimeInterval);
+
+    // Time Occurred dropdown (1-14)
+    const timeOccurredSelect = document.createElement('select');
+    for (let i = 1; i <= 14; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        const h = i + 5;
+        option.text = `${h}:00 - ${h + 1}:00`;
+        if (i == row.dt_id) option.selected = true;
+        timeOccurredSelect.appendChild(option);
+    }
+    wrapper.querySelector('.time-occurred-value').replaceWith(timeOccurredSelect);
+
+    // Text inputs
+    ['process','details','countermeasure','remarks','pic'].forEach(cls => {
+        const span = wrapper.querySelector(`.${cls}-value`);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = span.textContent;
+        span.replaceWith(input);
+    });
+
+    // Range inputs (with seconds)
+    const rangeSpan = wrapper.querySelector('.range-value');
+    const [occ, end] = rangeSpan.textContent.split(' - ').map(t => convertTo24Hour(t));
+    const occInput = document.createElement('input');
+    occInput.type = 'time';
+    occInput.step = '1';
+    occInput.value = occ;
+
+    const endInput = document.createElement('input');
+    endInput.type = 'time';
+    endInput.step = '1';
+    endInput.value = end;
+
+    const rangeWrapper = document.createElement('span');
+    rangeWrapper.className = 'range-value-wrapper';
+    rangeWrapper.appendChild(occInput);
+    rangeWrapper.appendChild(document.createTextNode(' - '));
+    rangeWrapper.appendChild(endInput);
+    rangeSpan.replaceWith(rangeWrapper);
+
+    // Show Save / Cancel, hide Edit
+    wrapper.querySelector('.edit-downtime-button').style.display = 'none';
+    wrapper.querySelector('.save-downtime-button').style.display = 'inline-block';
+    wrapper.querySelector('.cancel-downtime-button').style.display = 'inline-block';
+}
+
+function cancelEdit(wrapper, row) {
+    // Restore modal position
+    const modal = document.querySelector('.modal');
+    if(modal) modal.style.bottom = ''; // revert to original CSS
+
+    // Restore original spans
+    const timeRange = `${Number(row.dt_id)+5}:00 - ${Number(row.dt_id)+6}:00`;
+    const select = wrapper.querySelector('select');
+    if (select) select.replaceWith(createSpan('time-occurred-value', timeRange));
+
+    const inputs = wrapper.querySelectorAll('input[type="text"]');
+    ['process','details','countermeasure','remarks','pic'].forEach((cls, i) => {
+        if(inputs[i]) inputs[i].replaceWith(createSpan(`${cls}-value`, row[cls]));
+    });
+
+    const rangeWrapper = wrapper.querySelector('.range-value-wrapper');
+    if(rangeWrapper){
+        const occ = formatTo12Hour(formatTime(row.time_occurred));
+        const end = formatTo12Hour(formatTime(row.time_ended));
+        rangeWrapper.replaceWith(createSpan('range-value', `${occ} - ${end}`));
+    }
+
+    wrapper.querySelector('.save-downtime-button').style.display = 'none';
+    wrapper.querySelector('.cancel-downtime-button').style.display = 'none';
+    wrapper.querySelector('.edit-downtime-button').style.display = 'inline-block';
+
+    if (downtimeInterval) clearInterval(downtimeInterval);
+    downtimeInterval = setInterval(() => {
+        fetchDowntime();
+    }, 10000);
+}
+
+function saveRow(wrapper, row) {
+    const proceed = confirm("Are you sure you want to save the changes?");
+    if (!proceed) return;
+
+    // Restore modal position
+    const modal = document.querySelector('.modal');
+    if(modal) modal.style.bottom = '';
+
+    const dt_id = wrapper.querySelector('select').value;
+    const inputs = wrapper.querySelectorAll('input[type="text"]');
+    const process = inputs[0].value;
+    const details = inputs[1].value;
+    const countermeasure = inputs[2].value;
+    const remarks = inputs[3].value;
+    const pic = inputs[4].value;
+    const timeInputs = wrapper.querySelectorAll('input[type="time"]');
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const currentDate = `${yyyy}-${mm}-${dd}`;
+
+    const time_occurred = `${currentDate} ${timeInputs[0].value}`;
+    const time_ended = `${currentDate} ${timeInputs[1].value}`;
+
+    const sendData = {
+        action: "update_downtime",
+        dt_id,
+        process,
+        details,
+        countermeasure,
+        remarks,
+        pic,
+        time_occurred,
+        time_ended
+    };
+
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(sendData).toString()
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            alert('Data saved successfully!');
+            fetchDowntime();
+        } else {
+            alert('Failed to update.');
+            console.error("Server error:", resp.message);
+        }
+
+        if (downtimeInterval) clearInterval(downtimeInterval);
+        downtimeInterval = setInterval(() => {
+            fetchDowntime();
+        }, 10000);
+    })
+    .catch(err => console.error("Fetch error:", err));
+}
+
+
+
+// -------------------- HELPER FUNCTIONS --------------------
+
+function createSpan(cls, text){
+    const span = document.createElement('span');
+    span.className = cls;
+    span.textContent = text;
+    return span;
+}
+
+function formatTo12Hour(timeStr){
+    if(!timeStr) return '-';
+    const parts = timeStr.split(':').map(Number);
+    let [h, m, s] = parts;
+    if (!s) s = 0;
+    const period = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${period}`;
+}
+
+function formatTime(sqlDatetime){
+    if(!sqlDatetime) return '-';
+    const d = new Date(sqlDatetime);
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    const ss = String(d.getSeconds()).padStart(2,'0');
+    return `${hh}:${mm}:${ss}`;
+}
+
+function convertTo24Hour(timeStr){
+    if(!timeStr) return '';
+    let [time, period] = timeStr.split(' ');
+    let [h, m, s] = time.split(':').map(Number);
+    if (!s) s = 0;
+    if(period.toUpperCase() === 'PM' && h < 12) h += 12;
+    if(period.toUpperCase() === 'AM' && h === 12) h = 0;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function timeToSeconds(timeStr){
+    if(!timeStr || typeof timeStr!=='string') return 0;
+    const parts = timeStr.split(':').map(Number);
+    const [h=0,m=0,s=0]=parts;
+    return h*3600 + m*60 + s;
+}
+
+function formatDuration(totalSeconds){
+    if(isNaN(totalSeconds)||totalSeconds<0) return '-';
+    const h=Math.floor(totalSeconds/3600);
+    const m=Math.floor((totalSeconds%3600)/60);
+    const s=Math.floor(totalSeconds%60);
+    const parts=[];
+    if(h>0) parts.push(`${h} Hour${h>1?'s':''}`);
+    if(m>0) parts.push(`${m} Minute${m>1?'s':''}`);
+    if(s>0||parts.length===0) parts.push(`${s} Second${s>1?'s':''}`);
+    return parts.join(' ');
+}
+
+function escapeHtml(str){
+    if(str===null||str===undefined) return '';
+    return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+}
+
 
 
 // Close modal
 function closeSettings() {
     settingsOverlay.classList.remove("active");
-
-    // Reset sections and selection view
     resetDataHandlingSections();
-    // Hide both main containers
 }
+
+let currentInput = null;
+let shift = false;
+let capsLock = false;
+
+// Show keyboard when input is focused, except inputs inside #timely-outputs
+document.addEventListener('focusin', (e) => {
+    if (e.target.tagName === 'INPUT' && !e.target.closest('#timely-outputs')) {
+        currentInput = e.target;
+        document.getElementById('keyboard').style.display = 'block';
+    }
+});
+
+// Hide keyboard when clicking outside
+document.addEventListener('click', (e) => {
+    const keyboard = document.getElementById('keyboard');
+    if (!keyboard.contains(e.target) && e.target.tagName !== 'INPUT') {
+        document.getElementById('keyboard').style.display = 'none';
+        currentInput = null;
+    }
+});
+
+// Handle key presses
+document.querySelectorAll('#keyboard .key').forEach(key => {
+    key.addEventListener('click', () => {
+        if (!currentInput) return;
+
+        let val = key.textContent;
+
+        if (key.classList.contains('backspace')) {
+            currentInput.value = currentInput.value.slice(0, -1);
+        } else if (key.classList.contains('space')) {
+            currentInput.value += ' ';
+        } else if (key.classList.contains('enter')) {
+            currentInput.dispatchEvent(new Event('change', { bubbles: true }));
+            currentInput.blur();
+        } else if (key.classList.contains('shift')) {
+            shift = !shift;
+            updateKeys();
+        } else if (key.classList.contains('capslock')) {
+            capsLock = !capsLock;
+            updateKeys();
+        } else {
+            // NORMAL KEY PRESSED
+            // Apply shift/caps rules
+            if (shift) {
+                val = val.toUpperCase();
+            } else if (capsLock) {
+                if (val.match(/[a-z]/i)) val = val.toUpperCase();
+            }
+
+            // Add value to input
+            currentInput.value += val;
+
+            // Turn off shift after any normal key press
+            if (shift) {
+                shift = false;
+                updateKeys();
+            }
+        }
+
+        currentInput.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+});
+
+
+function updateKeys() {
+    document.querySelectorAll('#keyboard .key').forEach(key => {
+        if (!key.classList.contains('backspace') &&
+            !key.classList.contains('enter') &&
+            !key.classList.contains('shift') &&
+            !key.classList.contains('capslock') &&
+            !key.classList.contains('space')) {
+
+            if (shift) key.textContent = key.textContent.toUpperCase();
+            else if (!capsLock) key.textContent = key.textContent.toLowerCase();
+            else key.textContent = key.textContent.toUpperCase();
+        }
+    });
+}
+
+
+
+
+
+
 
 
 
