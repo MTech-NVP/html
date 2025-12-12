@@ -612,6 +612,7 @@ function updateTable() {
             }
 
             cells[8].textContent = rowData.ng_quantity ?? '-';
+            updateNGOutput();
         }
 
         // --- Call updateOverview after table update ---
@@ -1077,12 +1078,21 @@ function fetchDowntime() {
     })
     .then(res => res.json())
     .then(data => {
+
         const container = document.getElementById('occurred-downtime-list');
         container.innerHTML = ''; // clear existing
+
+        // Show message if no downtime found
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p>No downtime as of today.</p>';
+            return;
+        }
+
         data.forEach(row => container.appendChild(createDowntimeRow(row)));
     })
     .catch(err => console.error('Fetch error', err));
 }
+
 
 function createDowntimeRow(row) {
     const wrapper = document.createElement('div');
@@ -1360,7 +1370,161 @@ function escapeHtml(str){
         .replace(/'/g,'&#39;');
 }
 
+// NG Type options
+const ngOptions = [
+    "Select NG Type",
+    "Slanted Cut",
+    "Short Tube",
+    "Long Tube",
+    "No Clamp",
+    "Damaged Pre-Assemble Part 1",
+    "Damaged Pre-Assemble Part 13",
+    "Damaged Clamp 1",
+    "Damaged Clamp 2",
+    "Damaged Clamp 3",
+    "Damaged Clamp 4",
+    "Damaged Clamp 5",
+    "Damaged Clamp 6",
+    "Damaged Clamp 7",
+    "Damaged Clamp 8",
+    "Damaged Clamp 9",
+    "Damaged Clamp 10",
+    "Damaged Clamp 11",
+    "Damaged Clamp 12",
+    "Lack of Clamp",
+    "Missing Clamp",
+    "Missing Tape",
+    "Short Feeder",
+    "Long Feeder",
+    "Missing Grommet",
+    "Damaged Grommet"
+];
 
+// Load NG Type options into selects
+function loadNGTypes() {
+    const selects = [document.getElementById('ng1'), document.getElementById('ng2'), document.getElementById('ng3')];
+    selects.forEach(sel => {
+        ngOptions.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            sel.appendChild(option);
+        });
+    });
+}
+
+loadNGTypes();
+
+// Map time to value 1–14 (06:00–19:59)
+function getNGTimeValue(timeStr) {
+    if (!timeStr) return null;
+    const hour = parseInt(timeStr.split(':')[0], 10);
+    if (hour < 6 || hour >= 20) return null;
+    return hour - 5;
+}
+
+// DOM elements
+const NGtimeInput = document.getElementById('time-ng');
+const ngQtyInput = document.getElementById('how-many');
+
+NGtimeInput.min = "00:00";
+NGtimeInput.max = "23:59";
+
+// Handle Add button
+document.getElementById('add-button-ng').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const timePicked = NGtimeInput.value;
+    const ngTimeId = getNGTimeValue(timePicked);
+
+    if (!timePicked || ngTimeId === null) {
+        alert("Please pick a valid time between 06:00 and 19:59.");
+        return;
+    }
+
+    // Add ":00" to the time for full value
+    const fullTime = timePicked + ":00";
+
+    // NG Quantity validation
+    const ngQty = parseInt(ngQtyInput.value);
+    if (!ngQty || ngQty < 1) {
+        alert("Please enter a valid NG Quantity (1 or more).");
+        return;
+    }
+
+    // NG Types
+    const ng1 = document.getElementById('ng1').value;
+    const ng2 = document.getElementById('ng2').value;
+    const ng3 = document.getElementById('ng3').value;
+
+    if (ng1 === "Select NG Type" && (ng2 === "" || ng2 === "Select NG Type") && (ng3 === "" || ng3 === "Select NG Type")) {
+        alert("Please select at least one NG Type.");
+        return;
+    }
+
+    // Fill empty NG Types with "-"
+    const finalNG1 = ng1 !== "Select NG Type" ? ng1 : "-";
+    const finalNG2 = (ng2 && ng2 !== "Select NG Type") ? ng2 : "-";
+    const finalNG3 = (ng3 && ng3 !== "Select NG Type") ? ng3 : "-";
+    // Confirmation dialog
+    const confirmMsg = `Confirm adding NG Details?\n\nTime: ${timePicked} (ID: ${ngTimeId})\nQuantity: ${ngQty}\nNG Types: ${finalNG1}, ${finalNG2}, ${finalNG3}`;
+    if (!confirm(confirmMsg)) return;
+
+    // Prepare POST data
+    const postData = new URLSearchParams();
+    postData.append('action', 'add_ng_detail');
+    postData.append('ng_time_id', ngTimeId);
+    postData.append('ng_time', fullTime); // <-- added full time here
+    postData.append('ng_qty', ngQty);
+    postData.append('ngtype1', finalNG1);
+    postData.append('ngtype2', finalNG2);
+    postData.append('ngtype3', finalNG3);
+    console.log(fullTime, ngTimeId, ngQty, finalNG1, finalNG2, finalNG3);
+    // Send via fetch
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: postData.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('NG Details added successfully!');
+            // Reset manually since #ng-form is a div
+            NGtimeInput.value = '';
+            ngQtyInput.value = 1;
+            document.getElementById('ng1').value = 'Select NG Type';
+            document.getElementById('ng2').value = '';
+            document.getElementById('ng3').value = '';
+        } else {
+            alert('Error adding NG Details: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
+        alert('Error adding NG Details.');
+    });
+});
+
+
+
+function updateNGOutput() {
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: 'update_ng_output' })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+        } else {
+            console.error(data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
+    });
+}
 
 // Close modal
 function closeSettings() {
@@ -1374,11 +1538,16 @@ let capsLock = false;
 
 // Show keyboard when input is focused, except inputs inside #timely-outputs
 document.addEventListener('focusin', (e) => {
-    if (e.target.tagName === 'INPUT' && !e.target.closest('#timely-outputs')) {
+    if (
+        e.target.tagName === 'INPUT' &&
+        e.target.type !== 'time' &&        
+        !e.target.closest('#timely-outputs')
+    ) {
         currentInput = e.target;
         document.getElementById('keyboard').style.display = 'block';
     }
 });
+
 
 // Hide keyboard when clicking outside
 document.addEventListener('click', (e) => {

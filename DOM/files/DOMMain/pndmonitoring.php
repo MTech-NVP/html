@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
     <title>DOM | Tube Assembly</title>
-    <link rel="stylesheet" href="pnddesign.css">
+    <link rel="stylesheet" href="css/pnddesign.css">
 </head>
 <body>
 
@@ -575,13 +575,13 @@
                             </div>
                             <div>></div>
                         </button> 
-                        <button class="edits" id="editsbtn4">
+                      <!--  <button class="edits" id="editsbtn4">
                             <div class="title-edit">
                                 Change Manpower
                                 <p>Change the person-in-charge of the process.</p>                                    
                             </div>
                             <div>></div>
-                        </button>                             
+                        </button>  -->                           
                     </div>
                 </div>
 
@@ -693,22 +693,48 @@
                         <button class="back-btn">< Back</button>
                         <h2>Add NG Quantity</h2>
                     </div>
-                    <!-- Your form goes here -->
-                </div>
+                    <div class="data-content" id="daily-ng-content">
+                        <div id="ng-form">
+                            <div class="per-form">
+                                <label for="time-ng">Time NG Occurred: </label>
+                                <input type="time" id="time-ng" min="00:00" max="23:59" required>
+                            </div>
+                            <div class="per-form">
+                                <label for="how-many">NG Quantity:</label>
+                                <input type="number" id="how-many" min="1" required>
+                            </div>
+                            <div class="per-form">
+                                <label for="ng1">NG Type:</label>
+                                <select id="ng1" required></select>
+                            </div>
+                            <div class="per-form">
+                                <label for="ng2">NG Type:</label>
+                                <select id="ng2"></select>
+                            </div>
+                            <div class="per-form">
+                                <label for="ng3">NG Type:</label>
+                                <select id="ng3"></select> 
+                            </div>
+                            <button id="add-button-ng">
+                                Add
+                            </button>
+                        </div>
+                    </div>
 
-                <div class="data-handlers" id="change-manpower" style="display:none;">
+
+
+         <!--   <div class="data-handlers" id="change-manpower" style="display:none;">
                     <div class="headers-handlers">
                         <button class="back-btn">< Back</button>
                         <h2>Change Manpower</h2>
                     </div>
-                    <!-- Your form goes here -->
-                </div>
+                </div> -->
 
             </div>
 
-                <div id="generalization-container" style="display:none;">
-                    <!-- Generalization content goes here -->
-                </div>
+            <div id="generalization-container" style="display:none;">
+                <!-- Generalization content goes here -->
+            </div>
 
             </div>
             
