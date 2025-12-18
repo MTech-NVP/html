@@ -114,50 +114,105 @@ $action = $_REQUEST['action'] ?? '';
         exit;
     }
 
-    if ($action === 'get_by_plan_id_value') {
-        // Get the latest plan_id from plan_id_value
+if ($action === 'get_by_plan_id_value') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    // Get plan value
+    $stmt = $conn->prepare("SELECT plan FROM PlanSelection LIMIT 1");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    if (!$row) {
+        echo json_encode("No Plan");
+        exit;
+    }
+
+    $id_value = (int) $row['plan'];
+
+    // ✅ If plan is 0, return "No Plan" as data
+    if ($id_value === 0) {
+        echo json_encode("No Plan");
+        exit;
+    }
+
+    // Fetch plan data
+    $stmt2 = $conn->prepare("
+        SELECT partnumber, model, balance, manpower, prodhrs, deliverydate,
+               cycletime, cycletimeasof, expirationdate
+        FROM PlanOutput
+        WHERE id = ?
+    ");
+    $stmt2->bind_param("i", $id_value);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+    $product_row = $result2->fetch_assoc();
+
+    if (!$product_row) {
+        echo json_encode("No Plan");
+        exit;
+    }
+
+    echo json_encode($product_row);
+    exit;
+}
+
+
+    if ($action === 'fetchPlanOutput') {
+        header('Content-Type: application/json; charset=utf-8');
+
+        // Get plan value
         $stmt = $conn->prepare("SELECT plan FROM PlanSelection LIMIT 1");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
 
         if (!$row) {
-            die(json_encode(["error" => "No plan found"]));
+            echo json_encode("0");
+            exit;
         }
 
-        $id_value = $row['plan'];
+        $plan_id = (int) $row['plan'];
 
-        // Fetch the corresponding row from details_product
-        $stmt2 = $conn->prepare("SELECT partnumber, model, balance, manpower, prodhrs, deliverydate, cycletime, cycletimeasof, expirationdate FROM PlanOutput WHERE id = ?");
-        $stmt2->bind_param("i", $id_value);
+        // If plan is 0 → return 0
+        if ($plan_id === 0) {
+            echo json_encode("0");
+            exit;
+        }
+
+        // Fetch mins1–mins14 and cycletime from PlanOutput
+        $stmt2 = $conn->prepare("
+            SELECT 
+                mins1, mins2, mins3, mins4, mins5, mins6, mins7,
+                mins8, mins9, mins10, mins11, mins12, mins13, mins14,
+                cycletime
+            FROM PlanOutput
+            WHERE id = ?
+        ");
+        $stmt2->bind_param("i", $plan_id);
         $stmt2->execute();
         $result2 = $stmt2->get_result();
-        $product_row = $result2->fetch_assoc();
+        $planRow = $result2->fetch_assoc();
 
-        if (!$product_row) {
-            die(json_encode(["error" => "No details_product found for id_value $id_value"]));
+        if (!$planRow || $planRow['cycletime'] <= 0) {
+            echo json_encode("0");
+            exit;
         }
 
-        echo json_encode($product_row);
-        exit;
-    }
-
-    if ($action === 'fetchPlanOutput') {
-        header('Content-Type: application/json');
-
-        // Fetch first 14 rows from plan_output column
-        $stmt = $conn->prepare("SELECT plan_output FROM OutputTable ORDER BY id ASC LIMIT 14");
-        $stmt->execute();
-        $result = $stmt->get_result();
-
+        $cycleTime = (float) $planRow['cycletime'];
         $outputs = [];
-        while ($row = $result->fetch_assoc()) {
-            $outputs[] = $row['plan_output'];
+
+        // Compute 14 outputs
+        for ($i = 1; $i <= 14; $i++) {
+            $mins = (float) $planRow["mins{$i}"];
+            $outputs[] = round(($mins * 60) / $cycleTime);
         }
 
         echo json_encode($outputs);
         exit;
     }
+
+
 
     if ($action === 'update') {
         // Make sure id exists

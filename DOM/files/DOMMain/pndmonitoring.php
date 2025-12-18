@@ -805,6 +805,6 @@
     
 </body>
 
-<script src="pnd.js"></script>
+<script src="js/pnd.js"></script>
 
 </html>

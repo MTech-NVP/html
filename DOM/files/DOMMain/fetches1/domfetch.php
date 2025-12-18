@@ -293,6 +293,35 @@ if ($action === 'fetchPlanSummary') {
     ]);
 }
 
+if ($_POST['action'] === 'fetchBalance') {
+
+    $balance = 0;
+
+    // Get current plan ID
+    $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
+    $resPlan = $conn->query($sqlPlan);
+
+    if ($resPlan && $resPlan->num_rows > 0) {
+        $planId = intval($resPlan->fetch_assoc()['plan']);
+
+        if ($planId > 0) {
+            // JUST FETCH balance
+            $sql = "SELECT balance FROM PlanOutput WHERE id = $planId LIMIT 1";
+            $res = $conn->query($sql);
+
+            if ($res && $row = $res->fetch_assoc()) {
+                $balance = $row['balance'];
+            }
+        }
+    }
+
+    echo json_encode([
+        'balance' => $balance
+    ]);
+    exit;
+}
+
+
 if ($action === 'totalng') {
     $activeRows = isset($_POST['activeRows']) ? intval($_POST['activeRows']) : 14;
 

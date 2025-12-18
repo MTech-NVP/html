@@ -112,6 +112,22 @@ fetch('fetches1/domfetch.php', {
     console.error('Error:', err);
 });
 
+function updateBalance() {
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'action=fetchBalance' // new lightweight action
+    })
+    .then(res => res.json())
+    .then(data => {
+        // update only the balance span
+        const spans = document.querySelectorAll('#product-details span');
+        spans[5].textContent = data.balance;
+    })
+    .catch(err => console.error('Balance update error:', err));
+}
+setInterval(updateBalance, 3000); // 3000 ms = 3 seconds
+
 
 ////////////////////////////////////////////////////////////////
 // PRODUCTION AND DOWNTIME GRAPH

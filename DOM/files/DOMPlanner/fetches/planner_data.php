@@ -14,20 +14,20 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if action is provided
-$action = $_POST['action'] ?? null;
-
 if ($action === 'get_plan_value') {
+    header('Content-Type: application/json; charset=utf-8');
+
     $stmt = $conn->prepare("SELECT plan FROM PlanSelection WHERE id = 1");
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-
+    
     if (!$row) {
-        die(json_encode(["error" => "No plan found"]));
+        echo json_encode(0);
+        exit;
     }
 
-    $id_value = $row['plan'];
+
 
     $stmt2 = $conn->prepare("SELECT model FROM PlanOutput WHERE id = ?");
     $stmt2->bind_param("i", $id_value);
@@ -36,23 +36,50 @@ if ($action === 'get_plan_value') {
     $product_row = $result2->fetch_assoc();
 
     if (!$product_row) {
-        die(json_encode(["error" => "No model found for id_value $id_value"]));
+        echo json_encode(0);
+        exit;
     }
 
     echo json_encode($product_row);
     exit;
 }
 
-$sql = "SELECT SUM(plan_output) AS totalPlan, SUM(actual_output) AS totalCount FROM OutputTable";
-$result = $conn->query($sql);
 
-if ($result && $row = $result->fetch_assoc()) {
-    $totalPlan = $row['totalPlan'];
-    $totalCount = $row['totalCount'];
-    echo $totalPlan . " " . $totalCount;
-} else {
-    echo "0"; // fallback if query fails
+/* ===============================
+   FALLBACK — ONLY IF NO ACTION
+================================ */
+if (!$action) {
+
+    // 🔑 Check plan first
+    $stmt = $conn->prepare("SELECT plan FROM PlanSelection WHERE id = 1");
+    $stmt->execute();
+    $resPlan = $stmt->get_result();
+    $planRow = $resPlan->fetch_assoc();
+
+    // If no plan or plan = 0 → return 0 0
+    if (!$planRow || (int)$planRow['plan'] === 0) {
+        echo "0 0";
+        exit;
+    }
+
+    $sql = "SELECT 
+                COALESCE(SUM(plan_output),0) AS totalPlan, 
+                COALESCE(SUM(actual_output),0) AS totalCount 
+            FROM OutputTable";
+    $result = $conn->query($sql);
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $totalPlan  = $row['totalPlan'];
+        $totalCount = $row['totalCount'];
+        echo $totalPlan . " " . $totalCount;
+    } else {
+        echo "0 0";
+    }
+
+    exit; // 🔑 important: stop script so no extra output
 }
+
+
 
 $conn->close();
 ?>

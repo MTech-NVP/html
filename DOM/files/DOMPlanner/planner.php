@@ -13,6 +13,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- Cropper.js CSS -->
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
 </head>
 
 
@@ -205,117 +211,142 @@
         </div>
 
         <div id="dataentry-container">
-                <div id="input-data">
+            <div id="input-data">
 
-                    <div class="btns-form-container">
-                        <nav class="btns-form">
-                                <button onclick="showTablePlan()" class="active">List of Plans <i class='fas fa-file-upload'></i></button>
-                                <button onclick="showPlandata()">Create Plan<i class='fas fa-file-upload'></i></button>
-                                <button onclick="showPic()">Person-in-Charge List <i class='fas fa-file-upload'></i></button>
-                                <button onclick="showSwp()">Upload SWP <i class='fas fa-file-upload'></i></button>
-                                
-                        </nav>
-                    </div>
-
-                    <div id="line2"></div>
-                    
-                    <div id="form-container">
-                        <form action="fetches/formhandler.inc.php" method="post">
+                <div class="btns-form-container">
+                    <nav class="btns-form">
+                            <button onclick="showTablePlan()" class="active">List of Plans <i class='fas fa-file-upload'></i></button>
+                            <button onclick="showPlandata()">Create Plan<i class='fas fa-file-upload'></i></button>
+                            <button onclick="showPic()">Person-in-Charge List <i class='fas fa-file-upload'></i></button>
+                            <button onclick="showSwp()">Upload SWP <i class='fas fa-file-upload'></i></button>
                             
-                            <div class="section-header" id="section-header1">Product Information</div>
-                            <div class="product-info" id="product-tab">
-                                <label for="part_no">Part Number:</label>
-                                <input type="text" id="part_no" name="partnumber" placeholder="Enter part number">
+                    </nav>
+                </div>
 
-                                <label for="model">Model:</label>
-                                <input type="text" id="model" name="model" placeholder="Enter model name">
+                <div id="line2"></div>
+                
+                <div id="form-container">
+                    <form action="fetches/formhandler.inc.php" method="post">
+                        
+                        <div class="section-header" id="section-header1">Product Information</div>
+                        <div class="product-info" id="product-tab">
+                            <label for="part_no">Part Number:</label>
+                            <input type="text" id="part_no" name="partnumber" placeholder="Enter part number">
 
-                                <label for="del_date">Delivery Date:</label>
-                                <input type="date" id="del_date" name="deliverydate">
+                            <label for="model">Model:</label>
+                            <input type="text" id="model" name="model" placeholder="Enter model name">
 
-                                <label for="balance">Balance:</label>
-                                <input type="number" id="balance" name="balance" placeholder="Enter balance">
+                            <label for="del_date">Delivery Date:</label>
+                            <input type="date" id="del_date" name="deliverydate">
 
-                                <label for="man_power">Manpower:</label>
-                                <input type="number" id="man_power" name="man_power" placeholder="Enter manpower count">
+                            <label for="balance">Balance:</label>
+                            <input type="number" id="balance" name="balance" placeholder="Enter balance">
 
-                                <label for="prod_hrs">Production Hours:</label>
-                                <input type="text" id="prod_hrs" name="prod_hrs" placeholder="Enter Production Hours">
+                            <label for="man_power">Manpower:</label>
+                            <input type="number" id="man_power" name="man_power" placeholder="Enter manpower count">
 
+                            <label for="prod_hrs">Production Hours:</label>
+                            <input type="text" id="prod_hrs" name="prod_hrs" placeholder="Enter Production Hours">
+
+                        </div>
+                        <div id="plan-hr-container">
+                            <div class="section-header">
+                                Minutes Allotted Per Hour
                             </div>
-                            <div id="plan-hr-container">
-                                <div class="section-header">
-                                    Minutes Allotted Per Hour
-                                </div>
-                                <div class="plan-hr" id="plan-tab">
-                                    <input type="number" name="mins1" placeholder="6am-7am" />
-                                    <input type="number" name="mins2" placeholder="7am-8am" />
-                                    <input type="number" name="mins3" placeholder="8am-9am" />
-                                    <input type="number" name="mins4" placeholder="9am-10am" />
-                                    <input type="number" name="mins5" placeholder="10am-11am" />
-                                    <input type="number" name="mins6" placeholder="11am-12nn" />
-                                    <input type="number" name="mins7" placeholder="12nn-1pm" />
-                                    <input type="number" name="mins8" placeholder="1pm-2pm" />
-                                    <input type="number" name="mins9" placeholder="2pm-3pm" />
-                                    <input type="number" name="mins10" placeholder="3pm-4pm" />
-                                    <input type="number" name="mins11" placeholder="4pm-5pm" />
-                                    <input type="number" name="mins12" placeholder="5pm-6pm" />
-                                    <input type="number" name="mins13" placeholder="6pm-7pm" />
-                                    <input type="number" name="mins14" placeholder="7pm-8pm" /> 
-                                </div>
+                            <div class="plan-hr" id="plan-tab">
+                                <input type="number" name="mins1" placeholder="6am-7am" />
+                                <input type="number" name="mins2" placeholder="7am-8am" />
+                                <input type="number" name="mins3" placeholder="8am-9am" />
+                                <input type="number" name="mins4" placeholder="9am-10am" />
+                                <input type="number" name="mins5" placeholder="10am-11am" />
+                                <input type="number" name="mins6" placeholder="11am-12nn" />
+                                <input type="number" name="mins7" placeholder="12nn-1pm" />
+                                <input type="number" name="mins8" placeholder="1pm-2pm" />
+                                <input type="number" name="mins9" placeholder="2pm-3pm" />
+                                <input type="number" name="mins10" placeholder="3pm-4pm" />
+                                <input type="number" name="mins11" placeholder="4pm-5pm" />
+                                <input type="number" name="mins12" placeholder="5pm-6pm" />
+                                <input type="number" name="mins13" placeholder="6pm-7pm" />
+                                <input type="number" name="mins14" placeholder="7pm-8pm" /> 
                             </div>
+                        </div>
 
-                            <div class="submit-btn-container" id="submit-btn">
-                                <button type="submit">Submit</button>
-                            </div>                    
+                        <div class="submit-btn-container" id="submit-btn">
+                            <button type="submit">Submit</button>
+                        </div>                    
 
+                    </form>
+
+                </div>
+
+                <div id="form-swp-container">
+                    <div class="section-header" id="section-header3">Standard Working Procedure</div>
+                    <div class="upload-swp-container">
+                        
+                        <!--
+                        <label for="file" class="upload-label">
+                            Select SWP File
+                                </label>
+                                <input type="file" name = "file" id="file" class="file-input" />
+                                <input type="submit" value = "Upload File" class="submit-button">
+                                    Upload
+                                </>
+                            </div>
+                        </form>
+                        -->
+                        <form action="fetches/upload_file_swp.php" method="post" enctype="multipart/form-data">
+                            <div class="upload-section">
+                                <label for="file">Select file:</label>
+                                <input type="file" name="file" id="file">
+                                <input type="submit" value="Upload File" id="swp-file-submitbtn">
+                            </div>
                         </form>
 
                     </div>
+                </div>
 
-                    <div id="form-swp-container">
-                        <div class="section-header" id="section-header3">Standard Working Procedure</div>
-                        <div class="upload-swp-container">
-                            
-                            <!--
-                            <label for="file" class="upload-label">
-                                Select SWP File
-                                    </label>
-                                    <input type="file" name = "file" id="file" class="file-input" />
-                                    <input type="submit" value = "Upload File" class="submit-button">
-                                        Upload
-                                    </>
-                                </div>
-                            </form>
-                            -->
-                            <form action="fetches/upload_file_swp.php" method="post" enctype="multipart/form-data">
-                                <div class="upload-section">
-                                    <label for="file">Select file:</label>
-                                    <input type="file" name="file" id="file">
-                                    <input type="submit" value="Upload File" id="swp-file-submitbtn">
-                                </div>
-                            </form>
-
+                <div id="form-pic-container">
+                    <div class="section-name">
+                        <div class="section-header" id="section-header4" >List of Person-in-Charge
+                            <span class="line-prod-number2" style="font-size: 0.7rem; font-family:Arial"></span>
                         </div>
                     </div>
+                    <div id="append-data-persons">
+                        <div id="line-leader-container">
+                            <div id="ll-header">
+                                List of Line Leaders
+                            </div>
+                            <table id="line-leader-person">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Name</th>
+                                        <th>Position</th>                            
+                                    </tr>                                
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                    <div id="form-pic-container">
-
-                        
-                        <div class="section-name">
-                                <div class="section-header" id="section-header4" >List of Person-in-Charge
-                                    <span class="line-prod-number2" style="font-size: 0.7rem; font-family:Arial"></span>
-                                </div>
                         </div>
-
+                        
                         <div class="table-person-container">
+                            <div id="pic-header">
+                                List of Production Staffs
+                            </div>
                             <table id="table-person">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
                                         <th>Name</th>
-                                        <th>Latest Cert Date</th>
-                                        <th>Re-Cert Date</th>
+                                        <th>Designated Area</th>
+                                        <th>Latest Certification Date</th>
+                                        <th>Re-Certification Date</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -340,206 +371,249 @@
                                     Delete
                                 </button>
                             </div>
-                        </div>
+                        </div>                        
+                    </div>
+                </div>
 
+                <div id="plan-table-container">
+                    <div class="section-header" id="section-header5" >Planned Quota Per Day
+                        <span class="line-prod-number3" style="font-size: 0.7rem; font-family:Arial"></span>
                     </div>
 
-                    <div id="plan-table-container">
-                        <div class="section-header" id="section-header5" >Planned Quota Per Day
-                            <span class="line-prod-number3" style="font-size: 0.7rem; font-family:Arial"></span>
-                        </div>
-
-                        <div id="ct-details">
-                            <div id="ct-containers">
-                                <div class="ct-container">
-                                    <label for="cycletime">Cycle Time:</label>
-                                    <input type="number" id="ct" name="cycletime" class="ct-input" placeholder="Cycle Time">
-                                </div>
-                                <div class="ct-container">
-                                    <label for="ctao">Cycle Time as of:</label>
-                                    <input type="date" id="ctao" name="ctao" class="ct-input" placeholder="Cycle Time as of">
-                                </div>
-                                <div class="ct-container">
-                                    <label for="expdate">Expiration Date:</label>
-                                    <input type="date" id="expdate" name="expdate" class="ct-input" placeholder="Expiration Date">
-                                </div>                               
+                    <div id="ct-details">
+                        <div id="ct-containers">
+                            <div class="ct-container">
+                                <label for="ct">Cycle Time:</label>
+                                <input type="number" id="ct" name="cycletime" class="ct-input" placeholder="Cycle Time">
                             </div>
-                            <div id="ct-buttons">
-                                <button id="edit-ct" class="ct-btn">
-                                    Edit
-                                </button>
-                                <button id="submit-ct" class="ct-btn">
-                                    Submit
-                                </button>
-                                <button id="back-ct" class="ct-btn">
-                                    Back
-                                </button>                            
+                            <div class="ct-container">
+                                <label for="ctao">Cycle Time as of:</label>
+                                <input type="date" id="ctao" name="ctao" class="ct-input" placeholder="Cycle Time as of">
                             </div>
+                            <div class="ct-container">
+                                <label for="expdate">Expiration Date:</label>
+                                <input type="date" id="expdate" name="expdate" class="ct-input" placeholder="Expiration Date">
+                            </div>                               
                         </div>
-                        <div id="append-data-plan">
+                        <div id="ct-buttons">
+                            <button id="edit-ct" class="ct-btn">
+                                Edit
+                            </button>
+                            <button id="submit-ct" class="ct-btn">
+                                Submit
+                            </button>
+                            <button id="back-ct" class="ct-btn">
+                                Back
+                            </button>                            
                         </div>
+                    </div>
+                    <div id="append-data-plan">
+                    </div>
 
-                        <div>
-                            <form id="editForm">
-                                <div class="info-prod-edit">
-                                    <div class="header-edit-form">
-                                        <span>Edit Table Form</span>
-                                    </div>
+                    <div>
+                        <form id="editForm">
+                            <div class="info-prod-edit">
+                                <div class="header-edit-form">
+                                    <span>Edit Table Form</span>
+                                </div>
+
+                                <div class="edit-field-input">
+                                    <label for="planId">Plan number</label>
+                                    <input type="text" id="planId" placeholder="Enter Plan number" readonly>
 
                                     <div class="edit-field-input">
-                                        <label for="planId">Plan number</label>
-                                        <input type="text" id="planId" placeholder="Enter Plan number" readonly>
-
-                                        <div class="edit-field-input">
-                                            <label for="partno">Part Number</label>
-                                            <input type="text" id="partno" name="partnumber" placeholder="Enter Part number">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="model">Model</label>
-                                            <input type="text" id="modelnumber" name="model" placeholder="Enter Model">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="delDate">Delivery Date</label>
-                                            <input type="date" id="delDate" name="deliverydate">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="manpower">Manpower</label>
-                                            <input type="text" id="manpower" name="manpower" placeholder="Enter Number Manpower">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="prodhrs">Production Hours</label>
-                                            <input type="text" id="prodhrs" name="prodhrs" placeholder="Enter Production Hours">
-                                        </div>
+                                        <label for="partno">Part Number</label>
+                                        <input type="text" id="partno" name="partnumber" placeholder="Enter Part number">
                                     </div>
-
-                                    <div class="table-plan-edit-form">
-                                        <div class="edit-field-input">
-                                            <label for="plan1">6am-7am</label>
-                                            <input type="number" id="plan1" name="mins1" placeholder="6am-7am">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan2">7am-8am</label>
-                                            <input type="number" id="plan2" name="mins2" placeholder="7am-8am">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan3">8am-9am</label>
-                                            <input type="number" id="plan3" name="mins3" placeholder="8am-9am">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan4">9am-10am</label>
-                                            <input type="text" id="plan4" name="mins4" placeholder="9am-10am">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan5">10am-11am</label>
-                                            <input type="number" id="plan5" name="mins5" placeholder="10am-11am">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan6">11am-12nn</label>
-                                            <input type="number" id="plan6" name="mins6" placeholder="11am-12nn">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan7">12nn-1pm</label>
-                                            <input type="number" id="plan7" name="mins7" placeholder="12nn-1pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan8">1pm-2pm</label>
-                                            <input type="number" id="plan8" name="mins8" placeholder="1pm-2pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan9">2pm-3pm</label>
-                                            <input type="text" id="plan9" name="mins9" placeholder="2pm-3pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan10">3pm-4pm</label>
-                                            <input type="number" id="plan10" name="mins10" placeholder="3pm-4pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan11">4pm-5pm</label>
-                                            <input type="number" id="plan11" name="mins11" placeholder="4pm-5pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan12">5pm-6pm</label>
-                                            <input type="number" id="plan12" name="mins12" placeholder="5pm-6pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan13">6pm-7pm</label>
-                                            <input type="number" id="plan13" name="mins13" placeholder="6pm-7pm">
-                                        </div>
-                                        <div class="edit-field-input">
-                                            <label for="plan14">7pm-8pm</label>
-                                            <input type="number" id="plan14" name="mins14" placeholder="7pm-8pm">
-                                        </div>
+                                    <div class="edit-field-input">
+                                        <label for="model">Model</label>
+                                        <input type="text" id="modelnumber" name="model" placeholder="Enter Model">
                                     </div>
-
-                                    <div class="SubmitEditForm">
-                                        <button type="submit">Submit</button>
+                                    <div class="edit-field-input">
+                                        <label for="delDate">Delivery Date</label>
+                                        <input type="date" id="delDate" name="deliverydate">
                                     </div>
-                            </form>
-                        </div>
-                        
+                                    <div class="edit-field-input">
+                                        <label for="manpower">Manpower</label>
+                                        <input type="text" id="manpower" name="manpower" placeholder="Enter Number Manpower">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="prodhrs">Production Hours</label>
+                                        <input type="text" id="prodhrs" name="prodhrs" placeholder="Enter Production Hours">
+                                    </div>
+                                </div>
+
+                                <div class="table-plan-edit-form">
+                                    <div class="edit-field-input">
+                                        <label for="plan1">6am-7am</label>
+                                        <input type="number" id="plan1" name="mins1" placeholder="6am-7am">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan2">7am-8am</label>
+                                        <input type="number" id="plan2" name="mins2" placeholder="7am-8am">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan3">8am-9am</label>
+                                        <input type="number" id="plan3" name="mins3" placeholder="8am-9am">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan4">9am-10am</label>
+                                        <input type="text" id="plan4" name="mins4" placeholder="9am-10am">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan5">10am-11am</label>
+                                        <input type="number" id="plan5" name="mins5" placeholder="10am-11am">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan6">11am-12nn</label>
+                                        <input type="number" id="plan6" name="mins6" placeholder="11am-12nn">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan7">12nn-1pm</label>
+                                        <input type="number" id="plan7" name="mins7" placeholder="12nn-1pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan8">1pm-2pm</label>
+                                        <input type="number" id="plan8" name="mins8" placeholder="1pm-2pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan9">2pm-3pm</label>
+                                        <input type="text" id="plan9" name="mins9" placeholder="2pm-3pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan10">3pm-4pm</label>
+                                        <input type="number" id="plan10" name="mins10" placeholder="3pm-4pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan11">4pm-5pm</label>
+                                        <input type="number" id="plan11" name="mins11" placeholder="4pm-5pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan12">5pm-6pm</label>
+                                        <input type="number" id="plan12" name="mins12" placeholder="5pm-6pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan13">6pm-7pm</label>
+                                        <input type="number" id="plan13" name="mins13" placeholder="6pm-7pm">
+                                    </div>
+                                    <div class="edit-field-input">
+                                        <label for="plan14">7pm-8pm</label>
+                                        <input type="number" id="plan14" name="mins14" placeholder="7pm-8pm">
+                                    </div>
+                                </div>
+
+                                <div class="SubmitEditForm">
+                                    <button type="submit">Submit</button>
+                                </div>
+                        </form>
                     </div>
+                    
+                </div>
 
-                </div>           
+            </div>           
         </div>
     
         <div class="operator-cover" id="operator-div">
             <div class="update-operator-container" id="update-operator-div">
                 <button class="exit-btn" onclick="exitForm()">&times;</button>
-                <div>
-                    <h1>
-                        Update Operator Menu
-                    </h1>
+                <div id="fill-up">
+                    <div id="header-update">
+                        Update Details
+                    </div>
+                    <div id="choose-container" class="edit-persons-container">
+                        <span>Choose which staff to edit.</span>
+                        <button id="line-leader-edit-button" class="choose-container-buttons">Line Leaders</button>
+                        <button id="prod-staff-edit-button" class="choose-container-buttons">Production Staffs</button>
+                    </div>
+                    <div id="line-leader-edit-container" class="edit-persons-container">
+                        <button class="edit-back-btn" onclick="goBack()">← Back</button>
+                        <div id="select-ll-form">
+                            <select name="names-ll" id="names-ll">
+                                <option value="Select">Select a Name</option>
+                            </select>
+                        </div>
+                        <div id="ll-form">
+                            <div>
+                                <label for="first-name">First Name:</label>
+                                <input id="first-name" type="text">
+                            </div>
+                            <div>
+                                <label for="middle-name">Middle Name:</label>
+                                <input id="middle-name" type="text">
+                            </div>
+                            <div>
+                                <label for="last-name">Last Name:</label>
+                                <input id="last-name" type="text">
+                            </div>
+                            <div>
+                                <label for="title-ll">Position:</label>
+                                <input id="title-ll" type="text">
+                            </div>
+                        </div>
+                        <div id="pic-container-ll">
+                            <div id="picture-display-ll">
+                                Picture
+                            </div>
+                            <input id="picture-ll" type="file" accept="image/*">
+                        </div>
+                        <div id="submit-button-update-ll-container">
+                            <button id="submit-button-update-ll">Submit Updates</button>
+                        </div>
+                    </div>
+                    <div id="prod-staff-edit-container" class="edit-persons-container">
+                        <button class="edit-back-btn" onclick="goBack()">← Back</button>
+                        <div id="select-ps-form">
+                            <select name="names-ps" id="names-ps">
+                                <option value="SelectPS">Select a Name</option>
+                            </select>
+                        </div>
+                        <div id="ps-form">
+                            <div>
+                                <label for="first-name-ps">First Name:</label>
+                                <input id="first-name-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="middle-name-ps">Middle Name:</label>
+                                <input id="middle-name-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="last-name-ps">Last Name:</label>
+                                <input id="last-name-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="title-ps">Process:</label>
+                                <input id="title-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="lcdate-ps">Last Certification Date:</label>
+                                <input id="lcdate-ps" type="date">
+                            </div>
+                            <div>
+                                <label for="rcdate-ps">Re-Certification Date:</label>
+                                <input id="rcdate-ps" type="date">
+                            </div>
+                        </div>
+                        <div id="pic-container-ps">
+                            <div id="picture-display-ps">
+                                Picture
+                            </div>
+                            <input id="picture-ps" type="file" accept="image*/">
+                        </div>
+                        <div id="submit-button-update-ps-container">
+                            <button id="submit-button-update-ps">Submit Updates</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input id="name-update" type="text" placeholder="Enter name ">
-                </div>
-                <div class="input-group">
-                    <input id="role" type="text" placeholder="Enter Role ">
-                </div>
-                <div class="checkbox-container">
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-1">
-                        <span>Cutting</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-2">
-                        <span>Assembly</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-3">
-                        <span>Cutting</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-4">
-                        <span>Installation pad</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-5">
-                        <span>Manual Seimitsu</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-6">
-                        <span>Retainer Putting</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-7">
-                        <span>Manual Valve Check</span>
-                    </div>
-                    <div class="checkbox-input">
-                        <input type="checkbox" id="update-op-check-8">
-                        <span>Final Inspection</span>
-                    </div>
-                    <div class="date-input">
-                        <label>Last Certification Date</label>
-                        <input type="date" id="update-op-date-1">
-                    </div>
-                    <div class="date-input">
-                        <label>Re-Certification Date</label>
-                        <input type="date" id="update-op-date-2">
-                    </div>
-                </div>
-                <div class="submit-update-btn">
-                    <button onclick="submitUpdate() ">Submit</button>
+
+            </div>
+        </div>
+
+        <div id="crop-overlay">
+            <div id="crop-container">
+                <img id="crop-image" src="" alt="Crop Image">
+                <div id="crop-buttons">
+                    <button id="crop-confirm">Crop</button>
+                    <button id="crop-cancel">Cancel</button>
                 </div>
             </div>
         </div>
@@ -547,16 +621,12 @@
         <div class="operator-cover" id="upload-operator-div">
             <div class="upload-pic-container" id="pic-container-div">
                 <button class="exit-btn" onclick="exitForm()">&times;</button>
-                <form action="/fetches/inserSigna.php" method="POST" enctype="multipart/form-data">
-                    <div class="upload-section">
-                        <label class="upload-label-pic">
-                            Upload PIC Picture
-                        </label>
-                        <input type="file" name="picture" required>
-                        <input type="text" name="ope-pic" placeholder="Enter Operator Name" required>
-                        <input type="submit" value="Upload" class="submit-button">
+                    <input type="file" id="input-image" accept="image/*">
+                    <div id="crop-container" style="margin-top:15px; max-width:400px; max-height:400px;">
+                        <img id="image-to-crop" style="max-width:100%; display:none;">
                     </div>
-                </form> 
+                    <button id="crop-btn">Crop & Save</button>
+                    <div id="cropped-result" style="margin-top:15px;"></div>
             </div>            
         </div>
 
