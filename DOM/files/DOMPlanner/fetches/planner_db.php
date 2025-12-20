@@ -430,6 +430,325 @@ if ($action === 'update_prod_staff') {
     exit;
 }
 
+if ($action === 'add_leader') {
+
+    $fn    = $_POST['fn'] ?? '';
+    $mn    = $_POST['mn'] ?? '';
+    $ln    = $_POST['ln'] ?? '';
+    $title = $_POST['title'] ?? '';
+
+    // 1️⃣ Insert leader (no image yet)
+    $stmt = $conn->prepare("
+        INSERT INTO line_leader_list (fn, mn, ln, title)
+        VALUES (?, ?, ?, ?)
+    ");
+    $stmt->bind_param("ssss", $fn, $mn, $ln, $title);
+    $stmt->execute();
+
+    $newId = $stmt->insert_id;
+
+    // 2️⃣ Handle picture
+    if (isset($_FILES['picture']) && is_uploaded_file($_FILES['picture']['tmp_name'])) {
+
+        $uploadDir = "/var/www/html/DOM/media/img/staffs/leader/";
+        $fileName  = "leader_" . $newId . ".jpeg";
+        $filePath  = $uploadDir . $fileName;
+
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+
+        if (!move_uploaded_file($_FILES['picture']['tmp_name'], $filePath)) {
+            echo json_encode([
+                "success" => false,
+                "error" => "Failed to move image to leader folder"
+            ]);
+            exit;
+        }
+
+        // Update BLOB from file
+        $sql = "UPDATE line_leader_list
+                SET picture = LOAD_FILE(?)
+                WHERE id = ?";
+        $stmt2 = $conn->prepare($sql);
+        $stmt2->bind_param("si", $filePath, $newId);
+        $stmt2->execute();
+
+    } else {
+        // No picture uploaded → set BLOB to NULL
+        $sql = "UPDATE line_leader_list
+                SET picture = NULL
+                WHERE id = ?";
+        $stmt2 = $conn->prepare($sql);
+        $stmt2->bind_param("i", $newId);
+        $stmt2->execute();
+    }
+
+    echo json_encode([
+        "success" => true,
+        "id" => $newId
+    ]);
+    exit;
+}
+
+if ($action === 'reorder_leaders') {
+    $uploadDir = "/var/www/html/DOM/media/img/staffs/leader/";
+
+    // 1️⃣ Fetch all current leader IDs >= 1 (exclude 0)
+    $result = $conn->query("SELECT id FROM line_leader_list WHERE id >= 1 ORDER BY id ASC");
+    if (!$result) {
+        echo json_encode(["success" => false, "error" => "Failed to fetch leaders"]);
+        exit;
+    }
+
+    $leaders = [];
+    while ($row = $result->fetch_assoc()) {
+        $leaders[] = $row['id'];
+    }
+
+    if (empty($leaders)) {
+        echo json_encode(["success" => false, "error" => "No leaders to reorder"]);
+        exit;
+    }
+
+    $renameMap = [];
+
+    // 2️⃣ Temporarily offset IDs to avoid duplicates
+    foreach ($leaders as $oldId) {
+        $tempId = $oldId + 1000; // avoid conflicts
+        $stmt = $conn->prepare("UPDATE line_leader_list SET id = ? WHERE id = ?");
+        $stmt->bind_param("ii", $tempId, $oldId);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Failed to offset ID $oldId"]);
+            exit;
+        }
+        $stmt->close();
+    }
+
+    // 3️⃣ Assign new sequential IDs starting from 1
+    $newId = 1;
+    foreach ($leaders as $oldId) {
+        $tempId = $oldId + 1000;
+        $stmt = $conn->prepare("UPDATE line_leader_list SET id = ? WHERE id = ?");
+        $stmt->bind_param("ii", $newId, $tempId);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Failed to assign new ID for $oldId"]);
+            exit;
+        }
+        $stmt->close();
+
+        $renameMap[$oldId] = $newId;
+        $newId++;
+    }
+
+    // 4️⃣ Rename images safely using temporary filenames
+    foreach ($renameMap as $oldId => $newId) {
+        $oldFile = $uploadDir . "leader_" . $oldId . ".jpeg";
+        $newFile = $uploadDir . "leader_" . $newId . ".jpeg";
+        if (file_exists($oldFile)) {
+            $tmpFile = $newFile . ".tmp"; // avoid overwriting
+            if (!rename($oldFile, $tmpFile)) {
+                echo json_encode(["success" => false, "error" => "Failed to rename $oldFile"]);
+                exit;
+            }
+        }
+    }
+
+    // 5️⃣ Finalize image renames
+    foreach ($renameMap as $oldId => $newId) {
+        $newFile = $uploadDir . "leader_" . $newId . ".jpeg";
+        $tmpFile = $newFile . ".tmp";
+        if (file_exists($tmpFile)) {
+            if (!rename($tmpFile, $newFile)) {
+                echo json_encode(["success" => false, "error" => "Failed to finalize rename $tmpFile"]);
+                exit;
+            }
+        }
+    }
+
+    echo json_encode(["success" => true, "message" => "Leaders reordered successfully"]);
+    exit;
+}
+
+if ($action === 'add_prod_staff') {
+
+    $fn      = $_POST['fn'] ?? '';
+    $mn      = $_POST['mn'] ?? '';
+    $ln      = $_POST['ln'] ?? '';
+    $title   = $_POST['title'] ?? '';
+    $lcdate  = $_POST['lcdate'] ?? null;
+    $rcdate  = $_POST['rcdate'] ?? null;
+
+    // 1️⃣ Insert staff (no image yet)
+    $stmt = $conn->prepare("
+        INSERT INTO prod_staff_list (fn, mn, ln, title, lcdate, rcdate)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->bind_param("ssssss", $fn, $mn, $ln, $title, $lcdate, $rcdate);
+    $stmt->execute();
+
+    $newId = $stmt->insert_id;
+
+    // 2️⃣ Handle picture
+    if (isset($_FILES['picture']) && is_uploaded_file($_FILES['picture']['tmp_name'])) {
+
+        $uploadDir = "/var/www/html/DOM/media/img/staffs/prod/";
+        $fileName  = "staff_" . $newId . ".jpeg";
+        $filePath  = $uploadDir . $fileName;
+
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+
+        if (!move_uploaded_file($_FILES['picture']['tmp_name'], $filePath)) {
+            echo json_encode([
+                "success" => false,
+                "error" => "Failed to move image to prod folder"
+            ]);
+            exit;
+        }
+
+        // Update BLOB from file
+        $sql = "UPDATE prod_staff_list
+                SET picture = LOAD_FILE(?)
+                WHERE id = ?";
+        $stmt2 = $conn->prepare($sql);
+        $stmt2->bind_param("si", $filePath, $newId);
+        $stmt2->execute();
+
+    } else {
+        // No picture uploaded → set BLOB to NULL
+        $sql = "UPDATE prod_staff_list
+                SET picture = NULL
+                WHERE id = ?";
+        $stmt2 = $conn->prepare($sql);
+        $stmt2->bind_param("i", $newId);
+        $stmt2->execute();
+    }
+
+    echo json_encode([
+        "success" => true,
+        "id" => $newId
+    ]);
+    exit;
+}
+
+if ($action === 'reorder_prod_staff') {
+    $uploadDir = "/var/www/html/DOM/media/img/staffs/prod/";
+
+    // 1️⃣ Fetch all current staff IDs >= 1 (exclude 0)
+    $result = $conn->query("SELECT id FROM prod_staff_list WHERE id >= 1 ORDER BY id ASC");
+    if (!$result) {
+        echo json_encode(["success" => false, "error" => "Failed to fetch production staff"]);
+        exit;
+    }
+
+    $staffs = [];
+    while ($row = $result->fetch_assoc()) {
+        $staffs[] = $row['id'];
+    }
+
+    if (empty($staffs)) {
+        echo json_encode(["success" => false, "error" => "No production staff to reorder"]);
+        exit;
+    }
+
+    $renameMap = [];
+
+    // 2️⃣ Temporarily offset IDs to avoid duplicates
+    foreach ($staffs as $oldId) {
+        $tempId = $oldId + 1000;
+        $stmt = $conn->prepare("UPDATE prod_staff_list SET id = ? WHERE id = ?");
+        $stmt->bind_param("ii", $tempId, $oldId);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Failed to offset ID $oldId"]);
+            exit;
+        }
+        $stmt->close();
+    }
+
+    // 3️⃣ Assign new sequential IDs starting from 1
+    $newId = 1;
+    foreach ($staffs as $oldId) {
+        $tempId = $oldId + 1000;
+        $stmt = $conn->prepare("UPDATE prod_staff_list SET id = ? WHERE id = ?");
+        $stmt->bind_param("ii", $newId, $tempId);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Failed to assign new ID for $oldId"]);
+            exit;
+        }
+        $stmt->close();
+
+        $renameMap[$oldId] = $newId;
+        $newId++;
+    }
+
+    // 4️⃣ Rename images safely using temporary filenames
+    foreach ($renameMap as $oldId => $newId) {
+        $oldFile = $uploadDir . "staff_" . $oldId . ".jpeg";
+        $newFile = $uploadDir . "staff_" . $newId . ".jpeg";
+        if (file_exists($oldFile)) {
+            $tmpFile = $newFile . ".tmp";
+            if (!rename($oldFile, $tmpFile)) {
+                echo json_encode(["success" => false, "error" => "Failed to rename $oldFile"]);
+                exit;
+            }
+        }
+    }
+
+    // 5️⃣ Finalize image renames
+    foreach ($renameMap as $oldId => $newId) {
+        $newFile = $uploadDir . "staff_" . $newId . ".jpeg";
+        $tmpFile = $newFile . ".tmp";
+        if (file_exists($tmpFile)) {
+            if (!rename($tmpFile, $newFile)) {
+                echo json_encode(["success" => false, "error" => "Failed to finalize rename $tmpFile"]);
+                exit;
+            }
+        }
+    }
+
+    echo json_encode(["success" => true, "message" => "Production staff reordered successfully"]);
+    exit;
+}
+
+if ($action === 'deletePerson') {
+
+    $id = (int)$_POST['id'];
+    $type = $_POST['type'];
+
+    $baseDir = "/var/www/html/DOM/media/img/staffs/";
+
+    if ($type === 'leader') {
+        $table = "line_leader_list";
+        $imagePath = $baseDir . "leader/leader_" . $id . ".jpeg";
+
+    } elseif ($type === 'staff') {
+        $table = "prod_staff_list";
+        $imagePath = $baseDir . "prod/staff_" . $id . ".jpeg";
+
+    } else {
+        echo json_encode(["success" => false]);
+        exit;
+    }
+
+    // ✅ Try deleting file, but continue no matter what
+    if (file_exists($imagePath)) {
+        @unlink($imagePath); // @ prevents warnings
+    }
+
+    // ✅ Always continue to DB delete
+    $stmt = $conn->prepare("DELETE FROM {$table} WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $success = $stmt->execute();
+
+    echo json_encode([
+        "success" => $success,
+        "deleted_id" => $id
+    ]);
+    exit;
+}
+
+
+
+
+
 /* ====================================
    UNKNOWN ACTION
 ==================================== */

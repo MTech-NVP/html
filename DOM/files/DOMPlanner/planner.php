@@ -321,7 +321,8 @@
                                     <tr>
                                         <th>No.</th>
                                         <th>Name</th>
-                                        <th>Position</th>                            
+                                        <th>Position</th> 
+                                        <th class="action-col" style="display:none;"></th>
                                     </tr>                                
                                 </thead>
                                 <tbody>
@@ -347,6 +348,7 @@
                                         <th>Designated Area</th>
                                         <th>Latest Certification Date</th>
                                         <th>Re-Certification Date</th>
+                                        <th class="action-col" style="display:none;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -367,9 +369,7 @@
                             </div>
 
                             <div class="deleteBtn">
-                                <button onclick="ShowDeleteForm()">
-                                    Delete
-                                </button>
+                                <button id="deleteMainBtn" onclick="toggleDeleteMode()">Delete</button>
                             </div>
                         </div>                        
                     </div>
@@ -604,7 +604,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -620,31 +619,89 @@
 
         <div class="operator-cover" id="upload-operator-div">
             <div class="upload-pic-container" id="pic-container-div">
-                <button class="exit-btn" onclick="exitForm()">&times;</button>
-                    <input type="file" id="input-image" accept="image/*">
-                    <div id="crop-container" style="margin-top:15px; max-width:400px; max-height:400px;">
-                        <img id="image-to-crop" style="max-width:100%; display:none;">
+                <button class="add-exit-btn" onclick="">&times;</button>
+                <div id="fill-up-new">
+                    <div id="header-update">
+                        Create New Staff
                     </div>
-                    <button id="crop-btn">Crop & Save</button>
-                    <div id="cropped-result" style="margin-top:15px;"></div>
+                    <div id="choose-add-container" class="edit-persons-container">
+                        <span>Choose which staff to create.</span>
+                        <button id="line-leader-add-button" class="choose-container-buttons">Line Leaders</button>
+                        <button id="prod-staff-add-button" class="choose-container-buttons">Production Staffs</button>
+                    </div>
+                    <div id="line-leader-add-container" class="add-persons-container">
+                        <button class="add-back-btn" onclick="">← Back</button>
+                        <div id="ll-add-form">
+                            <div>
+                                <label for="first-name-add">First Name:</label>
+                                <input id="first-name-add" type="text">
+                            </div>
+                            <div>
+                                <label for="middle-name-add">Middle Name:</label>
+                                <input id="middle-name-add" type="text">
+                            </div>
+                            <div>
+                                <label for="last-name-add">Last Name:</label>
+                                <input id="last-name-add" type="text">
+                            </div>
+                            <div>
+                                <label for="title-ll-add">Position:</label>
+                                <input id="title-ll-add" type="text">
+                            </div>
+                        </div>
+                        <div id="add-pic-container-ll">
+                            <div id="add-picture-display-ll">
+                                Picture
+                            </div>
+                            <input id="add-picture-ll" type="file" accept="image/*">
+                        </div>
+                        <div id="submit-button-add-ll-container">
+                            <button id="submit-button-add-ll">Add Line Leader</button>
+                        </div>
+                    </div>
+                    <div id="prod-staff-add-container" class="add-persons-container">
+                        <button class="add-back-btn" onclick="">← Back</button>
+                        <div id="ps-add-form">
+                            <div>
+                                <label for="first-name-add-ps">First Name:</label>
+                                <input id="first-name-add-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="middle-name-add-ps">Middle Name:</label>
+                                <input id="middle-name-add-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="last-name-add-ps">Last Name:</label>
+                                <input id="last-name-add-ps" type="text">
+                            </div>
+                            <div>
+                                <label for="title-ps-add">Process:</label>
+                                <input id="title-ps-add" type="text">
+                            </div>
+                            <div>
+                                <label for="lcdate-ps-add">Latest Certification Date:</label>
+                                <input id="lcdate-ps-add" type="date">
+                            </div>
+                            <div>
+                                <label for="rcdate-ps-add">Re-Certification Date:</label>
+                                <input id="rcdate-ps-add" type="date">
+                            </div>
+                        </div>
+                        <div id="add-pic-container-ps">
+                            <div id="add-picture-display-ps">
+                                Picture
+                            </div>
+                            <input id="add-picture-ps" type="file" accept="image/*">
+                        </div>
+                        <div id="submit-button-add-ps-container">
+                            <button id="submit-button-add-ps">Add Production Staff</button>
+                        </div>
+                    </div>
+                </div>
             </div>            
         </div>
 
         <div class="operator-cover" id="delete-operator-div">
-            <div class="DeleteContainer" id="DeleteContainer">
-                <button class="exit-btn" onclick="exitDeleteForm()">&times;</button>
-                <div class="title-delete-form">
-                    <h2>Delete Form</h2> 
-                </div>
-                <div class="input-delete">
-                    <input id="num-operator" type="number" placeholder="Enter Number Operator">
-                </div>
-                <div class="delete-btn-submit">
-                    <button onclick="deleteOperator()">
-                        Submit
-                    </button>
-                </div>
-            </div>
         </div>
 
     </div> 

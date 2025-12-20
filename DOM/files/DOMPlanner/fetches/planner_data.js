@@ -1,16 +1,17 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Get the current IP from the page URL
-    const currentIP = window.location.hostname; // e.g., "10.0.0.102"
+document.addEventListener("DOMContentLoaded", async () => {
+    // Fetch the LAN IP from ip.php
+    const currentIP = await getCurrentIP(); // use your async function
 
-    // Loop through each button and check if it matches
+    // Loop through each button and disable if it matches the current device's IP
     document.querySelectorAll(".nav-button").forEach(button => {
         if (button.dataset.ip === currentIP) {
-            button.disabled = true; // disable matching button
-            button.style.opacity = "0.5"; // optional style
-            button.style.cursor = "not-allowed"; // optional visual feedback
+            button.disabled = true;
+            button.style.opacity = "0.5";
+            button.style.cursor = "not-allowed";
         }
     });
 });
+
 
 const ctx = document.getElementById('graph-data').getContext('2d');
 
@@ -122,41 +123,44 @@ const dashboardNames = {
     "10.0.0.136": "TUBE ASSEMBLY: C9 TUBE LINE",
     "10.0.0.125": "TUBE ASSEMBLY: C9-1 TUBE LINE",
     "10.0.0.164": "TUBE ASSEMBLY: C10 TUBE LINE",
-    "localhost": "TUBE ASSEMBLY: C4 TUBE LINE",
     "192.168.0.228": "TUBE ASSEMBLY: C4 PRODUCTION LINE"
+};
+
+// Global variable
+let currentIP = null;
+
+async function getCurrentIP() {
+    try {
+        const res = await fetch("../../data/ip.php");
+        const data = await res.json();
+        currentIP = data.lan_ip;
+        console.log("LAN IP:", currentIP);
+        return currentIP;
+    } catch (err) {
+        console.error("Failed to fetch LAN IP:", err);
+        return null;
+    }
 }
 
-const currentIP = window.location.hostname;
+async function updateDashboardTitles() {
+    const ip = await getCurrentIP();
+    const dashboardTitle = dashboardNames[ip] || "PRODUCTION LINE";
 
-const dashboardTitle = dashboardNames[currentIP] || "PRODUCTION LINE";
+    const selectors = [
+        ".line-prod-main",
+        ".line-prod-number",
+        ".line-prod-number2",
+        ".line-prod-number3"
+    ];
 
-document.addEventListener("DOMContentLoaded", function() {
-    const titleSpan = document.querySelector(".line-prod-main");
-    if (titleSpan) {
-        titleSpan.textContent = dashboardTitle;
-    }
-});
+    selectors.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) el.textContent = dashboardTitle;
+    });
+}
 
-document.addEventListener("DOMContentLoaded", function() {
-    const titleSpan = document.querySelector(".line-prod-number");
-    if (titleSpan) {
-        titleSpan.textContent = dashboardTitle;
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    const titleSpan = document.querySelector(".line-prod-number2");
-    if (titleSpan) {
-        titleSpan.textContent = dashboardTitle;
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    const titleSpan = document.querySelector(".line-prod-number3");
-    if (titleSpan) {
-        titleSpan.textContent = dashboardTitle;
-    }
-});
+// Wait for DOM and then update titles
+document.addEventListener("DOMContentLoaded", updateDashboardTitles);
 
 document.querySelector('.side-nav button:nth-child(1)').addEventListener('click', function() {
     document.getElementById('home').style.display = 'block';
@@ -288,6 +292,27 @@ async function loadImages() {
     }
 }
 
+function ShowUploadForm() {
+    document.getElementById('pic-container-div').style.display = "flex"
+    document.getElementById('upload-operator-div').classList.add("active");           
+}
+
+function ShowDeleteForm() {
+    document.getElementById('DeleteContainer').style.display = "block";
+    document.getElementById('delete-operator-div').classList.add("active");           
+}
+
+function exitDeleteForm() {
+    document.getElementById('DeleteContainer').style.display = "none";
+    document.getElementById('delete-operator-div').classList.remove("active");           
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    loadImages();
+    loadPerson();
+    loadLeaders();
+}) 
+
 async function loadLeaders(){
     try {
         const response = await fetch('fetches/planner_db.php?action=get_leaders');
@@ -304,7 +329,12 @@ async function loadLeaders(){
             row.innerHTML = `
             <td>${person.id}</td>
             <td>${name}</td>
-            <td>${person.title}</td>`;
+            <td>${person.title}</td>
+            <td class="action-col" style="display:none;">
+                <button class="row-delete-btn" onclick="deleteRow(this, 'leader')">
+                    Delete
+                </button>
+            </td>`;
             tbody.appendChild(row);
         })
     }
@@ -331,6 +361,11 @@ async function loadPerson() {
                 <td>${person.title}</td>
                 <td>${person.lcdate || ''}</td>
                 <td>${person.rcdate || ''}</td>
+                <td class="action-col" style="display:none;">
+                    <button class="row-delete-btn" onclick="deleteRow(this, 'staff')">
+                        Delete
+                    </button>
+                </td>
             `;
             tableBody.appendChild(row);
         });
@@ -484,7 +519,6 @@ const submitButton    = document.getElementById("submit-button-update-ll");
 ================================ */
 let leaders = [];
 let selectedLeaderId = null;
-let croppedImageBlob = null;
 
 /* ===============================
    OPEN LINE LEADER EDIT
@@ -666,7 +700,7 @@ submitButton.addEventListener("click", () => {
             input.value = "";         // Reset the file input
             croppedBlob = null;
             selectedLeaderId = null;
-
+            loadLeaders();
             goBackConfirm();
         } else {
             alert("Update failed: " + (resp.error || "Unknown error"));
@@ -861,10 +895,427 @@ submitButtonPs.addEventListener("click", () => {
             pictureInputPs.value = "";
             croppedBlobPs = null;
             selectedProdStaffId = null;
+            loadPerson();
             goBackConfirm();
         }
     });
 });
+
+
+/* ===============================
+   ADD LINE LEADER ELEMENTS
+================================ */
+const llAddContainer   = document.getElementById("line-leader-add-container");
+
+const firstNameAdd     = document.getElementById("first-name-add");
+const middleNameAdd    = document.getElementById("middle-name-add");
+const lastNameAdd      = document.getElementById("last-name-add");
+const titleLlAdd       = document.getElementById("title-ll-add");
+
+const pictureInputAdd  = document.getElementById("add-picture-ll");
+const pictureDisplayAdd= document.getElementById("add-picture-display-ll");
+
+const submitAddBtn     = document.getElementById("submit-button-add-ll");
+const chooseContainer2 = document.getElementById("choose-add-container");
+
+let addCroppedBlob = null;
+let addCropper = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("pic-container-div");
+
+    const chooseContainer = document.getElementById("choose-add-container");
+    const lineLeaderContainer = document.getElementById("line-leader-add-container");
+    const prodStaffContainer = document.getElementById("prod-staff-add-container");
+
+    const lineLeaderBtn = document.getElementById("line-leader-add-button");
+    const prodStaffBtn = document.getElementById("prod-staff-add-button");
+
+    const backButtons = document.querySelectorAll(".add-back-btn");
+    const exitBtn = document.querySelector(".add-exit-btn");
+
+    // 🔹 Utility: reset everything
+    function resetAddStaff() {
+        lineLeaderContainer.style.display = "none";
+        prodStaffContainer.style.display = "none";
+        chooseContainer.style.display = "flex";
+
+        // Clear all inputs inside modal
+        modal.querySelectorAll("input").forEach(input => {
+            input.value = "";
+        });
+    }
+
+    // Initial state
+    resetAddStaff();
+
+    // Show Line Leader form
+    lineLeaderBtn.addEventListener("click", () => {
+        chooseContainer.style.display = "none";
+        lineLeaderContainer.style.display = "flex";
+    });
+
+    // Show Production Staff form
+    prodStaffBtn.addEventListener("click", () => {
+        chooseContainer.style.display = "none";
+        prodStaffContainer.style.display = "flex";
+    });
+
+    // Back button → return to choose screen
+    backButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            resetAddStaff();
+        });
+    });
+
+    // ❌ Exit button → close modal & reset
+    exitBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        document.getElementById("operator-div").classList.remove("active");
+        document.querySelector('.upload-pic-container').style.display = 'none';
+        document.getElementById("upload-operator-div").classList.remove("active");
+        resetAddStaff();
+    });
+
+});
+
+pictureInputAdd.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        cropImage.src = e.target.result;
+        overlay.style.display = "flex";
+
+        addCropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1
+        });
+    };
+    reader.readAsDataURL(file);
+});
+
+cropConfirm.addEventListener("click", () => {
+    const activeCropper = addCropper || cropper;
+    if (!activeCropper) return;
+
+    activeCropper.getCroppedCanvas({
+        width: 200,
+        height: 200
+    }).toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+
+        if (addCropper) {
+            addCroppedBlob = blob;
+            pictureDisplayAdd.innerHTML = `<img src="${url}">`;
+            addCropper.destroy();
+            addCropper = null;
+        } else {
+            croppedBlob = blob;
+            pictureDisplay.innerHTML = `<img src="${url}">`;
+            cropper.destroy();
+            cropper = null;
+        }
+
+        overlay.style.display = "none";
+    }, "image/jpeg");
+});
+
+cropCancel.addEventListener("click", () => {
+    overlay.style.display = "none";
+
+    if (addCropper) {
+        addCropper.destroy();
+        addCropper = null;
+    }
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+});
+
+submitAddBtn.addEventListener("click", () => {
+    if (!firstNameAdd.value || !lastNameAdd.value) {
+        alert("First and Last Name are required.");
+        return;
+    }
+
+    // 2️⃣ Check if picture is missing
+    let pictureMissing = !addCroppedBlob; // true if no picture
+    if (pictureMissing) {
+        let proceed = confirm(
+            "You did not upload a picture. Do you want to save changes without uploading a picture?"
+        );
+        if (!proceed) {
+            // User clicked Cancel → stop submission
+            return;
+        }
+        // User clicked OK → continue with NULL picture
+    }
+
+    const formData = new FormData();
+    formData.append("action", "add_leader");
+    formData.append("fn", firstNameAdd.value);
+    formData.append("mn", middleNameAdd.value);
+    formData.append("ln", lastNameAdd.value);
+    formData.append("title", titleLlAdd.value);
+
+    // Only append picture if user uploaded it
+    if (addCroppedBlob) {
+        formData.append("picture", addCroppedBlob, "leader.jpeg");
+    }
+
+    fetch("fetches/planner_db.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            alert("Line Leader added successfully");
+
+            // Auto reset
+            firstNameAdd.value = "";
+            middleNameAdd.value = "";
+            lastNameAdd.value = "";
+            titleLlAdd.value = "";
+            pictureDisplayAdd.innerHTML = "Picture";
+            pictureInputAdd.value = "";
+            addCroppedBlob = null;
+
+            llAddContainer.style.display = "none";
+            chooseContainer2.style.display = "flex";
+          
+            reorderLeaders();
+            loadLeaders();
+        } else {
+            alert("Add failed: " + (resp.error || "Unknown error"));
+        }
+    })
+    .catch(err => console.error("Add leader error:", err));
+});
+
+function reorderLeaders() {
+    return fetch("fetches/planner_db.php", {
+        method: "POST",
+        body: new URLSearchParams({ action: "reorder_leaders" })
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            loadLeaders();
+            loadLineLeaders(); // Reload after reordering
+        } else {
+            console.error("Reorder failed", resp);
+        }
+    })
+    .catch(err => console.error("Reorder error:", err));
+}
+
+/* ===============================
+   ADD PRODUCTION STAFF ELEMENTS
+================================ */
+const psAddContainer     = document.getElementById("prod-staff-add-container");
+
+const firstNameAddPS     = document.getElementById("first-name-add-ps");
+const middleNameAddPS    = document.getElementById("middle-name-add-ps");
+const lastNameAddPS      = document.getElementById("last-name-add-ps");
+const titlePsAdd         = document.getElementById("title-ps-add");
+const lcdatePsAdd        = document.getElementById("lcdate-ps-add");
+const rcdatePsAdd        = document.getElementById("rcdate-ps-add");
+
+const pictureInputAddPS  = document.getElementById("add-picture-ps");
+const pictureDisplayAddPS= document.getElementById("add-picture-display-ps");
+
+const submitAddBtnPS     = document.getElementById("submit-button-add-ps");
+
+let addCroppedBlobPS = null;
+let addCropperPS = null;
+
+// Picture input + Cropper
+pictureInputAddPS.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        cropImage.src = e.target.result;
+        overlay.style.display = "flex";
+
+        addCropperPS = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1
+        });
+    };
+    reader.readAsDataURL(file);
+});
+
+cropConfirm.addEventListener("click", () => {
+    const activeCropper = addCropperPS || cropper;
+    if (!activeCropper) return;
+
+    activeCropper.getCroppedCanvas({
+        width: 200,
+        height: 200
+    }).toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+
+        if (addCropperPS) {
+            addCroppedBlobPS = blob;
+            pictureDisplayAddPS.innerHTML = `<img src="${url}">`;
+            addCropperPS.destroy();
+            addCropperPS = null;
+        } else if (cropper) {
+            croppedBlob = blob;
+            pictureDisplay.innerHTML = `<img src="${url}">`;
+            cropper.destroy();
+            cropper = null;
+        }
+
+        overlay.style.display = "none";
+    }, "image/jpeg");
+});
+
+cropCancel.addEventListener("click", () => {
+    overlay.style.display = "none";
+
+    if (addCropperPS) {
+        addCropperPS.destroy();
+        addCropperPS = null;
+    }
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+});
+
+// Submit Production Staff
+submitAddBtnPS.addEventListener("click", () => {
+    if (!firstNameAddPS.value || !lastNameAddPS.value) {
+        alert("First and Last Name are required.");
+        return;
+    }
+
+    let pictureMissing = !addCroppedBlobPS;
+    if (pictureMissing) {
+        let proceed = confirm(
+            "You did not upload a picture. Do you want to save changes without uploading a picture?"
+        );
+        if (!proceed) return;
+    }
+
+    const formData = new FormData();
+    formData.append("action", "add_prod_staff");
+    formData.append("fn", firstNameAddPS.value);
+    formData.append("mn", middleNameAddPS.value);
+    formData.append("ln", lastNameAddPS.value);
+    formData.append("title", titlePsAdd.value);
+    formData.append("lcdate", lcdatePsAdd.value);
+    formData.append("rcdate", rcdatePsAdd.value);
+
+    if (addCroppedBlobPS) {
+        formData.append("picture", addCroppedBlobPS, "staff.jpeg");
+    }
+
+    fetch("fetches/planner_db.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            alert("Production Staff added successfully");
+
+            // Auto reset
+            firstNameAddPS.value = "";
+            middleNameAddPS.value = "";
+            lastNameAddPS.value = "";
+            titlePsAdd.value = "";
+            lcdatePsAdd.value = "";
+            rcdatePsAdd.value = "";
+            pictureDisplayAddPS.innerHTML = "Picture";
+            pictureInputAddPS.value = "";
+            addCroppedBlobPS = null;
+
+            psAddContainer.style.display = "none";
+            chooseContainer2.style.display = "flex";
+            
+            reorderProdStaff();
+            loadProdStaffs();
+        } else {
+            alert("Add failed: " + (resp.error || "Unknown error"));
+        }
+    })
+    .catch(err => console.error("Add prod staff error:", err));
+});
+
+// Optional: reorder Production Staff (similar to reorderLeaders)
+function reorderProdStaff() {
+    return fetch("fetches/planner_db.php", {
+        method: "POST",
+        body: new URLSearchParams({ action: "reorder_prod_staff" })
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            loadPerson();
+            loadProdStaffs(); // Reload after reordering
+        } else {
+            console.error("Reorder failed", resp);
+        }
+    })
+    .catch(err => console.error("Reorder error:", err));
+}
+
+function deleteOperator() {
+    const num = document.getElementById('num-operator').value;
+
+    const formData = {
+        person_delete: num
+    };
+    sendNumDelete(formData)
+
+    document.getElementById('DeleteContainer').style.display = "none";
+    document.getElementById('delete-operator-div').classList.remove("active"); 
+}
+
+function deleteRow(btn, type) {
+    const tr = btn.closest("tr");
+
+    // 👇 ID is the first column (No.)
+    const id = tr.children[0].innerText.trim();
+
+    if (!id) {
+        alert("Invalid ID");
+        return;
+    }
+
+    if (!confirm(`Delete ID ${id}?`)) return;
+
+    fetch("fetches/planner_db.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `action=deletePerson&id=${id}&type=${type}`
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            tr.remove();
+            alert("Removed.");
+            reorderLeaders();
+            reorderProdStaff();
+            loadPerson();
+            loadLeaders();
+            loadProdStaffs();
+            loadLineLeaders();
+        } else {
+            alert("Delete failed");
+        }
+    });
+}
 
 
 function loadPlans() {
@@ -1051,99 +1502,6 @@ setInterval(loadPlans, 5000);
 // Initial load
 loadPlans();
 
-const checkboxData = [];
-
-function getCheckboxData() {
-    const checkboxes = document.querySelectorAll('.checkbox-input input[type="checkbox"]');
-
-    checkboxes.forEach(checkbox => {
-        checkboxData.push(checkbox.checked ? 1 : 0);
-    });
-
-    return checkboxData;
-}
-
-function sendDataToServer(data) {
-    fetch('fetches/updatePerson.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log('Success:', result);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-
-    for (let i = 0; i < checkboxData.length; i++) {
-        console.log(checkboxData[i])
-    }
-}
-
-function sendNumDelete(data) {
-    fetch('DeleteNum.php', { // Change this to your PHP script filename
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                alert(result.message);
-            } else {
-                alert("Error: " + result.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Something went wrong while deleting.');
-        });
-}
-
-function submitUpdate() {
-    const name = document.getElementById('name-update').value;
-    const role = document.getElementById('role').value;
-    const checkboxData = getCheckboxData();
-    const lastCertDate = document.querySelector('.date-input input[type="date"]').value;
-    const reCertDate = document.querySelectorAll('.date-input input[type="date"]')[1].value;
-
-    const formData = {
-        name_person: name,
-        process_role: role,
-        cert: checkboxData,
-        recert_date: reCertDate,
-        latest_date: lastCertDate
-    };
-
-    console.log('Checkbox data:', checkboxData);
-    console.log('Form data:', formData);
-
-    sendDataToServer(formData)
-
-
-    alert('Form submitted! Check console for data.');
-
-    document.getElementById('update-operator-div').style.display = "none";
-    document.getElementById("operator-div").classList.remove("active");
-}
-
-function deleteOperator() {
-    const num = document.getElementById('num-operator').value;
-
-    const formData = {
-        person_delete: num
-    };
-    sendNumDelete(formData)
-
-    document.getElementById('DeleteContainer').style.display = "none";
-    document.getElementById('delete-operator-div').classList.remove("active"); 
-}
 
     /*        function convertToPDF(base64Image) {
 
@@ -1186,28 +1544,7 @@ function convertToPDF(base64Image) {
         doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
         doc.save('graphData_C4.pdf');
     };
-}
-
-function ShowUploadForm() {
-    document.getElementById('pic-container-div').style.display = "block"
-    document.getElementById('upload-operator-div').classList.add("active");           
-}
-
-function ShowDeleteForm() {
-    document.getElementById('DeleteContainer').style.display = "block";
-    document.getElementById('delete-operator-div').classList.add("active");           
-}
-
-function exitDeleteForm() {
-    document.getElementById('DeleteContainer').style.display = "none";
-    document.getElementById('delete-operator-div').classList.remove("active");           
-}
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    loadImages();
-    loadPerson();
-    loadLeaders();
-})            
+}           
 
 document.addEventListener("DOMContentLoaded", () => {
     const updateBars = () => {
@@ -1317,32 +1654,49 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(updateBars, 5000);
 });
 
-/*  document.addEventListener("DOMContentLoaded", () => {
+/*
+document.addEventListener("DOMContentLoaded", () => {
     const barEndpoints = {
-        "c7": "http://10.0.0.102/fetches/planner_data.php",
-        "c9": "http://10.0.0.136/fetches/planner_data.php",
-        "c9one": "http://10.0.0.125/fetches/planner_data.php",
-        "c10": "http://10.0.0.164/fetches/planner_data.php"
+        "c4": "http://10.0.0.189/DOM/files/DOMPlanner/fetches/planner_data.php",
+        "c7": "http://10.0.0.102/DOM/files/DOMPlanner/fetches/planner_data.php",
+        "c9": "http://10.0.0.136/DOM/files/DOMPlanner/fetches/planner_data.php",
+        "c9one": "http://10.0.0.125/DOM/files/DOMPlanner/fetches/planner_data.php",
+        "c10": "http://10.0.0.164/DOM/files/DOMPlanner/fetches/planner_data.php"
     };
 
     const barLabels = {
+        "c4": "C4 Line:",
         "c7": "C7 Line:",
         "c9": "C9 Line:",
         "c9one": "C9-1 Line:",
         "c10": "C10 Line:"
     };
 
+    // Fetch current LAN IP
+    async function getCurrentIP() {
+        try {
+            const res = await fetch("../../data/ip.php");
+            const data = await res.json();
+            return data.lan_ip;
+        } catch (err) {
+            console.error("Failed to fetch LAN IP:", err);
+            return null;
+        }
+    }
+
+    // Update a single bar
     const updateBar = async (key, url) => {
         const label = barLabels[key];
         const baseURL = url.replace("/planner_fetch/planner_data.php", ""); // derive base ip
 
         try {
+            // 1️⃣ Fetch total plan & total count
             const response = await fetch(url);
             const value = await response.text();
             const [totalPlan, totalCount] = value.split(" ").map(Number);
             const targetWidth = Math.round((totalCount / totalPlan) * 100);
 
-            // Fetch model name
+            // 2️⃣ Fetch model name
             let modelName = "--";
             try {
                 const modelResponse = await fetch(url, {
@@ -1356,10 +1710,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(`Model fetch failed for ${label}:`, err);
             }
 
-            // Fetch downtime data from same IP
+            // 3️⃣ Fetch downtime data
             let downtimeCount = 0;
             let downtimeDuration = "00:00:00";
-
             try {
                 // Downtime count
                 const countResponse = await fetch(`${baseURL}/tablePlanServer.php?action=get_downtime_total`);
@@ -1387,7 +1740,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(`Downtime fetch failed for ${label}:`, err);
             }
 
-            // Update DOM
+            // 4️⃣ Update DOM
             document.querySelectorAll(".bar-container").forEach(container => {
                 const labelEl = container.querySelector(".label");
                 const bar = container.querySelector(".bar");
@@ -1428,16 +1781,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    const updateBars = () => {
+    // Update all bars (skip C4 if current device is C4)
+    const updateBars = async () => {
+        const currentIP = await getCurrentIP();
+
         for (const [key, url] of Object.entries(barEndpoints)) {
+            // Extract the IP from the URL
+            const endpointIP = url.match(/\/\/([\d.]+)\//)[1];
+
+            // Skip if the endpoint IP matches current device IP
+            if (endpointIP === currentIP) continue;
+
             updateBar(key, url);
         }
     };
 
+
+    // Initial update and interval
     updateBars();
     setInterval(updateBars, 6000);
-}); 
-*/
+}); */
+
+let deleteMode = false;
+
+function toggleDeleteMode() {
+    deleteMode = !deleteMode;
+
+    document.getElementById("deleteMainBtn").innerText =
+        deleteMode ? "Cancel" : "Delete";
+
+    document.querySelectorAll(".action-col").forEach(col => {
+        col.style.display = deleteMode ? "table-cell" : "none";
+    });
+}
+
 
 function loadOverviewPlan() {
     fetch('fetches/tablePlanServer.php', {

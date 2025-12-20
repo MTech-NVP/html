@@ -238,60 +238,40 @@ if ($action === 'get_downtime_count') {
 }
 
 if ($action === 'fetchPlanSummary') {
+    header('Content-Type: application/json; charset=utf-8');
 
-    if (isPlan($conn)) {
-        echo json_encode([
-            "prodhrs" => 0,
-            "total_plan_output" => 0,
-            "manpower" => 0
-        ]);
-        exit;
-    }
-    
-    // 1️⃣ Get selected plan ID
-    $sqlPlan = "SELECT plan FROM PlanSelection LIMIT 1";
-    $resultPlan = $conn->query($sqlPlan);
+    // Default response
+    $response = [
+        "prodhrs" => 0,
+        "total_plan_output" => 0,
+        "manpower" => 0
+    ];
 
-    $planId = 0;
-    if ($resultPlan && $resultPlan->num_rows > 0) {
-        $rowPlan = $resultPlan->fetch_assoc();
-        $planId = intval($rowPlan['plan']);
-    }
+    // Fetch summary row (id = 1)
+    $sql = "
+        SELECT 
+            plan_prodhrs,
+            plan_manpower,
+            plan_output
+        FROM summary
+        WHERE id = 1
+        LIMIT 1
+    ";
 
-    // Default values
-    $manpower = "-";
-    $prodhrs  = "-";
-    $total_plan_output = "-";
+    $result = $conn->query($sql);
 
-    // 2️⃣ If we have a valid plan ID, fetch details from PlanOutput
-    if ($planId > 0) {
-        $sql = "SELECT manpower, prodhrs, cycletime, mins1, mins2, mins3, mins4, mins5, mins6, mins7, mins8, mins9, mins10, mins11, mins12, mins13, mins14
-                FROM PlanOutput
-                WHERE id = $planId
-                LIMIT 1";
-        $result = $conn->query($sql);
-
-        if ($result && $row = $result->fetch_assoc()) {
-            $manpower = $row['manpower'] ?: "-";
-            $prodhrs  = $row['prodhrs']  ?: "-";
-            $cycletime = floatval($row['cycletime']) ?: 1; // prevent division by zero
-
-            // 3️⃣ Calculate total_plan_output from mins1 to mins14
-            $total_plan_output = 0;
-            for ($i = 1; $i <= 14; $i++) {
-                $mins = intval($row["mins$i"]); // treat NULL as 0 automatically
-                $total_plan_output += intval(($mins * 60) / $cycletime); // integer division
-            }
-        }
+    if ($result && $row = $result->fetch_assoc()) {
+        $response = [
+            "prodhrs" => (int)$row['plan_prodhrs'],
+            "total_plan_output" => (int)$row['plan_output'],
+            "manpower" => (int)$row['plan_manpower']
+        ];
     }
 
-    // 4️⃣ Return JSON
-    echo json_encode([
-        "prodhrs"           => $prodhrs,
-        "total_plan_output" => $total_plan_output,
-        "manpower"          => $manpower
-    ]);
+    echo json_encode($response);
+    exit;
 }
+
 
 if ($_POST['action'] === 'fetchBalance') {
 
