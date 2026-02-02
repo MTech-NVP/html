@@ -21,7 +21,7 @@
             </div>
             <div id="title">
                 <span id="dom-name">DIGITAL OUTPUT MONITORING</span>
-                <span id="line">Tube Assembly: C4 Tube Line</span>
+                <span id="line">Loading...</span>
                 <span id="tab-name">START-UP MENU</span>
             </div>
         </div>

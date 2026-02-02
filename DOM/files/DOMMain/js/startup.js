@@ -1,3 +1,36 @@
+const dashboardNames = {
+    "10.0.0.189": "TUBE ASSEMBLY: C4 TUBE LINE",
+    "10.0.0.102": "TUBE ASSEMBLY: C7 TUBE LINE",
+    "10.0.0.136": "TUBE ASSEMBLY: C9 TUBE LINE",
+    "10.0.0.125": "TUBE ASSEMBLY: C9-1 TUBE LINE",
+    "10.0.0.164": "TUBE ASSEMBLY: C10 TUBE LINE",
+    "localhost": "ADMINISTRATOR",
+    "192.168.0.228": "TUBE ASSEMBLY: C4 TUBE LINE"
+};
+async function getCurrentIP() {
+    try {
+        const res = await fetch("../../data/ip.php");
+        const data = await res.json();
+        return data.lan_ip;
+    } catch (err) {
+        console.error("Failed to fetch LAN IP:", err);
+        return null;
+    }
+}
+document.addEventListener("DOMContentLoaded", async () => {
+    const lineSpan = document.getElementById("line");
+    if (!lineSpan) return;
+
+    const currentIP = await getCurrentIP();
+
+    lineSpan.textContent =
+        (currentIP && dashboardNames[currentIP])
+            ? dashboardNames[currentIP]
+            : "PRODUCTION LINE";
+});
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
     fetch("fetches1/startup_handler.php?action=checkPlanFilled")
     .then(res => res.json())

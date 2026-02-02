@@ -178,18 +178,12 @@
         <div id="dashboard-container">
             <div id="dashboard">
 
-                <div class="graph-data-container">
-                    <div class="graph-header">Production vs. Downtime</div>
-                    <div class="dropdown-container">
-                        <select class="dropdown" id="data-selector" onchange="updateChartData()">
-                            <option value="monthly">Monthly Data</option>
-                            <option value="yearly">Yearly Data</option>
-                        </select>
-                    </div>
-                    <canvas id="graph-data" width="800" height="350"></canvas>
-                </div>
-                <div id="line">
-
+                <div id="Download">
+                    <label for="savedDataSelect">Select Data ID:</label>
+                    <select id="savedDataSelect">
+                        <option value="">-- Choose ID --</option>
+                    </select>
+                    <button id="downloadBtn">Download</button>
                 </div>
 
                 <div class="download-production-data">
@@ -207,7 +201,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
 
         <div id="dataentry-container">
@@ -322,7 +315,7 @@
                                         <th>No.</th>
                                         <th>Name</th>
                                         <th>Position</th> 
-                                        <th class="action-col" style="display:none;"></th>
+                                        <th class="action-col" style="display:none;">Action</th>
                                     </tr>                                
                                 </thead>
                                 <tbody>

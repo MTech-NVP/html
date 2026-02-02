@@ -12,91 +12,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
-
-const ctx = document.getElementById('graph-data').getContext('2d');
-
-let chartData = {
-    monthly: {
-        labels: ['January', 'February', 'March', 'April', 'May'],
-        datasets: [{
-                label: 'Production',
-                data: [120, 150, 100, 180, 130],
-                backgroundColor: '#007bff'
-            },
-            {
-                label: 'Downtime',
-                data: [30, 20, 40, 15, 25],
-                backgroundColor: 'red'
-            }
-        ]
-    },
-    yearly: {
-        labels: ['2020', '2021', '2022', '2023', '2024'],
-        datasets: [{
-                label: 'Production',
-                data: [1500, 1800, 1600, 1900, 1700],
-                backgroundColor: 'green'
-            },
-            {
-                label: 'Downtime',
-                data: [300, 250, 350, 200, 400],
-                backgroundColor: 'red'
-            }
-        ]
-    }
-};
-
-let chart = new Chart(ctx, {
-    type: 'bar',
-    data: chartData.monthly,
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Hours'
-                }
-            },
-            x: {
-                title: {
-                    display: true,
-                    text: 'Months'
-                }
-            }
-        },
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    color: '#555'
-                }
-            }
-        }
-    }
-});
-
-function updateChartData() {
-    const selectedData = document.getElementById('data-selector').value;
-    chart.data = chartData[selectedData];
-    chart.options.scales.x.title.text = selectedData === 'monthly' ? 'Months' : 'Years';
-    chart.update();
-}
-
-function downloadData(date, production) {
-    const dataStr = `Date: ${date}\nProduction: ${production}`;
-    const blob = new Blob([dataStr], {
-        type: 'text/plain'
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `production_data_${date}.txt`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
-
 document.getElementById("c4-cont").addEventListener("click", function() {
     window.location.href = "http://10.0.0.189/DOM/files/DOMPlanner/planner.php";
 });
@@ -1305,6 +1220,7 @@ function deleteRow(btn, type) {
         if (resp.success) {
             tr.remove();
             alert("Removed.");
+            toggleDeleteMode();
             reorderLeaders();
             reorderProdStaff();
             loadPerson();
@@ -2294,6 +2210,41 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => console.error('Fetch error:', err));
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const select = document.getElementById("savedDataSelect");
+    const button = document.getElementById("downloadBtn");
+
+    // Fetch IDs for dropdown
+    fetch("../../data/fetch_id.php")
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                alert("Failed to load IDs");
+                return;
+            }
+
+            data.ids.forEach(row => {
+                const opt = document.createElement("option");
+                opt.value = row.id;
+                opt.textContent = `ID ${row.id} - ${row.date_saved}`;
+                select.appendChild(opt);
+            });
+        })
+        .catch(err => alert("Fetch error: " + err));
+
+    // Download Excel
+    button.addEventListener("click", () => {
+        const id = select.value;
+        if (!id) {
+            alert("Please select a record");
+            return;
+        }
+
+        window.location.href = `../../data/excel.php?id=${id}`;
+    });
+});
+
 
 
         

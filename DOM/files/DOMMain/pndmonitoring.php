@@ -41,7 +41,7 @@
                 <span class="corner bottom-left"></span>
                 <span class="corner bottom-right"></span>
             </div>
-        </div>-->
+        </div> -->
         <div id="nav-buttons">
             <button class="nav-btns">
                 Dashboard
@@ -109,9 +109,11 @@
                                 <img src="fetches1/domfetch.php?action=fetchProdStaffPicture" alt="wala?" width="72" height="72">
                             </div>
                             <div class="infos">
-                                <div class="name"><span>Verdon</span><span>Raven Neil A.</span></div>
+                                <div class="name"><span></span><span></span></div>
                                 <div class="person-title">
-                                    Process 1
+                                    
+                                </div>
+                                <div class="date-from">
                                 </div>
                             </div>
                         </div>
@@ -563,15 +565,29 @@
                         </button>
                         <button class="edits" id="editsbtn2">
                             <div class="title-edit">
+                                Add Downtime
+                                <p>Form for filling up the downtime occurred in a certain time and its details.</p>                                    
+                            </div>
+                            <div>></div>
+                        </button> 
+                        <button class="edits" id="editsbtn3">
+                            <div class="title-edit">
                                 Edit Downtime Details
                                 <p>Edits the whole Downtime Details occurred on the current day.</p>                                    
                             </div>
                             <div>></div>
                         </button>
-                        <button class="edits" id="editsbtn3">
+                        <button class="edits" id="editsbtn4">
                             <div class="title-edit">
                                 Add NG (No Good) Quantity
                                 <p>Form for filling the NG in a certain time and its details.</p>                                    
+                            </div>
+                            <div>></div>
+                        </button> 
+                        <button class="edits" id="editsbtn5">
+                            <div class="title-edit">
+                                Change Plan
+                                <p>Change the current plan running in the production line.</p>                                    
                             </div>
                             <div>></div>
                         </button> 
@@ -678,6 +694,57 @@
                     </div>
                 </div>    
 
+                <div class="data-handlers" id="add-downtime" style="display: none;">
+                    <div class="headers-handlers">
+                        <button class="back-btn">< Back</button>
+                        <h2>Add Downtime</h2>
+                    </div>                   
+                    <div class="data-content" id="daily-downtime-input">
+                        <div id="input-container">
+                            <div id="input-dt-1">
+                                <label for="add-time-occurred">Time Occurred:</label>
+                                <select id="add-time-occurred"></select>
+                            </div>
+
+                            <div id="input-dt-2">
+                                <label for="process-add">Process:</label>
+                                <input type="text" id="process-add">
+                            </div>
+
+                            <div id="input-dt-3">
+                                <label for="dt-details-add">Downtime Details:</label>
+                                <input type="text" id="dt-details-add">
+                            </div>
+
+                            <div id="input-dt-4">
+                                <label for="countermeasure-add">Countermeasure:</label>
+                                <input type="text" id="countermeasure-add">
+                            </div>
+
+                            <div id="input-dt-6">
+                                <label>Time Range:</label>
+                                <div id="time-wrapper">
+                                    <input type="time" step="1" id="time-start-add">
+                                    -
+                                    <input type="time" step="1" id="time-end-add">
+                                </div>
+                            </div>
+
+                            <div id="input-dt-7">
+                                <label for="pic-add">Person-in-Charge</label>
+                                <input type="text" id="pic-add">
+                            </div>
+
+                            <div id="input-dt-5">
+                                <label for="remarks-add">Remarks:</label>
+                                <input type="text" id="remarks-add">
+                            </div>
+
+                            <button id="add-dt-btn">Add Downtime</button>
+                        </div>
+                    </div> 
+                </div>
+
                 <div class="data-handlers" id="edit-downtime" style="display:none;">
                     <div class="headers-handlers">
                         <button class="back-btn">< Back</button>
@@ -720,24 +787,25 @@
                             </button>
                         </div>
                     </div>
+                </div>
 
-
-
-         <!--   <div class="data-handlers" id="change-manpower" style="display:none;">
+                <div class="data-handlers" id="change-plan" style="display: none;">
                     <div class="headers-handlers">
                         <button class="back-btn">< Back</button>
-                        <h2>Change Manpower</h2>
+                        <h2>Change Plan</h2>
+                    </div>                   
+                    <div class="data-content" id="change-plan-input">
+                    <div id="plans-container">
+                        <div class="plans-list card" id="plan-1">
+                        </div>
                     </div>
-                </div> -->
-
+                    </div> 
+                </div>
             </div>
 
             <div id="generalization-container" style="display:none;">
-                <!-- Generalization content goes here -->
+                    <!-- Generalization content goes here -->
             </div>
-
-            </div>
-            
         </div>
         <div id="keyboard" class="keyboard">
             <div class="keyboard-row" data-row="1">

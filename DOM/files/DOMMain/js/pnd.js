@@ -39,40 +39,123 @@ const dashboardNames = {
     "192.168.0.228": "TUBE ASSEMBLY: C4 TUBE LINE"
 }
 
-const currentIP = window.location.hostname;
+async function getCurrentIP() {
+    try {
+        const res = await fetch("../../data/ip.php");
+        const data = await res.json();
+        currentIP = data.lan_ip;
+        console.log("LAN IP:", currentIP);
+        return currentIP;
+    } catch (err) {
+        console.error("Failed to fetch LAN IP:", err);
+        return null;
+    }
+}
 
-const dashboardTitle = dashboardNames[currentIP] || "PRODUCTION LINE";
+document.addEventListener("DOMContentLoaded", async () => {
+    const titleDiv = document.getElementById("production_line_name");
 
+    const currentIP = await getCurrentIP();
 
-document.addEventListener("DOMContentLoaded", function() {
-        const titleSpan = document.querySelector("#production_line_name");
-        if (titleSpan) {
-            titleSpan.textContent = dashboardTitle;
-        }
-    });
-    
-/*fullscreen, just open to use
-    const fullscreenButton = document.getElementById('fullscreen-button');
-    const fullscreenIcon = document.getElementById('fullscreen-icon');
-
-    fullscreenButton.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    }); 
-
-    // Listen for fullscreen changes
-document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement) {
-        fullscreenIcon.classList.add('fullscreen');
+    if (currentIP && dashboardNames[currentIP]) {
+        titleDiv.textContent = dashboardNames[currentIP];
     } else {
-        fullscreenIcon.classList.remove('fullscreen');
+        titleDiv.textContent = "NO INTERNET";
     }
 });
 
-asd*/
+/*
+document.addEventListener("DOMContentLoaded", () => {
+    const titleSpan = document.querySelector("#production_line_name");
+    if (titleSpan && typeof dashboardTitle !== "undefined") {
+        titleSpan.textContent = dashboardTitle;
+    }
+
+    const fullscreenButton = document.getElementById("fullscreen-button");
+    const fullscreenIcon = document.getElementById("fullscreen-icon");
+
+    // --- FULLSCREEN HELPERS ---
+    function isFullscreen() {
+        return (
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement
+        );
+    }
+
+    function requestFullscreen(elem) {
+        if (elem.requestFullscreen) return elem.requestFullscreen();
+        if (elem.webkitRequestFullscreen) return elem.webkitRequestFullscreen();
+        if (elem.mozRequestFullScreen) return elem.mozRequestFullScreen();
+        if (elem.msRequestFullscreen) return elem.msRequestFullscreen();
+    }
+
+    function exitFullscreen() {
+        if (document.exitFullscreen) return document.exitFullscreen();
+        if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+        if (document.mozCancelFullScreen) return document.mozCancelFullScreen();
+        if (document.msExitFullscreen) return document.msExitFullscreen();
+    }
+
+    // --- OPTIONAL: LOCK ORIENTATION (KIOSK-LIKE) ---
+    async function lockOrientation() {
+        if (screen.orientation && screen.orientation.lock) {
+            try {
+                await screen.orientation.lock("landscape");
+            } catch (err) {
+                console.warn("Orientation lock denied:", err);
+            }
+        }
+    }
+
+    async function unlockOrientation() {
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+    }
+
+    // --- BUTTON CLICK ---
+    fullscreenButton.addEventListener("click", async () => {
+        if (!isFullscreen()) {
+            await requestFullscreen(document.documentElement);
+            await lockOrientation();
+        } else {
+            await exitFullscreen();
+            await unlockOrientation();
+        }
+    });
+
+    // --- FULLSCREEN CHANGE LISTENER ---
+    const fullscreenEvents = [
+        "fullscreenchange",
+        "webkitfullscreenchange",
+        "mozfullscreenchange",
+        "MSFullscreenChange"
+    ];
+
+    fullscreenEvents.forEach(event => {
+        document.addEventListener(event, () => {
+            if (isFullscreen()) {
+                fullscreenIcon.classList.add("fullscreen");
+                document.body.classList.add("fullscreen-active");
+            } else {
+                fullscreenIcon.classList.remove("fullscreen");
+                document.body.classList.remove("fullscreen-active");
+                unlockOrientation();
+            }
+        });
+    });
+
+    // --- PREVENT ACCIDENTAL ESC (LIMITED BY BROWSER) ---
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isFullscreen()) {
+            e.preventDefault();
+            console.warn("ESC pressed — browser may still exit fullscreen");
+        }
+    });
+});*/
+
 
 //LINE NAMES
 ////////////////////////////////////////////////////////////////
@@ -543,31 +626,31 @@ function updateTable() {
             const hasPlanOutput = row.plan_output && Number(row.plan_output) > 0;
             if (hasPlanOutput) lastDataIndex = d;
         }
-        const activeRows = lastDataIndex + 1; // total number of active rows
+
+        // --- Skip first row without plan_output ---
+        let firstActiveIndex = 0;
+        for (let d = 0; d <= lastDataIndex; d++) {
+            const row = data[d];
+            const hasPlanOutput = row.plan_output && Number(row.plan_output) > 0;
+            if (hasPlanOutput) {
+                firstActiveIndex = d;
+                break;
+            }
+        }
+
+        const activeRows = lastDataIndex - firstActiveIndex + 1; // total active rows excluding leading empty
 
         let cumulativeTotal = 0;
         const hourStart = 6; // first row = 6AM
 
         for (let i = 2; i < rows.length; i++) { // skip 2 header rows
             const dataIndex = i - 2;
-
-            if (dataIndex > lastDataIndex) {
-                rows[i].style.display = "none";
-                const cells = rows[i].querySelectorAll('td');
-                cells[6].textContent = 0; // cumulative total
-                cells[9].textContent = "";
-                continue;
-            } else {
-                rows[i].style.display = "";
-            }
-
             const row = rows[i];
             const cells = row.querySelectorAll('td');
             const rowData = data[dataIndex] || {};
-
+            
             const planOutput = Number(rowData.plan_output) || 0;
             const actualOutput = Number(rowData.actual_output) || 0;
-
             // --- Determine remark ---
             const rowHourStart = hourStart + dataIndex;
             const rowHourEnd = rowHourStart + 1;
@@ -629,13 +712,30 @@ function updateTable() {
 
             cells[8].textContent = rowData.ng_quantity ?? '-';
             updateNGOutput();
+            if (dataIndex < firstActiveIndex || dataIndex > lastDataIndex) {
+                // --- Hide row ---
+                row.style.display = "none";
+
+                // --- Clear / reset relevant cells ---
+                cells[6].innerHTML = "0"; // cumulative total
+                cells[9].innerHTML = "-"; // remarks or placeholder
+
+                // --- Update database if needed ---
+                if (rowData.id) {
+                    sendTotalToDB(rowData.id, 0);
+                    sendRemarksToDB(rowData.id, "-");
+                }
+            } else {
+                // --- Show active row ---
+                row.style.display = "";
+            }
         }
 
         // --- Call updateOverview after table update ---
         updateOverview(activeRows);
-        updateTimelyOutputs(activeRows);
+        updateTimelyOutputs(firstActiveIndex, lastDataIndex);
         if (!editing) {
-            fetchOutputs(activeRows);
+            fetchOutputs();
         }
     })
     .catch(err => console.error(err));
@@ -805,8 +905,23 @@ function loadProdStaff() {
                 titleDiv.className = "person-title";
                 titleDiv.textContent = staff.title;
 
+                const dateDiv = document.createElement("div");
+                const certRange = document.createElement("div");
+                certRange.className = "cert-range";
+
+                // Handle empty dates safely
+                const lc = staff.lcdate ? staff.lcdate : "N/A";
+                const rc = staff.rcdate ? staff.rcdate : "N/A";
+
+                certRange.innerHTML = `<span>${lc} - ${rc}</span>`;
+
+                dateDiv.className = "date-from";
+                dateDiv.textContent = "Certification:";
+
                 infos.appendChild(nameDiv);
                 infos.appendChild(titleDiv);
+                infos.appendChild(dateDiv);
+                infos.appendChild(certRange);
 
                 // Append to staffDiv
                 staffDiv.appendChild(pictureBox);
@@ -814,6 +929,8 @@ function loadProdStaff() {
 
                 // Append staffDiv to container
                 container.appendChild(staffDiv);
+
+                
             });
         })
         .catch(err => console.error("Error loading staff:", err));
@@ -861,12 +978,16 @@ buttonsset.forEach(btn => {
 });
 
 function resetDataHandlingSections() {
+    const confirmDiscard = confirm("Are you sure you want to discard your changes?");
+    if (!confirmDiscard) return;
+
     const sections = document.querySelectorAll('.data-handlers');
     const selectionView = document.getElementById('data-handling-selection');
 
     sections.forEach(section => section.style.display = 'none');
     selectionView.style.display = 'block';
 
+    // Reset downtime rows in edit mode
     const editWrappers = document.querySelectorAll('.append-occurred-downtime');
     editWrappers.forEach(wrapper => {
         const cancelBtn = wrapper.querySelector('.cancel-downtime-button');
@@ -875,19 +996,28 @@ function resetDataHandlingSections() {
         }
     });
 
+    // Reset all inputs
+    resetInputs();
+
     // Restore modal position
     const modal = document.querySelector('.modal');
     if(modal) modal.style.bottom = '';
 }
 
 function showDataHandling() {
-    resetDataHandlingSections(); // reset first
+    const sections = document.querySelectorAll('.data-handlers');
+    const isAnyVisible = Array.from(sections).some(section => section.offsetParent !== null);
+
+    if (isAnyVisible) {
+        resetDataHandlingSections();
+    }
+
     document.getElementById('data-handling-container').style.display = 'block';
     document.getElementById('generalization-container').style.display = 'none';
 }
 
+
 function showGeneralization() {
-    resetDataHandlingSections(); // reset first
     document.getElementById('data-handling-container').style.display = 'none';
     document.getElementById('generalization-container').style.display = 'block';
 }
@@ -909,6 +1039,11 @@ buttonsedit.forEach((btn, index) => {
 const backBtns = document.querySelectorAll('.back-btn');
 backBtns.forEach(btn => {
     btn.addEventListener('click', () => {
+
+        // Confirm before discarding changes
+        const confirmDiscard = confirm("Are you sure you want to discard your changes?");
+        if (!confirmDiscard) return;
+
         const sections = document.querySelectorAll('.data-handlers');
         const selectionView = document.getElementById('data-handling-selection');
 
@@ -923,26 +1058,42 @@ backBtns.forEach(btn => {
         editWrappers.forEach(wrapper => {
             const cancelBtn = wrapper.querySelector('.cancel-downtime-button');
             if (cancelBtn && cancelBtn.style.display !== 'none') {
-                // Trigger the cancel handler programmatically
                 cancelBtn.click();
             }
         });
+
+        // Reset all inputs in the form
+        resetInputs();
     });
 });
+
+function resetInputs() {
+    const inputs = document.querySelectorAll('#input-container input, #input-container select');
+    inputs.forEach(input => {
+        if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0; // reset selects
+        } else {
+            input.value = ''; // reset text/time inputs
+        }
+    });
+}
+
 
 
 
 //////////////////////////    EDIT OUTPUT DAILY /////////////////////////////
-function updateTimelyOutputs(activeRows) {
+function updateTimelyOutputs(firstActiveIndex, lastDataIndex) {
     const outputs = document.querySelectorAll('#timely-outputs .outputs');
 
     outputs.forEach((div, index) => {
-        if (index < activeRows) {
-            div.style.display = "flex";   // show only needed
+        if (index >= firstActiveIndex && index <= lastDataIndex) {
+            // Match table: show exact same row positions
+            div.style.display = "flex";
         } else {
-            div.style.display = "none";    // hide the rest
+            // Match table: hide leading + trailing zeros
+            div.style.display = "none";
 
-            // Optional: clear hidden inputs
+            // Clear hidden inputs
             const input = div.querySelector('input');
             if (input) input.value = "";
         }
@@ -983,24 +1134,29 @@ keys.forEach(key => {
 let editing = false;
 
 // --- FETCH OUTPUTS ---
-function fetchOutputs(activeRows) {
-    if (editing) return; // do not overwrite while editing
+function fetchOutputs() {
+    if (editing) return; // don't overwrite while editing
 
     fetch('fetches1/domfetch.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `action=fetch_outputs&activeRows=${activeRows}`
+        body: new URLSearchParams({ action: 'fetch_outputs' })
     })
     .then(res => res.json())
     .then(data => {
+        // data should be in order of hours 6→19
         data.forEach((row, index) => {
-            const inputId = index + 6; // now starts from 1
+            const inputId = index + 6; // 6 = 6AM, 7 = 7AM, etc
             const input = document.getElementById(inputId);
-            if (input) input.value = row.actual_output;
+            if (input) {
+                input.value = row.actual_output; // assign regardless of display
+            }
         });
     })
     .catch(err => console.error('Fetch Error:', err));
 }
+
+
 
 // --- EDIT / CONFIRM / CANCEL ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -1150,27 +1306,59 @@ function createDowntimeRow(row) {
         <p class="p8"><label for="picv" class="pic">Person-in-Charge:</label> 
         <span class="pic-value" id="picv">${escapeHtml(row.pic)}</span>
         </p>
-        <button class="edit-downtime-button">Edit</button>
+        <div id="edit-or-delete"> 
+            <button class="edit-downtime-button">Edit</button>
+            <button class="delete-downtime-button">Delete</button>
+        </div>
+
         <div id="edit-container-button">
-        <button class="save-downtime-button" style="display:none;">Save</button>
-        <button class="cancel-downtime-button" style="display:none;">Cancel</button> 
+            <button class="save-downtime-button" style="display:none;">Save</button>
+            <button class="cancel-downtime-button" style="display:none;">Cancel</button> 
         </div>
     `;
 
     // Buttons
     const editBtn = wrapper.querySelector('.edit-downtime-button');
+    const delBtn = wrapper.querySelector('.delete-downtime-button');
     const saveBtn = wrapper.querySelector('.save-downtime-button');
     const cancelBtn = wrapper.querySelector('.cancel-downtime-button');
 
     editBtn.addEventListener('click', () => enterEditMode(wrapper, row));
     saveBtn.addEventListener('click', () => saveRow(wrapper, row));
     cancelBtn.addEventListener('click', () => cancelEdit(wrapper, row));
+    delBtn.addEventListener('click', () => deleteRow(row.dt_id, wrapper)); // Use id now
+
 
     return wrapper;
 }
 
+function deleteRow(dt_id, wrapper) {
+    const proceed = confirm("Are you sure you want to delete this downtime record?");
+    if (!proceed) return;
+
+    // Send dt_id to server; server will figure out the correct id
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: 'delete_downtime', dt_id }).toString()
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            alert('Downtime record deleted successfully!');
+            wrapper.remove(); // Remove from DOM immediately
+        } else {
+            alert('Failed to delete.');
+            console.error("Server error:", resp.message);
+        }
+    })
+    .catch(err => console.error("Fetch error:", err));
+}
+
+
 function enterEditMode(wrapper, row) {
     // Move modal up
+    const delBtn = wrapper.querySelector('.delete-downtime-button');
     const modal = document.querySelector('.modal');
     if(modal) modal.style.bottom = '100px';
 
@@ -1220,6 +1408,7 @@ function enterEditMode(wrapper, row) {
 
     // Show Save / Cancel, hide Edit
     wrapper.querySelector('.edit-downtime-button').style.display = 'none';
+    delBtn.style.display = 'none';
     wrapper.querySelector('.save-downtime-button').style.display = 'inline-block';
     wrapper.querySelector('.cancel-downtime-button').style.display = 'inline-block';
 }
@@ -1228,6 +1417,7 @@ function cancelEdit(wrapper, row) {
     // Restore modal position
     const modal = document.querySelector('.modal');
     if(modal) modal.style.bottom = ''; // revert to original CSS
+    const delBtn = wrapper.querySelector('.delete-downtime-button');
 
     // Restore original spans
     const timeRange = `${Number(row.dt_id)+5}:00 - ${Number(row.dt_id)+6}:00`;
@@ -1249,6 +1439,7 @@ function cancelEdit(wrapper, row) {
     wrapper.querySelector('.save-downtime-button').style.display = 'none';
     wrapper.querySelector('.cancel-downtime-button').style.display = 'none';
     wrapper.querySelector('.edit-downtime-button').style.display = 'inline-block';
+    delBtn.style.display = 'inline-block';
 
     if (downtimeInterval) clearInterval(downtimeInterval);
     downtimeInterval = setInterval(() => {
@@ -1293,6 +1484,7 @@ function saveRow(wrapper, row) {
         time_occurred,
         time_ended
     };
+    console.log(sendData);
 
     fetch('fetches1/domfetch.php', {
         method: 'POST',
@@ -1303,6 +1495,10 @@ function saveRow(wrapper, row) {
     .then(resp => {
         if (resp.success) {
             alert('Data saved successfully!');
+            console.log({
+                sent: sendData,
+                response: resp
+            });
             fetchDowntime();
         } else {
             alert('Failed to update.');
@@ -1316,6 +1512,85 @@ function saveRow(wrapper, row) {
     })
     .catch(err => console.error("Fetch error:", err));
 }
+
+document.addEventListener("DOMContentLoaded", loadPlans);
+
+    function loadPlans() {
+        Promise.all([
+            fetch('fetches1/domfetch.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=get_all_plans'
+            }).then(res => res.json()),
+
+            fetch('fetches1/domfetch.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=get_active_plan'
+            }).then(res => res.json())
+        ])
+        .then(([plans, active]) => {
+            renderPlans(plans, active.active_plan);
+        });
+    }
+
+    function renderPlans(plans, activePlanId) {
+        const container = document.getElementById('plans-container');
+        container.innerHTML = '';
+
+        plans.forEach(plan => {
+
+            const isActive = Number(plan.id) === Number(activePlanId);
+
+            container.innerHTML += `
+                <div class="plans-list card">
+                    <div class="card-row"><strong>Plan No.:</strong> ${plan.id}</div>
+                    <div class="card-row"><strong>Part Number (Model):</strong> ${plan.partnumber} (${plan.model})</div>
+                    <div class="card-row"><strong>Production Hours:</strong> ${plan.prodhrs}</div>
+                    <div class="card-row"><strong>Time:</strong> ${plan.time}</div>
+                    <div class="card-row"><strong>Planned Output:</strong> ${plan.planned_output}</div>
+
+                    <div class="card-actions">
+                        <button class="btn use-btn"
+                                data-id="${plan.id}"
+                                style="${isActive ? 'display:none' : ''}">
+                            Use
+                        </button>
+
+                        <button class="btn inuse-btn" style="${isActive ? '' : 'display:none'}">
+                            In Use
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+document.addEventListener("click", function (e) {
+
+    if (!e.target.classList.contains("use-btn")) return;
+
+    const newPlanId = e.target.dataset.id;
+
+    if (!confirm("Use this plan? Current plan data will be transferred.")) {
+        return;
+    }
+
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=switch_plan&new_plan_id=${newPlanId}`
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            location.reload(); // ✅ FULL PAGE RELOAD
+        } else {
+            alert(resp.msg || "Failed to switch plan");
+        }
+    });
+});
+
 
 
 
@@ -1542,10 +1817,88 @@ function updateNGOutput() {
     });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const select = document.getElementById("add-time-occurred");
+
+    // 6:00–7:00 (1) to 19:00–20:00 (14)
+    for (let i = 0; i < 14; i++) {
+        const start = 6 + i;
+        const end = start + 1;
+
+        const option = document.createElement("option");
+        option.value = i + 1;
+        option.textContent = `${start}:00 - ${end}:00`;
+        select.appendChild(option);
+    }
+});
+
+document.getElementById("add-dt-btn").addEventListener("click", () => {
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const params = new URLSearchParams();
+    params.append("action", "add_downtime");
+    params.append(
+        "dt_id",
+        parseInt(document.getElementById("add-time-occurred").value, 10)
+    );
+    params.append("process", document.getElementById("process-add").value);
+    params.append("details", document.getElementById("dt-details-add").value);
+    params.append("countermeasure", document.getElementById("countermeasure-add").value);
+    params.append("remarks", document.getElementById("remarks-add").value);
+    params.append("pic", document.getElementById("pic-add").value);
+    params.append(
+        "time_start",
+        `${today} ${document.getElementById("time-start-add").value}`
+    );
+    params.append(
+        "time_end",
+        `${today} ${document.getElementById("time-end-add").value}`
+    );
+
+    console.log("Downtime data to be sent:");
+    console.log(Object.fromEntries(params.entries()));
+
+    fetch("fetches1/domfetch.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString()
+    })
+    .then(res => res.text())
+    .then(msg => {
+        alert(msg);
+
+        // ✅ Reset inputs
+        const inputs = document.querySelectorAll('#input-container input, #input-container select');
+        inputs.forEach(input => {
+            if(input.tagName === "SELECT") {
+                input.selectedIndex = 0;
+            } else {
+                input.value = "";
+            }
+        });
+
+        // ✅ Hide downtime form, go back to selection view
+        const sections = document.querySelectorAll('.data-handlers');
+        sections.forEach(section => section.style.display = 'none');
+
+        const selectionView = document.getElementById('data-handling-selection');
+        if(selectionView) selectionView.style.display = 'block';
+    });
+});
+
+
 // Close modal
 function closeSettings() {
     settingsOverlay.classList.remove("active");
-    resetDataHandlingSections();
+    const sections = document.querySelectorAll('.data-handlers');
+    const isAnyVisible = Array.from(sections).some(section => section.offsetParent !== null);
+
+    if (isAnyVisible) {
+        resetDataHandlingSections();
+    }
 }
 
 let currentInput = null;
@@ -1632,6 +1985,29 @@ function updateKeys() {
         }
     });
 }
+
+document.getElementById("save-btn").addEventListener("click", () => {
+    // --- Confirmation ---
+    const proceed = confirm("Are you sure you want to save the data? This action will create a snapshot.");
+    if (!proceed) return;
+
+    // --- Fetch POST to save ---
+    fetch("fetches1/domfetch.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ action: "save_data" })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("SWP data saved successfully!");
+        } else {
+            alert("Error saving SWP data: " + data.message);
+        }
+    })
+    .catch(err => alert("❌ Fetch error: " + err));
+});
+
 
 
 

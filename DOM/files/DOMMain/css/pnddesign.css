@@ -55,7 +55,7 @@
     border: 1px solid white;
 }
 
-/*fullscreen css #fullscreen-button {
+#fullscreen-button {
     width: 40px;
     height: 30px;
     cursor: pointer;
@@ -103,7 +103,7 @@
 .fullscreen .top-right { transform: rotate(-90deg); }
 .fullscreen .bottom-left { transform: rotate(-270deg); }
 .fullscreen .bottom-right { transform: rotate(0deg); }
-*/
+
 
 #nav-buttons{
     margin: 0px 50px 0px 0px;
@@ -270,6 +270,16 @@
 
 .person-title{
   font-size: 0.65rem;
+}
+
+.date-from{
+  margin-top: 2px;
+  font-size: 0.60rem;
+  font-weight: bold;
+}
+
+.cert-range{
+  font-size: 0.7rem;
 }
 
 #center-contents{
@@ -1125,6 +1135,17 @@ input[type=number]::-webkit-inner-spin-button {
   margin-top: 5px;
 }
 
+.delete-downtime-button{
+  width: 100px;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
 .edit-downtime-button:hover{
   background-color: #004fa3;
 }
@@ -1189,7 +1210,7 @@ input[type=number]::-webkit-inner-spin-button {
   font-size: 0.8rem;
   font-weight: bold;
 }
-.per-form input, select, option{
+.per-form input, .per-form select, .per-form option{
   width: 200px;
   height: 30px;
   padding: 5px;
@@ -1232,6 +1253,156 @@ input[type=number]::-webkit-inner-spin-button {
   color: white;
   font-weight: bold;
 }
+
+/* Container */
+#input-container {
+    width: 70%;
+    height: 365px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+}
+
+/* Make full-width rows */
+#input-dt-6,
+#add-dt-btn {
+    grid-column: 1 / -1;
+}
+
+/* Input groups */
+#input-container > div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+/* Labels */
+#input-container label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 3px;
+}
+
+/* Inputs & Select */
+#input-container input,
+#input-container select {
+    height: 30px;
+    padding: 0px 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fafafa;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+#input-container input:focus,
+#input-container select:focus {
+    outline: none;
+    border-color: #999;
+    background: #fff;
+}
+
+/* Time range wrapper */
+#time-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#time-wrapper input[type="time"] {
+    flex: 1;
+}
+
+/* Button */
+#add-dt-btn {
+    margin-top: 5px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#add-dt-btn:hover {
+    background: #333;
+}
+
+#add-dt-btn:active {
+    transform: scale(0.98);
+}
+
+#plans-container {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    width: 100%;
+    overflow: auto;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px 18px;
+    width: 320px;
+    height: 200px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    font-family: Arial, sans-serif;
+}
+
+.card-row {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.card-row strong {
+    color: #555;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.btn {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.use-btn {
+    background: #007bff;
+    color: white;
+}
+
+.use-btn:hover {
+    background: #0069d9;
+}
+
+.inuse-btn {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.inuse-btn:hover {
+    background: #d5d5d5;
+}
+
 
 #generalization-container{
   width: 80%;
