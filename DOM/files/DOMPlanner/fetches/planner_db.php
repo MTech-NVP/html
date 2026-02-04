@@ -745,10 +745,32 @@ if ($action === 'deletePerson') {
     exit;
 }
 
+if(isset($_GET['action']) && $_GET['action'] === 'get_saved_data' && isset($_GET['id'])) {
+    header('Content-Type: application/json');
+    $id = (int)$_GET['id'];
 
+    $conn = new mysqli("localhost", "root", "123", "monitoring");
+    if ($conn->connect_error) {
+        echo json_encode(["success" => false, "message" => "DB connection failed"]);
+        exit;
+    }
 
+    $stmt = $conn->prepare("SELECT * FROM saved_data WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
 
+    if(!$data) {
+        echo json_encode(["success" => false, "message" => "No data found for ID $id"]);
+        exit;
+    }
 
+    echo json_encode(["success" => true, "data" => $data]);
+    $stmt->close();
+    $conn->close();
+    exit;
+}
 /* ====================================
    UNKNOWN ACTION
 ==================================== */

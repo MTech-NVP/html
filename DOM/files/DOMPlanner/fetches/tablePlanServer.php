@@ -1,6 +1,7 @@
 <?php
 // Show all errors for debugging
 ob_clean();
+date_default_timezone_set('Asia/Manila');
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -399,8 +400,117 @@ if ($action === 'get_by_plan_id_value') {
             echo json_encode(["error" => $stmt->error]);
         }
 
-    } else {
-        echo json_encode(["error" => "Invalid action"]);
     }
+
+    if ($action === 'get_latest_swp') {
+        // Get latest file
+        $result = $conn->query("
+            SELECT f.filename, f.file, f.date_uploaded, f.initial_issue, f.revision_date, l.log
+            FROM swp_file f
+            LEFT JOIN swp_logs l ON f.date_uploaded = l.date_uploaded
+            ORDER BY f.id DESC LIMIT 1
+        ");
+
+        if ($result && $row = $result->fetch_assoc()) {
+            echo json_encode([
+                'success' => true,
+                'filename' => $row['filename'],
+                'date_uploaded' => $row['date_uploaded'],
+                'initial_issue' => $row['initial_issue'],
+                'revision_date' => $row['revision_date'],
+                'file' => base64_encode($row['file']),
+                'log' => $row['log']
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No file found']);
+        }
+    }
+
+    if($action === 'get_upload_logs'){
+        // Fetch logs directly from swp_logs
+        $result = $conn->query("
+            SELECT log, date_uploaded
+            FROM swp_logs
+            ORDER BY date_uploaded DESC
+        ");
+
+        $logs = [];
+        if($result){
+            while($row = $result->fetch_assoc()){
+                $logs[] = [
+                    'log' => $row['log'],
+                    'date_uploaded' => $row['date_uploaded']
+                ];
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'logs' => $logs
+        ]);
+    }
+
+    if($action === 'replace_swp'){
+
+        date_default_timezone_set('Asia/Manila'); // ✅ set correct timezone
+
+        if (!isset($_FILES['file']) || empty($_POST['initial_issue'])) {
+            echo json_encode(['success'=>false, 'message'=>'Missing required fields']);
+            exit;
+        }
+
+        $newFile = $_FILES['file'];
+        $initial_issue = $_POST['initial_issue'];
+        $revision_date = empty($_POST['revision_date']) ? null : $_POST['revision_date'];
+
+        // Current timestamp for this upload
+        $timestamp = date('Y-m-d H:i:s');
+
+        // Get current SWP file for logging
+        $oldRes = $conn->query("SELECT filename FROM swp_file ORDER BY id DESC LIMIT 1");
+        if($oldRes && $oldRow = $oldRes->fetch_assoc()){
+            $oldFilename = $oldRow['filename'];
+        } else {
+            $oldFilename = '';
+        }
+
+        // Read new file content
+        $newFileContent = file_get_contents($newFile['tmp_name']);
+        $newFilename = $newFile['name'];
+
+        // Start transaction
+        $conn->begin_transaction();
+        try {
+            // Update swp_file table with new file and current timestamp
+            $stmt = $conn->prepare("UPDATE swp_file SET filename=?, file=?, initial_issue=?, revision_date=?, date_uploaded=? ORDER BY id DESC LIMIT 1");
+            $stmt->bind_param('sssss', $newFilename, $newFileContent, $initial_issue, $revision_date, $timestamp);
+            $stmt->execute();
+
+            // Insert into swp_logs with the same timestamp
+            if($oldFilename){
+                $logText = "New File \"$newFilename\" has been replaced from \"$oldFilename\"";
+                $stmtLog = $conn->prepare("INSERT INTO swp_logs (log, date_uploaded) VALUES (?, ?)");
+                $stmtLog->bind_param('ss', $logText, $timestamp);
+                $stmtLog->execute();
+            }
+
+            $conn->commit();
+
+            echo json_encode([
+                'success'=>true,
+                'new_filename'=>$newFilename,
+                'initial_issue'=>$initial_issue,
+                'revision_date'=>$revision_date,
+                'date_uploaded'=>$timestamp,
+                'new_file_base64'=>base64_encode($newFileContent)
+            ]);
+
+        } catch(Exception $e){
+            $conn->rollback();
+            echo json_encode(['success'=>false, 'message'=>$e->getMessage()]);
+        }
+    }
+
+
 
 ?>

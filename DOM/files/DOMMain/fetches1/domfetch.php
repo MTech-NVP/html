@@ -187,7 +187,7 @@ if ($action === 'update_output_durations') {
     $conn->query("
         UPDATE dt_details
         SET id = (@seq := @seq + 1)
-        ORDER BY id ASC
+        ORDER BY time_occurred ASC
     ");
 
     // Step 2: Update OutputTable.dt_mins based on sum of durations from dt_details
@@ -1107,8 +1107,6 @@ if ($_POST['action'] === 'delete_downtime') {
     exit;
 }
 
-
-
 if ($actionType === 'update_downtime') {
     // Get POST values and sanitize
     $dt_id = intval($_POST['dt_id'] ?? 0);
@@ -1166,7 +1164,6 @@ if ($action === 'add_ng_detail') {
     exit;
 }
 
-
 if ($action === 'update_ng_output') {
     $today = date('Y-m-d');
 
@@ -1203,32 +1200,35 @@ if ($_POST['action'] === 'get_all_plans') {
 
         $cycletime = floatval($row['cycletime']) ?: 1; // prevent divide by zero
         $plannedOutput = 0;
-        $lastMins = 0;
+        $firstSlot = 0;
+        $lastSlot = 0;
 
-        /* ---------- EXACT SAME LOGIC AS YOUR EXAMPLE ---------- */
         for ($i = 1; $i <= 14; $i++) {
-            $mins = intval($row["mins$i"]); // NULL → 0
-
+            $mins = intval($row["mins$i"]);
             if ($mins > 0) {
-                $lastMins = $i;
+                if ($firstSlot === 0) $firstSlot = $i; // first non-zero slot
+                $lastSlot = $i; // last non-zero slot
             }
-
-            // integer per-slot computation
             $plannedOutput += intval(($mins * 60) / $cycletime);
         }
 
-        /* ---------- TIME DISPLAY ---------- */
-        if ($lastMins > 0) {
-            $endHour = 6 + $lastMins;
-            if ($endHour >= 24) $endHour -= 24;
+        // ---------- TIME DISPLAY ----------
+        if ($firstSlot > 0 && $lastSlot > 0) {
+            $startHour = 6 + ($firstSlot - 1); // slot 1 = 6 AM
+            $endHour   = 6 + $lastSlot;        // slot 1 ends at 7 AM, slot 2 ends at 8 AM
 
-            $period = $endHour >= 12 ? "PM" : "AM";
-            $hour12 = $endHour % 12;
-            if ($hour12 == 0) $hour12 = 12;
+            // convert to 12-hour format
+            $startHour12 = $startHour % 12;
+            if ($startHour12 == 0) $startHour12 = 12;
+            $startPeriod = $startHour >= 12 ? "PM" : "AM";
 
-            $timeDisplay = "6:00 AM - $hour12:00 $period";
+            $endHour12 = $endHour % 12;
+            if ($endHour12 == 0) $endHour12 = 12;
+            $endPeriod = $endHour >= 12 ? "PM" : "AM";
+
+            $timeDisplay = "$startHour12:00 $startPeriod - $endHour12:00 $endPeriod";
         } else {
-            $timeDisplay = "6:00 AM";
+            $timeDisplay = "6:00 AM"; // no production
         }
 
         $plans[] = [
@@ -1316,6 +1316,77 @@ if ($_POST['action'] === 'switch_plan') {
     exit;
 }
 
+if ($action === 'get_pdf') {
+    // Fetch the latest PDF from swp_file table
+    $result = $conn->query("SELECT file FROM swp_file ORDER BY id DESC LIMIT 1");
+
+    if ($result && $row = $result->fetch_assoc()) {
+        // Convert BLOB to base64
+        $fileData = base64_encode($row['file']);
+        echo json_encode([
+            'success' => true,
+            'file'    => $fileData
+        ]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No file found']);
+    }
+}
+
+if ($action === 'get_plan_mins') {
+
+    // 1️⃣ Get plan number from PlanSelection
+    $planRes = $conn->query("
+        SELECT plan
+        FROM PlanSelection
+        LIMIT 1
+    ");
+
+    if (!$planRes || $planRes->num_rows === 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No plan found in PlanSelection.'
+        ]);
+        exit;
+    }
+
+    $planRow = $planRes->fetch_assoc();
+    $planId = (int)$planRow['plan'];
+
+    if ($planId === 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Plan is not set.'
+        ]);
+        exit;
+    }
+
+    // 2️⃣ Fetch mins1–mins14 from PlanOutput
+    $minsRes = $conn->query("
+        SELECT
+            mins1, mins2, mins3, mins4, mins5, mins6, mins7,
+            mins8, mins9, mins10, mins11, mins12, mins13, mins14
+        FROM PlanOutput
+        WHERE id = $planId
+        LIMIT 1
+    ");
+
+    if (!$minsRes || $minsRes->num_rows === 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No PlanOutput data found.'
+        ]);
+        exit;
+    }
+
+    $minsData = $minsRes->fetch_assoc();
+
+    echo json_encode([
+        'success' => true,
+        'mins' => $minsData
+    ]);
+    exit;
+}
+
 if ($action === 'save_data') {
 
     $planRes = $conn->query("SELECT plan FROM PlanSelection LIMIT 1");
@@ -1377,15 +1448,25 @@ if ($action === 'save_data') {
         $n = $i + 1;
         $mins[$n] = (int)$outputRows[$i]['mins'];
 
+        $plan_output   = (int)$outputRows[$i]['plan_output'];
+        $actual_output = (int)$outputRows[$i]['actual_output'];
+        $remarks       = $outputRows[$i]['remarks'];
+
+        // Check if remarks is "ONGOING" and plan_output equals actual_output
+        if ($remarks === "ONGOING" && $plan_output === $actual_output) {
+            $remarks = "COMPLETED";
+        }
+
         $output_flat["mins_out$n"]      = (int)$outputRows[$i]['mins'];
-        $output_flat["plan_output$n"]   = (int)$outputRows[$i]['plan_output'];
-        $output_flat["actual_output$n"] = (int)$outputRows[$i]['actual_output'];
+        $output_flat["plan_output$n"]   = $plan_output;
+        $output_flat["actual_output$n"] = $actual_output;
         $output_flat["percentage$n"]    = (int)$outputRows[$i]['percentage'];
         $output_flat["total$n"]         = (int)$outputRows[$i]['total'];
         $output_flat["dt_mins$n"]       = $outputRows[$i]['dt_mins'];
         $output_flat["ng_quantity$n"]   = (int)$outputRows[$i]['ng_quantity'];
-        $output_flat["remarks$n"]       = $outputRows[$i]['remarks'];
+        $output_flat["remarks$n"]       = $remarks;
     }
+
 
     /* =========================
        5️⃣ SUMMARY
@@ -1405,7 +1486,7 @@ if ($action === 'save_data') {
     $totaldowntime     = $summary['totaldowntime'];
     $good_qty           = (int)$summary['good_qty'];
     $total_ng           = (int)$summary['total_ng'];
-    $summary_percentage = (int)$summary['summary_percentage'];
+    $summary_percentage = (int)$summary['percentage'];
 
     /* =========================
        6️⃣ LINE LEADER & MANPOWER
@@ -1534,12 +1615,72 @@ if ($action === 'save_data') {
     );
     
     if ($stmt->execute()) {
+        $conn->query("SET @seq := 0;");
+        $conn->query("UPDATE saved_data SET id = (@seq := @seq + 1)ORDER BY date_saved ASC");
         echo json_encode(["success"=>true, "message"=>"SWP data saved successfully."]);
     } else {
         echo json_encode(["success"=>false, "message"=>"Failed to save SWP data: " . $stmt->error]);
+    }   
 }
 
+if ($action === 'reset_daily') {
+    try {
+        // 1️⃣ Get current selected plan
+        $planSql = "SELECT plan FROM PlanSelection LIMIT 1";
+        $planStmt = $conn->prepare($planSql);
+        $planStmt->execute();
+        $planStmt->bind_result($currentPlan);
+        $planStmt->fetch();
+        $planStmt->close();
+
+        if (empty($currentPlan)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'No active plan found'
+            ]);
+            exit;
+        }
+
+        // 2️⃣ Reset staff in PlanOutput based on plan
+        $resetStaffSql = "
+            UPDATE PlanOutput
+            SET 
+                lineleader = 0,
+                manpower1 = 0,
+                manpower2 = 0,
+                manpower3 = 0
+            WHERE id = ?
+        ";
+        $resetStaffStmt = $conn->prepare($resetStaffSql);
+        $resetStaffStmt->bind_param("s", $currentPlan);
+        $resetStaffStmt->execute();
+        $resetStaffStmt->close();
+
+        // 3️⃣ Reset actual output
+        $resetOutputSql = "UPDATE OutputTable SET actual_output = 0";
+        $resetOutputStmt = $conn->prepare($resetOutputSql);
+        $resetOutputStmt->execute();
+        $resetOutputStmt->close();
+
+        // 4️⃣ Reset plan in PlanSelection to 0
+        $resetPlanSql = "UPDATE PlanSelection SET plan = 0";
+        $resetPlanStmt = $conn->prepare($resetPlanSql);
+        $resetPlanStmt->execute();
+        $resetPlanStmt->close();
+
+        echo json_encode([
+            'success' => true
+        ]);
+
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+    exit;
 }
+
 /*else {
     echo json_encode(["success"=>false,"message"=>$e->getMessage()]);
 }*/

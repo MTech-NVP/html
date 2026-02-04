@@ -17,16 +17,20 @@ document.addEventListener('click', (event) => {
     }
 });
 
+
+
+//mobile version
+////////////////////////////////////////////////////////////////
+function goToSWP() {
+    window.location.href = 'swp.php';
+}
+
 const buttons = document.querySelectorAll('.nav-btns');
 buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
     navButtons.classList.remove('active');
     });
 });
-
-//mobile version
-////////////////////////////////////////////////////////////////
-
 ////////////////////////////////////////////////////////////////
 // LINE NAMES
 const dashboardNames = {
@@ -1367,6 +1371,8 @@ function enterEditMode(wrapper, row) {
 
     // Time Occurred dropdown (1-14)
     const timeOccurredSelect = document.createElement('select');
+    timeOccurredSelect.disabled = true; // 👈 disable here
+
     for (let i = 1; i <= 14; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -1375,7 +1381,9 @@ function enterEditMode(wrapper, row) {
         if (i == row.dt_id) option.selected = true;
         timeOccurredSelect.appendChild(option);
     }
+
     wrapper.querySelector('.time-occurred-value').replaceWith(timeOccurredSelect);
+
 
     // Text inputs
     ['process','details','countermeasure','remarks','pic'].forEach(cls => {
@@ -1512,88 +1520,6 @@ function saveRow(wrapper, row) {
     })
     .catch(err => console.error("Fetch error:", err));
 }
-
-document.addEventListener("DOMContentLoaded", loadPlans);
-
-    function loadPlans() {
-        Promise.all([
-            fetch('fetches1/domfetch.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=get_all_plans'
-            }).then(res => res.json()),
-
-            fetch('fetches1/domfetch.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=get_active_plan'
-            }).then(res => res.json())
-        ])
-        .then(([plans, active]) => {
-            renderPlans(plans, active.active_plan);
-        });
-    }
-
-    function renderPlans(plans, activePlanId) {
-        const container = document.getElementById('plans-container');
-        container.innerHTML = '';
-
-        plans.forEach(plan => {
-
-            const isActive = Number(plan.id) === Number(activePlanId);
-
-            container.innerHTML += `
-                <div class="plans-list card">
-                    <div class="card-row"><strong>Plan No.:</strong> ${plan.id}</div>
-                    <div class="card-row"><strong>Part Number (Model):</strong> ${plan.partnumber} (${plan.model})</div>
-                    <div class="card-row"><strong>Production Hours:</strong> ${plan.prodhrs}</div>
-                    <div class="card-row"><strong>Time:</strong> ${plan.time}</div>
-                    <div class="card-row"><strong>Planned Output:</strong> ${plan.planned_output}</div>
-
-                    <div class="card-actions">
-                        <button class="btn use-btn"
-                                data-id="${plan.id}"
-                                style="${isActive ? 'display:none' : ''}">
-                            Use
-                        </button>
-
-                        <button class="btn inuse-btn" style="${isActive ? '' : 'display:none'}">
-                            In Use
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-document.addEventListener("click", function (e) {
-
-    if (!e.target.classList.contains("use-btn")) return;
-
-    const newPlanId = e.target.dataset.id;
-
-    if (!confirm("Use this plan? Current plan data will be transferred.")) {
-        return;
-    }
-
-    fetch('fetches1/domfetch.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `action=switch_plan&new_plan_id=${newPlanId}`
-    })
-    .then(res => res.json())
-    .then(resp => {
-        if (resp.success) {
-            location.reload(); // ✅ FULL PAGE RELOAD
-        } else {
-            alert(resp.msg || "Failed to switch plan");
-        }
-    });
-});
-
-
-
-
 // -------------------- HELPER FUNCTIONS --------------------
 
 function createSpan(cls, text){
@@ -1889,6 +1815,83 @@ document.getElementById("add-dt-btn").addEventListener("click", () => {
     });
 });
 
+document.addEventListener("DOMContentLoaded", loadPlans);
+
+    function loadPlans() {
+        Promise.all([
+            fetch('fetches1/domfetch.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=get_all_plans'
+            }).then(res => res.json()),
+
+            fetch('fetches1/domfetch.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=get_active_plan'
+            }).then(res => res.json())
+        ])
+        .then(([plans, active]) => {
+            renderPlans(plans, active.active_plan);
+        });
+    }
+
+    function renderPlans(plans, activePlanId) {
+        const container = document.getElementById('plans-container');
+        container.innerHTML = '';
+
+        plans.forEach(plan => {
+
+            const isActive = Number(plan.id) === Number(activePlanId);
+
+            container.innerHTML += `
+                <div class="plans-list card">
+                    <div class="card-row"><strong>Plan No.:</strong> ${plan.id}</div>
+                    <div class="card-row"><strong>Part Number (Model):</strong> ${plan.partnumber} (${plan.model})</div>
+                    <div class="card-row"><strong>Production Hours:</strong> ${plan.prodhrs}</div>
+                    <div class="card-row"><strong>Time:</strong> ${plan.time}</div>
+                    <div class="card-row"><strong>Planned Output:</strong> ${plan.planned_output}</div>
+
+                    <div class="card-actions">
+                        <button class="btn use-btn"
+                                data-id="${plan.id}"
+                                style="${isActive ? 'display:none' : ''}">
+                            Use
+                        </button>
+
+                        <button class="btn inuse-btn" style="${isActive ? '' : 'display:none'}">
+                            In Use
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+document.addEventListener("click", function (e) {
+
+    if (!e.target.classList.contains("use-btn")) return;
+
+    const newPlanId = e.target.dataset.id;
+
+    if (!confirm("Use this plan? Current plan data will be transferred.")) {
+        return;
+    }
+
+    fetch('fetches1/domfetch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=switch_plan&new_plan_id=${newPlanId}`
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            location.reload(); // ✅ FULL PAGE RELOAD
+        } else {
+            alert(resp.msg || "Failed to switch plan");
+        }
+    });
+});
 
 // Close modal
 function closeSettings() {
@@ -1986,39 +1989,94 @@ function updateKeys() {
     });
 }
 
-document.getElementById("save-btn").addEventListener("click", () => {
-    // --- Confirmation ---
-    const proceed = confirm("Are you sure you want to save the data? This action will create a snapshot.");
-    if (!proceed) return;
+document.getElementById("save-btn").addEventListener("click", async () => {
+    try {
+        // 1️⃣ Fetch mins1–mins14
+        const minsRes = await fetch("fetches1/domfetch.php?action=get_plan_mins");
+        const minsData = await minsRes.json();
 
-    // --- Fetch POST to save ---
-    fetch("fetches1/domfetch.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ action: "save_data" })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert("SWP data saved successfully!");
-        } else {
-            alert("Error saving SWP data: " + data.message);
+        if (!minsData.success) {
+            alert("❌ " + minsData.message);
+            return;
         }
-    })
-    .catch(err => alert("❌ Fetch error: " + err));
+
+        const minsArray = [];
+        for (let i = 1; i <= 14; i++) {
+            minsArray.push(Number(minsData.mins[`mins${i}`]));
+        }
+
+        // 2️⃣ Time validation
+        let lastNonZeroIndex = -1;
+        for (let i = 0; i < minsArray.length; i++) {
+            if (minsArray[i] > 0) lastNonZeroIndex = i;
+        }
+
+        const firstRemainingZeroIndex = lastNonZeroIndex + 1;
+
+        if (firstRemainingZeroIndex < minsArray.length) {
+            const startHour = 6;
+            const cutoffHour = startHour + firstRemainingZeroIndex;
+
+            const cutoffDate = new Date();
+            cutoffDate.setHours(cutoffHour, 0, 0, 0);
+
+            const now = new Date();
+
+            if (now < cutoffDate) {
+                const cutoffTimeStr = cutoffDate.toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true
+                });
+
+                const earlyConfirm = confirm(
+                    `⚠️ It is not ${cutoffTimeStr} yet.\nAre you sure you want to save the data?`
+                );
+                if (!earlyConfirm) return;
+            }
+        }
+
+        // 3️⃣ FINAL confirmation
+        const proceed = confirm(
+            "Are you sure you want to save the data?\n\nThis action will reset the output today.\nView the DOM Planner for the details."
+        );
+        if (!proceed) return;
+
+        // 4️⃣ SAVE DATA
+        const saveRes = await fetch("fetches1/domfetch.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ action: "save_data" })
+        });
+
+        const saveData = await saveRes.json();
+
+        if (!saveData.success) {
+            alert("❌ Error saving SWP data: " + saveData.message);
+            return;
+        }
+
+        // 5️⃣ RESET DAILY OUTPUT
+        const resetRes = await fetch("fetches1/domfetch.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ action: "reset_daily" })
+        });
+
+        const resetData = await resetRes.json();
+
+        if (!resetData.success) {
+            alert("❌ Reset failed: " + resetData.message);
+            return;
+        }
+
+        // 6️⃣ UPDATE TABLE & RELOAD
+        updateTable();
+
+        alert("✅ SWP data saved and output reset!");
+        location.reload();
+
+    } catch (err) {
+        alert("❌ Fetch error: " + err);
+    }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

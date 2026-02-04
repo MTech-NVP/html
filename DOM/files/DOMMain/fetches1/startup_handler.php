@@ -153,8 +153,8 @@ if ($action === 'submitProduction') {
 
     try {
         // Update PlanSelection
-        $stmt = $conn->prepare("UPDATE PlanSelection SET plan=? WHERE id=?");
-        $stmt->bind_param("ii", $planNumber, $planNumber);
+        $stmt = $conn->prepare("UPDATE PlanSelection SET plan=? WHERE id = 1");
+        $stmt->bind_param("i", $planNumber);
         $stmt->execute();
         $stmt->close();
 

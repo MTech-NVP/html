@@ -107,9 +107,9 @@
                                     <div class="staff-title"></div>
                                     <select id="staff-1-select" class="prod-input">
                                         <option value="">Select Process</option>
-                                        <option value="Process 1">Process 1</option>
-                                        <option value="Process 2">Process 2</option>
-                                        <option value="Process 3">Process 3</option>
+                                        <option value="Person 1 (Process)">Person 1 (Process)</option>
+                                        <option value="Person 2 (Process)">Person 2 (Process)</option>
+                                        <option value="Person 3 (Process)">Person 3 (Process)</option>
                                         <option value="Final Inspection">Final Inspection</option>
                                     </select>
                                     </div>
@@ -125,9 +125,9 @@
                                     <div class="staff-title"></div>
                                     <select id="staff-2-select" class="prod-input">
                                         <option value="">Select Process</option>
-                                        <option value="Process 1">Process 1</option>
-                                        <option value="Process 2">Process 2</option>
-                                        <option value="Process 3">Process 3</option>
+                                        <option value="Person 1 (Process)">Person 1 (Process)</option>
+                                        <option value="Person 2 (Process)">Person 2 (Process)</option>
+                                        <option value="Person 3 (Process)">Person 3 (Process)</option>
                                         <option value="Final Inspection">Final Inspection</option>
                                     </select>           
                                 </div>
@@ -143,9 +143,9 @@
                                     <div class="staff-title"></div>
                                     <select id="staff-3-select" class="prod-input">
                                         <option value="">Select Process</option>
-                                        <option value="Process 1">Process 1</option>
-                                        <option value="Process 2">Process 2</option>
-                                        <option value="Process 3">Process 3</option>
+                                        <option value="Person 1 (Process)">Person 1 (Process)</option>
+                                        <option value="Person 2 (Process)">Person 2 (Process)</option>
+                                        <option value="Person 3 (Process)">Person 3 (Process)</option>
                                         <option value="Final Inspection">Final Inspection</option>
                                     </select>
                                     </div>

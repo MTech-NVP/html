@@ -365,8 +365,10 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Please fill in all required fields.");
             return;
         }
+
         const payload = { planNumber, balance, lineLeaderId, manpower, staffIds, staffProcesses };
 
+        console.log(payload);
         fetch("fetches1/startup_handler.php?action=submitProduction", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

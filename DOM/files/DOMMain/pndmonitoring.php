@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/ico" href="../../media/icons/nichivi-logo.ico">
-    <title>DOM | Tube Assembly</title>
+    <title>DOM | Production Monitoring</title>
     <link rel="stylesheet" href="css/pnddesign.css">
 </head>
 <body>
@@ -17,9 +17,7 @@
                     <img width="35" src="../../media/icons/nichivi_logo_white.png" alt="logo">
                 </div>
                 <div id="company-name-container">
-                    <div id="company-name">
-                        NICHIVI PHILIPPINES CORPORATION
-                    </div>                    
+                   
                 </div>                
             </div>
 
@@ -43,13 +41,13 @@
             </div>
         </div> -->
         <div id="nav-buttons">
-            <button class="nav-btns">
+            <button class="nav-btns" style="width:100px;">
                 Dashboard
             </button>
-            <button class="nav-btns">
+            <button class="nav-btns" style="width:100px;">
                 History Data
             </button>
-            <button class="nav-btns">
+            <button class="nav-btns" onclick="goToSWP()" style="width:90px;">
                 SWP
             </button>
             <button class="nav-btns">

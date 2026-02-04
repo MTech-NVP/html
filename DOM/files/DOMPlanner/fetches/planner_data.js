@@ -172,41 +172,6 @@ function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
 }
 
-async function loadImages() {
-    try {
-        const response = await fetch('fetches/server_display.php');
-        const images = await response.json();
-
-        const tableBody = document.querySelector('#imagesTable tbody');
-        tableBody.innerHTML = ''; // Clear existing rows
-
-        images.forEach(image => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td id="date-prod">${image.date}</td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <img  style ="width:50px; 
-                            height:15px;"src="data:image/png;base64,${image.image_data}" alt="Captured Image"/>
-                </td>
-                <td><button id="downloaddata-btn" style= "width: 150px; 
-                            padding: 5px 10px; 
-                            background-color: #007bff; 
-                            color: #ffffff; border: none; 
-                            border-radius: 6px; 
-                            font-size: 0.8rem; 
-                            font-weight: 700; 
-                            transition: background 0.3s;
-                            cursor: pointer;"onclick="convertToPDF('${image.image_data}')">Download Data
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    } catch (error) {
-        console.error('Error loading images:', error);
-    }
-}
-
 function ShowUploadForm() {
     document.getElementById('pic-container-div').style.display = "flex"
     document.getElementById('upload-operator-div').classList.add("active");           
@@ -223,7 +188,6 @@ function exitDeleteForm() {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    loadImages();
     loadPerson();
     loadLeaders();
 }) 
@@ -714,9 +678,9 @@ namesPsSelect.addEventListener("change", () => {
 
             pictureDisplayPs.innerHTML = `
                 <img src="fetches/planner_db.php?action=get_prod_staff_picture&id=${p.id}"
-                     style="width:100%;height:100%;object-fit:cover;">
+                     style="width:100%;height:100%;object-fit:cover;" 
+                     onerror="this.src='../../../DOM/media/img/default.png';">
             `;
-
             croppedBlobPs = null;
         });
 });
@@ -1233,7 +1197,6 @@ function deleteRow(btn, type) {
     });
 }
 
-
 function loadPlans() {
     fetch('fetches/tablePlanServer.php', {
         method: 'POST',
@@ -1416,51 +1379,304 @@ function deletePlan(id) {
 setInterval(loadPlans, 5000);
 
 // Initial load
-loadPlans();
-
-
-    /*        function convertToPDF(base64Image) {
-
-            const { jsPDF } = window.jspdf;
-            const img = new Image();
-            img.src = `data:image/png;base64,${base64Image}`;
-            img.onload = function () {
-                const doc = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'px',
-                    format: [img.width, img.height]
-                });
-                doc.addImage(img, 'PNG', 0, 0, img.width, img.height);
-                doc.save('production-data.pdf');
-            };
-    }*/
-
-
-function convertToPDF(base64Image) {
-    const {
-        jsPDF
-    } = window.jspdf;
-    const doc = new jsPDF("landscape", "mm", "a4");
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const img = new Image();
-    img.src = `data:image/png;base64,${base64Image}`;
-    img.onload = function() {
-
-        const imgWidth = pageWidth - 20
-        const imgHeight = (img.height * imgWidth) / img.width;
-
-        const x = (pageWidth - imgWidth) / 2;
-        const y = (pageHeight - imgHeight) / 2;
+loadPlans();       
 
 
 
-        doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
-        doc.save('graphData_C4.pdf');
-    };
-}           
+
+
+///////////WHOLE SWP FUNCTION UPLOAD//////////
+document.addEventListener('DOMContentLoaded', () => {
+    const viewBox = document.getElementById('swp-view-box');
+
+    /* =========================
+       LOAD LATEST SWP
+    ========================= */
+    fetch('fetches/tablePlanServer.php?action=get_latest_swp')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                viewBox.innerHTML = `<p>${data.message || 'No file found'}</p>`;
+                return;
+            }
+
+            const { filename, date_uploaded, initial_issue, revision_date, file } = data;
+
+            const pdfBlob = b64toBlob(file, 'application/pdf');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            viewBox.innerHTML = `
+                <strong>Current Standard Working Procedure</strong>
+                <iframe src="${pdfUrl}"></iframe>
+                <div class="file-details">
+                    <strong>File Name:</strong> ${filename}<br>
+                    <strong>Initial Issue:</strong> ${formatDate(initial_issue)}<br>
+                    <strong>Revision Date:</strong> ${
+                        revision_date
+                            ? formatDate(revision_date)
+                            : 'This Document has not been revised yet.'
+                    }<br>
+                    <strong>Date Uploaded:</strong> ${formatDateTime(date_uploaded)}<br>
+                </div>
+            `;
+        })
+        .catch(err => {
+            console.error(err);
+            viewBox.innerHTML = '<p>Error loading file</p>';
+        });
+
+    /* =========================
+       REVISION DATE N/A CHECKBOX
+    ========================= */
+    const revisionDateInput = document.getElementById('revision-date');
+    const revisionNA = document.getElementById('revision-na');
+
+    revisionNA.addEventListener('change', () => {
+        if (revisionNA.checked) {
+            revisionDateInput.value = '';
+            revisionDateInput.disabled = true;
+        } else {
+            revisionDateInput.disabled = false;
+        }
+    });
+
+    /* =========================
+       HELPERS
+    ========================= */
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+            month: 'long',
+            day: '2-digit',
+            year: 'numeric'
+        });
+    }
+
+    function formatDateTime(dateTimeStr) {
+        if (!dateTimeStr) return '-';
+        const date = new Date(dateTimeStr);
+
+        const datePart = date.toLocaleDateString('en-US', {
+            month: 'long',
+            day: '2-digit',
+            year: 'numeric'
+        });
+
+        const timePart = date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+
+        return `${datePart} ${timePart}`;
+    }
+
+    function b64toBlob(b64Data, contentType = '', sliceSize = 512) {
+        const byteCharacters = atob(b64Data);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            const slice = byteCharacters.slice(offset, offset + sliceSize);
+            const byteNumbers = new Array(slice.length);
+
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            byteArrays.push(new Uint8Array(byteNumbers));
+        }
+
+        return new Blob(byteArrays, { type: contentType });
+    }
+});
+
+/* =========================
+   FILE UPLOAD UI
+========================= */
+const uploadBox = document.getElementById('click-upload-box');
+const fileInput = document.getElementById('file');
+const uploadText = document.getElementById('upload-text');
+
+uploadBox.addEventListener('click', (e) => {
+    if (e.target.id !== 'swp-file-submitbtn') {
+        fileInput.click();
+    }
+});
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+
+        if (file.type !== 'application/pdf') {
+            alert('Only PDF files are allowed!');
+            fileInput.value = '';
+            uploadText.textContent = 'Click here to select file to upload:';
+            return;
+        }
+
+        uploadText.textContent = `Selected file: ${file.name}`;
+    } else {
+        uploadText.textContent = 'Click here to select file to upload:';
+    }
+});
+
+/* =========================
+   LOGS OVERLAY
+========================= */
+const logsBtn = document.getElementById('logs-btn');
+const logsOverlay = document.getElementById('logs-overlay');
+const logsClose = document.getElementById('logs-close');
+const logsList = document.getElementById('logs-list');
+
+const LOGS_PER_PAGE = 10;
+let allLogs = [];
+let currentPage = 1;
+
+function renderLogsPage(page) {
+    logsList.innerHTML = '';
+
+    const start = (page - 1) * LOGS_PER_PAGE;
+    const end = start + LOGS_PER_PAGE;
+    const pageLogs = allLogs.slice(start, end);
+
+    if (pageLogs.length === 0) {
+        logsList.innerHTML = '<li>No logs found</li>';
+        return;
+    }
+
+    pageLogs.forEach(log => {
+        const date = new Date(log.date_uploaded);
+        const formatted = date.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        const li = document.createElement('li');
+        li.textContent = `${log.log} in ${formatted}`;
+        logsList.appendChild(li);
+    });
+
+    const totalPages = Math.ceil(allLogs.length / LOGS_PER_PAGE);
+    document.getElementById('logs-page-info').textContent =
+        `Page ${currentPage} of ${totalPages}`;
+
+    document.getElementById('logs-prev').disabled = currentPage === 1;
+    document.getElementById('logs-next').disabled = currentPage === totalPages;
+}
+
+logsBtn.addEventListener('click', () => {
+    logsOverlay.style.display = 'flex';
+    currentPage = 1;
+
+    fetch('fetches/tablePlanServer.php?action=get_upload_logs')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.logs.length > 0) {
+                allLogs = data.logs;
+                renderLogsPage(currentPage);
+            } else {
+                allLogs = [];
+                logsList.innerHTML = '<li>No logs found</li>';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            logsList.innerHTML = '<li>Error fetching logs</li>';
+        });
+});
+
+document.getElementById('logs-prev').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        renderLogsPage(currentPage);
+    }
+});
+
+document.getElementById('logs-next').addEventListener('click', () => {
+    const totalPages = Math.ceil(allLogs.length / LOGS_PER_PAGE);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderLogsPage(currentPage);
+    }
+});
+
+logsClose.addEventListener('click', () => {
+    logsOverlay.style.display = 'none';
+});
+
+logsOverlay.addEventListener('click', (e) => {
+    if (e.target === logsOverlay) logsOverlay.style.display = 'none';
+});
+
+
+/* =========================
+   SUBMIT / UPLOAD
+========================= */
+const submitBtn = document.getElementById('swp-file-submitbtn');
+
+submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    if (!fileInput.files.length) {
+        alert('Please select a PDF file first!');
+        return;
+    }
+
+    const newFile = fileInput.files[0];
+    const initialDate = document.getElementById('initial-date').value;
+    const revisionDate = document.getElementById('revision-date').value;
+    const isRevisionNA = document.getElementById('revision-na').checked;
+
+    if (!initialDate) {
+        alert('Please select Initial Issue Date.');
+        return;
+    }
+
+    if (!isRevisionNA && !revisionDate) {
+        alert('Please select Revision Date or mark it as Not applicable.');
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to upload "${newFile.name}" and replace the current SWP?`)) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', newFile);
+    formData.append('initial_issue', initialDate);
+    formData.append('revision_date', isRevisionNA ? '' : revisionDate);
+    formData.append('action', 'replace_swp');
+
+    fetch('fetches/tablePlanServer.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('File uploaded and replaced successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('An error occurred during upload.' + data.message);
+        });
+});
+
+
+//////////////////////////////////////////////////////////
+
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const updateBars = () => {
@@ -1570,8 +1786,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(updateBars, 5000);
 });
 
-/*
-document.addEventListener("DOMContentLoaded", () => {
+/*document.addEventListener("DOMContentLoaded", () => {
     const barEndpoints = {
         "c4": "http://10.0.0.189/DOM/files/DOMPlanner/fetches/planner_data.php",
         "c7": "http://10.0.0.102/DOM/files/DOMPlanner/fetches/planner_data.php",
@@ -1716,7 +1931,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initial update and interval
     updateBars();
     setInterval(updateBars, 6000);
-}); */
+}); 
+*/ //to hide
 
 let deleteMode = false;
 
@@ -2211,40 +2427,169 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error('Fetch error:', err));
 });
 
+
+/////DOWNLOAD XML FILE
 document.addEventListener("DOMContentLoaded", () => {
     const select = document.getElementById("savedDataSelect");
-    const button = document.getElementById("downloadBtn");
+    const preview = document.getElementById("dataPreview");
+    const downloadBtn = document.getElementById("downloadBtn");
 
-    // Fetch IDs for dropdown
+    // Load IDs for the dropdown
     fetch("../../data/fetch_id.php")
         .then(res => res.json())
         .then(data => {
-            if (!data.success) {
-                alert("Failed to load IDs");
-                return;
-            }
+            if (!data.success) return;
 
             data.ids.forEach(row => {
                 const opt = document.createElement("option");
+
+                // Format: Month Day, Year - HH:MM:SS AM/PM
+                const dateObj = new Date(row.date_saved);
+                const datePart = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+                let hours = dateObj.getHours();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+                const timePart = `${hours}:${minutes}:${seconds} ${ampm}`;
+
                 opt.value = row.id;
-                opt.textContent = `ID ${row.id} - ${row.date_saved}`;
+                opt.textContent = `${datePart} - ${timePart}`;
                 select.appendChild(opt);
             });
-        })
-        .catch(err => alert("Fetch error: " + err));
+        });
 
-    // Download Excel
-    button.addEventListener("click", () => {
+        function getTimeRange(index) {
+    // index: 1 to 14
+    const startHour24 = 5 + index; // 6 AM for index 1
+    const endHour24 = startHour24 + 1;
+
+    function formatHour(hour24) {
+            const ampm = hour24 >= 12 ? 'PM' : 'AM';
+            let hour12 = hour24 % 12;
+            hour12 = hour12 === 0 ? 12 : hour12;
+            return `${hour12}:00 ${ampm}`;
+        }
+
+        return `${formatHour(startHour24)} - ${formatHour(endHour24)}`;
+    }
+
+    // On select change
+    select.addEventListener("change", () => {
         const id = select.value;
+
         if (!id) {
-            alert("Please select a record");
+            preview.innerHTML = `<p class="placeholder-text">Data will appear here.</p>`;
+            downloadBtn.disabled = true;
             return;
         }
+
+        // Show loading message
+        preview.innerHTML = `<p class="placeholder-text">Loading data for ID ${id}...</p>`;
+        downloadBtn.disabled = false;
+
+        // Fetch full saved_data for the selected ID
+        fetch(`fetches/planner_db.php?action=get_saved_data&id=${id}`)
+            .then(res => res.json())
+            .then(response => {
+                if (!response.success) {
+                    preview.innerHTML = `<p class="placeholder-text">Failed to load data.</p>`;
+                    return;
+                }
+
+                const d = response.data; // all saved_data columns
+
+                // Build HTML dynamically
+                let html = `
+                <div class="preview-card">
+                    <h3>Plan Info</h3>
+                    <div id="plan-info-preview">
+                        <span><strong>Part Number:</strong> ${d.partnumber}</span>
+                        <span><strong>Model:</strong> ${d.model}</span>
+                        <span><strong>Balance:</strong> ${d.balance}</span>
+                        <span><strong>Manpower:</strong> ${d.manpower}</span>
+                        <span><strong>Production Hours:</strong> ${d.prodhrs}</span>
+                        <span><strong>Delivery Date:</strong> ${d.deliverydate}</span>
+                        <span><strong>Cycle Time:</strong> ${d.cycletime}</span>
+                    </div>
+                </div>
+
+                `;
+
+                html += `
+                <div class="preview-card"><h3>Line Leader & Manpower</h3>
+                    <div id="ll-ps-previews">
+                        <span><strong>Line Leader:</strong> ${d.lineleader_name} <!--${d.lineleader_title}--></span>
+                        <span><strong>Manpower 1:</strong> ${d.manpower1_name} - ${d.manpower1_title}</span>
+                        <span><strong>Manpower 2:</strong> ${d.manpower2_name} - ${d.manpower2_title}</span>
+                        <span><strong>Manpower 3:</strong> ${d.manpower3_name} - ${d.manpower3_title}</span>
+                    </div>                
+                </div>
+
+                `;
+
+                html += `
+                <div class="preview-card"><h3>Output Table</h3>
+                <div id="data-preview-table">
+                    <table border="1" cellpadding="4" style="border-collapse:collapse; width:100%;">
+                        <tr>
+                            <th>Time Range</th><th>Mins</th><th>Plan Output</th><th>Actual Output</th><th>Percentage</th>
+                            <th>Total</th><th>Downtime</th><th>NG Qty</th><th>Remarks</th>
+                        </tr>`;
+
+                for (let i = 1; i <= 14; i++) {
+                    html += `<tr>
+                        <td><strong>${getTimeRange(i)}</strong></td>
+                        <td>${d[`mins_out${i}`]}</td>
+                        <td>${d[`plan_output${i}`]}</td>
+                        <td>${d[`actual_output${i}`]}</td>
+                        <td>${d[`percentage${i}`]}%</td>
+                        <td>${d[`total${i}`]}</td>
+                        <td>${d[`dt_mins${i}`]}</td>
+                        <td>${d[`ng_quantity${i}`]}</td>
+                        <td>${d[`remarks${i}`]}</td>
+                    </tr>`;
+                }
+                html += `</table> </div> </div>`;
+
+                html += `
+                <div class="preview-card">
+                <h3>Summary</h3>
+                    <div id="summary-preview">
+                        
+                        <span><strong>Plan Production Hrs:</strong> ${d.plan_prodhrs}</span>
+                        <span><strong>Actual Production Hrs:</strong> ${d.actual_prodhrs}</span>
+                        <span><strong>Plan Output:</strong> ${d.plan_output}</span>
+                        <span><strong>Actual Output:</strong> ${d.actual_output}</span>
+                        <span><strong>Plan Manpower:</strong> ${d.plan_manpower}</span>
+                        <span><strong>Actual Manpower:</strong> ${d.actual_manpower}</span>
+                        <span><strong>Break Time:</strong> ${d.breaktime}</span>
+                        <span><strong>Total Downtime:</strong> ${d.totaldowntime}</span>
+                        <span><strong>Good Quantity:</strong> ${d.good_qty}</span>
+                        <span><strong>Total NG:</strong> ${d.total_ng}</span>
+                        <span><strong>Completion Rate:</strong> ${d.summary_percentage}%</span>
+                    </div>
+                </div>`;
+
+                preview.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                preview.innerHTML = `<p class="placeholder-text">Failed to load data.</p>`;
+            });
+    });
+
+    // Download
+    downloadBtn.addEventListener("click", () => {
+        const id = select.value;
+        if (!id) return;
 
         window.location.href = `../../data/excel.php?id=${id}`;
     });
 });
 
+/////DOWNLOAD XML FILE
 
 
         

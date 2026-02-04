@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DOM | Planner</title>
@@ -18,7 +17,6 @@
 
     <!-- Cropper.js JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
 </head>
 
 
@@ -43,7 +41,7 @@
         <div class="navbar-buttons" id="navigation-btn">
             <button class="nav-button1" id="navbutton1">Home</button>
             <div class="line-nav2"></div>
-            <button class="nav-button1" id="navbutton2">Time-Based Data</button>
+            <button class="nav-button1" id="navbutton2">Line Data</button>
             <div class="line-nav2"></div>
             <button class="nav-button1" id="navbutton3">Data Entry</button>
             <div class="line-nav2"></div>
@@ -170,36 +168,25 @@
             </div>
 
             <footer class="footer">
-                <p>Digital Output Monitoring (Version 1.9.1)</p>
-                <p>© 2025 Nichivi Philippines Corporation (Manufacturing Technology) All Rights Reserved.</p>
+                <p>Digital Output Monitoring (Version 2.0)</p>
+                <p>© 2026 Nichivi Philippines Corporation (Raven Neil Verdon, Manufacturing Technology Engineer) All Rights Reserved.</p>
             </footer>
         </div>
 
         <div id="dashboard-container">
-            <div id="dashboard">
+            <div class="download-card">
+                <div class="download-header">Saved Data</div>
 
-                <div id="Download">
-                    <label for="savedDataSelect">Select Data ID:</label>
-                    <select id="savedDataSelect">
-                        <option value="">-- Choose ID --</option>
-                    </select>
-                    <button id="downloadBtn">Download</button>
+                <select id="savedDataSelect">
+                    <option value="">Select Data ID</option>
+                </select>
+
+                <!-- Data Preview (visible by default) -->
+                <div class="data-preview" id="dataPreview">
+                    <p class="placeholder-text">Data will appear here.</p>
                 </div>
 
-                <div class="download-production-data">
-                    <table id="imagesTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Data Production</th>
-                                <th>Download</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-                </div>
+                <button id="downloadBtn" disabled>Download XML File</button>
             </div>
         </div>
 
@@ -275,26 +262,55 @@
                 <div id="form-swp-container">
                     <div class="section-header" id="section-header3">Standard Working Procedure</div>
                     <div class="upload-swp-container">
-                        
-                        <!--
-                        <label for="file" class="upload-label">
-                            Select SWP File
-                                </label>
-                                <input type="file" name = "file" id="file" class="file-input" />
-                                <input type="submit" value = "Upload File" class="submit-button">
-                                    Upload
-                                </>
-                            </div>
-                        </form>
-                        -->
-                        <form action="fetches/upload_file_swp.php" method="post" enctype="multipart/form-data">
-                            <div class="upload-section">
-                                <label for="file">Select file:</label>
-                                <input type="file" name="file" id="file">
-                                <input type="submit" value="Upload File" id="swp-file-submitbtn">
-                            </div>
-                        </form>
+                        <div class="upload-section">
+                            <div class="file-preview-box" id="swp-view-box">
+                                <p>Loading current SWP...</p>
+                            </div>  
+                            <div class="new-file-upload-box">
+                                <strong>UPLOAD SWP HERE</strong>      
 
+                                <div class="upload-box" id="click-upload-box">
+                                    <div id="upload-part">
+                                        <p class="upload-label" id="upload-text">Click here to select file to upload:</p>
+                                        <input type="file" name="file" id="file" accept="application/pdf" style="display:none;">
+                                    </div>
+                                </div>    
+                                <div id="submit">
+                                    <!-- Date inputs -->
+                                    <div class="date-inputs">
+                                        <label for="initial-date">Initial Issue Date:</label>
+                                        <input type="date" id="initial-date" name="initial-date">
+
+                                        <label for="revision-date">Revision Date:</label>
+                                        <input type="date" id="revision-date" name="revision-date">
+
+                                        <div class="revision-na">
+                                            <input type="checkbox" id="revision-na" name="revision-na">
+                                            <label for="revision-na">Revision N/A</label>
+                                        </div>
+                                    </div>
+
+                                    <input type="submit" value="Upload File" id="swp-file-submitbtn">
+                                </div>  
+                                <div id="logs">
+                                    <button id="logs-btn">Open Uploading Logs</button>
+                                </div>                         
+                            </div>
+                        </div>
+
+                        <!-- Overlay for logs -->
+                        <div id="logs-overlay">
+                            <div id="logs-content">
+                                <span id="logs-close">&times;</span>
+                                <h3>Uploading Logs</h3>
+                                <ul id="logs-list"></ul>
+                                <div id="logs-pagination">
+                                    <button id="logs-prev" disabled>Prev</button>
+                                    <span id="logs-page-info">Page 1</span>
+                                    <button id="logs-next" disabled>Next</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -524,11 +540,12 @@
                             <select name="names-ll" id="names-ll">
                                 <option value="Select">Select a Name</option>
                             </select>
+                            
                         </div>
                         <div id="ll-form">
                             <div>
                                 <label for="first-name">First Name:</label>
-                                <input id="first-name" type="text">
+                                <input id="first-name" autocomplete="on" type="text">
                             </div>
                             <div>
                                 <label for="middle-name">Middle Name:</label>
@@ -693,10 +710,6 @@
                 </div>
             </div>            
         </div>
-
-        <div class="operator-cover" id="delete-operator-div">
-        </div>
-
     </div> 
 
     <script src="fetches/planner_data.js"></script>
