@@ -2073,7 +2073,7 @@ document.getElementById("save-btn").addEventListener("click", async () => {
         // 6️⃣ UPDATE TABLE & RELOAD
         updateTable();
 
-        alert("✅ SWP data saved and output reset!");
+        alert("✅ Daily output data saved and output reset!");
         location.reload();
 
     } catch (err) {
