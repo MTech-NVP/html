@@ -142,7 +142,7 @@ if ($action === 'updateSummary') {
             $planOutput = 0;
             for ($i = 1; $i <= 14; $i++) {
                 $mins = intval($row["mins$i"]); // treat NULL as 0
-                $planOutput += intval(($mins * 60) / $cycletime); // integer division
+                $planOutput += round(($mins * 60) / $cycletime); // integer division
             }
         }
     }
@@ -163,7 +163,7 @@ if ($action === 'updateSummary') {
     ");
     $updateSummary->bind_param(
         "diidi",
-        $planProdHrs, $planManpower, $planOutput,
+        $planProdHrs, $planManpower, $planOuintvaltput,
         $planProdHrs, $planManpower
     );
     $success = $updateSummary->execute();
@@ -1209,7 +1209,7 @@ if ($_POST['action'] === 'get_all_plans') {
                 if ($firstSlot === 0) $firstSlot = $i; // first non-zero slot
                 $lastSlot = $i; // last non-zero slot
             }
-            $plannedOutput += intval(($mins * 60) / $cycletime);
+            $plannedOutput += round(($mins * 60) / $cycletime);
         }
 
         // ---------- TIME DISPLAY ----------

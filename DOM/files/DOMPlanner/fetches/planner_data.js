@@ -17,19 +17,19 @@ document.getElementById("c4-cont").addEventListener("click", function() {
 });
 
 document.getElementById("c7-cont").addEventListener("click", function() {
-    window.location.href = "http://10.0.0.102/planner.php";
+    window.location.href = "http://10.0.0.102/DOM/files/DOMPlanner/planner.php";
 });
 
 document.getElementById("c9-cont").addEventListener("click", function() {
-    window.location.href = "http://10.0.0.136/planner.php";
+    window.location.href = "http://10.0.0.136//DOM/files/DOMPlanner/planner.php";
 });
 
 document.getElementById("c9-1-cont").addEventListener("click", function() {
-    window.location.href = "http://10.0.0.125/planner.php";
+    window.location.href = "http://10.0.0.125/DOM/files/DOMPlanner/planner.php";
 });
 
 document.getElementById("c10-cont").addEventListener("click", function() {
-    window.location.href = "http://10.0.0.164/planner.php";
+    window.location.href = "http://10.0.0.164/DOM/files/DOMPlanner/planner.php";
 });
 
 const dashboardNames = {
@@ -110,19 +110,19 @@ document.querySelector('.side-nav button:nth-child(5)').addEventListener('click'
 });
 
 document.querySelector('.dropdown-content button:nth-child(1)').addEventListener('click', function() {
-    window.location.href = "http://10.0.0.189/planner.php";
+    window.location.href = "http://10.0.0.189/DOM/files/DOMPlanner/planner.php";
 });
 document.querySelector('.dropdown-content button:nth-child(2)').addEventListener('click', function() {
-    window.location.href = "http://10.0.0.102/planner.php";
+    window.location.href = "http://10.0.0.102/DOM/files/DOMPlanner/planner.php";
 });
 document.querySelector('.dropdown-content button:nth-child(3)').addEventListener('click', function() {
-    window.location.href = "http://10.0.0.136/planner.php";
+    window.location.href = "http://10.0.0.136/DOM/files/DOMPlanner/planner.php";
 });
 document.querySelector('.dropdown-content button:nth-child(4)').addEventListener('click', function() {
-    window.location.href = "http://10.0.0.125/planner.php";
+    window.location.href = "http://10.0.0.125/DOM/files/DOMPlanner/planner.php";
 });
 document.querySelector('.dropdown-content button:nth-child(5)').addEventListener('click', function() {
-    window.location.href = "http://10.0.0.164/planner.php";
+    window.location.href = "http://10.0.0.164/DOM/files/DOMPlanner/planner.php";
 });
 
 const buttons = document.querySelectorAll('.btns-form button');
@@ -1730,14 +1730,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 // Step 4: Fetch product model name
-                const modelNamePromise = fetch("/DOM/files/DOMPlanner/fetches/planner_data.php", {
+                const modelNamePromise = fetch("fetches/tablePlanServer.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({ action: "get_plan_value" })
                 })
-                    .then(res => res.json())
-                    .then(data => data.model || "--")
-                    .catch(() => "--");
+                .then(res => res.json())
+                .then(res => res.success ? res.data.model : "--")
+                .catch(() => "--");
 
                 // Step 5: After all data fetched
                 Promise.all([downtimeCountPromise, downtimeDurationPromise, modelNamePromise]).then(
@@ -1747,7 +1747,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         barContainers.forEach(container => {
                             const label = container.querySelector(".label");
                             const bar = container.querySelector(".bar");
-
+///////MUST CHANGE
                             if (label && label.textContent.trim() === "C4 Line:" && bar) {
                                 const targetWidth = Math.round((totalCount / totalPlan) * 100);
 
@@ -1761,7 +1761,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 bar.style.background =
                                     targetWidth >= 100 ? "#3fb045ff" : "#3092fbff";
 
-                                // Update info section
+                                // Update info section MUSTTTTTTTTTTTTTTTT CHANGEEEEEEE
                                 const info = container.parentElement.querySelector("#c4-info");
                                 if (info) {
                                     info.innerHTML = `
@@ -1786,7 +1786,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(updateBars, 5000);
 });
 
-/*document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const barEndpoints = {
         "c4": "http://10.0.0.189/DOM/files/DOMPlanner/fetches/planner_data.php",
         "c7": "http://10.0.0.102/DOM/files/DOMPlanner/fetches/planner_data.php",
@@ -1818,8 +1818,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update a single bar
     const updateBar = async (key, url) => {
         const label = barLabels[key];
-        const baseURL = url.replace("/planner_fetch/planner_data.php", ""); // derive base ip
-
+        const baseURL = url.replace("/DOM/files/DOMPlanner/fetches/planner_data.php", ""); // derive base ip
+        console.log(baseURL);
         try {
             // 1️⃣ Fetch total plan & total count
             const response = await fetch(url);
@@ -1830,13 +1830,17 @@ document.addEventListener("DOMContentLoaded", () => {
             // 2️⃣ Fetch model name
             let modelName = "--";
             try {
-                const modelResponse = await fetch(url, {
+                const modelResponse = await fetch(url.replace("planner_data.php", "tablePlanServer.php"), {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({ action: "get_plan_value" })
                 });
+
                 const modelData = await modelResponse.json();
-                modelName = modelData.model || "--";
+
+                if (modelData.success && modelData.data?.model) {
+                    modelName = modelData.data.model;
+                }
             } catch (err) {
                 console.error(`Model fetch failed for ${label}:`, err);
             }
@@ -1846,12 +1850,12 @@ document.addEventListener("DOMContentLoaded", () => {
             let downtimeDuration = "00:00:00";
             try {
                 // Downtime count
-                const countResponse = await fetch(`${baseURL}/tablePlanServer.php?action=get_downtime_total`);
+                const countResponse = await fetch(`${baseURL}/DOM/files/DOMPlanner/fetches/tablePlanServer.php?action=get_downtime_total`);
                 const countData = await countResponse.json();
                 downtimeCount = countData.total_time || 0;
 
                 // Downtime duration
-                const durationResponse = await fetch(`${baseURL}/tablePlanServer.php?action=get_downtime_duration`);
+                const durationResponse = await fetch(`${baseURL}/DOM/files/DOMPlanner/fetches/tablePlanServer.php?action=get_downtime_duration`);
                 const durationData = await durationResponse.json();
 
                 let totalSeconds = 0;
@@ -1932,7 +1936,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateBars();
     setInterval(updateBars, 6000);
 }); 
-*/ //to hide
+ //to hide
 
 let deleteMode = false;
 

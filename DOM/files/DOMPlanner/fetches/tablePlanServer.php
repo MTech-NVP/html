@@ -426,6 +426,51 @@ if ($action === 'get_by_plan_id_value') {
         }
     }
 
+    if ($action === 'get_plan_value') {
+        header('Content-Type: application/json; charset=utf-8');
+
+        // 1️⃣ Get plan value
+        $stmt = $conn->prepare("SELECT plan FROM PlanSelection WHERE id = 1");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$row || empty($row['plan'])) {
+            echo json_encode([
+                "success" => false,
+                "message" => "No plan selected"
+            ]);
+            exit;
+        }
+
+        // plan value becomes the ID for PlanOutput
+        $id_value = (int)$row['plan'];
+
+        // 2️⃣ Get model based on plan
+        $stmt2 = $conn->prepare("SELECT model FROM PlanOutput WHERE id = ?");
+        $stmt2->bind_param("i", $id_value);
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+        $product_row = $result2->fetch_assoc();
+        $stmt2->close();
+
+        if (!$product_row) {
+            echo json_encode([
+                "success" => false,
+                "message" => "No matching plan output found"
+            ]);
+            exit;
+        }
+
+        // 3️⃣ Success response
+        echo json_encode([
+            "success" => true,
+            "data" => $product_row
+        ]);
+        exit;
+    }
+
     if($action === 'get_upload_logs'){
         // Fetch logs directly from swp_logs
         $result = $conn->query("

@@ -14,37 +14,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($action === 'get_plan_value') {
-    header('Content-Type: application/json; charset=utf-8');
-
-    $stmt = $conn->prepare("SELECT plan FROM PlanSelection WHERE id = 1");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    
-    if (!$row) {
-        echo json_encode(0);
-        exit;
-    }
-
-
-
-    $stmt2 = $conn->prepare("SELECT model FROM PlanOutput WHERE id = ?");
-    $stmt2->bind_param("i", $id_value);
-    $stmt2->execute();
-    $result2 = $stmt2->get_result();
-    $product_row = $result2->fetch_assoc();
-
-    if (!$product_row) {
-        echo json_encode(0);
-        exit;
-    }
-
-    echo json_encode($product_row);
-    exit;
-}
-
-
 /* ===============================
    FALLBACK — ONLY IF NO ACTION
 ================================ */
@@ -78,8 +47,6 @@ if (!$action) {
 
     exit; // 🔑 important: stop script so no extra output
 }
-
-
 
 $conn->close();
 ?>
