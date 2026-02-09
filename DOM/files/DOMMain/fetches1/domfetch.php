@@ -163,7 +163,7 @@ if ($action === 'updateSummary') {
     ");
     $updateSummary->bind_param(
         "diidi",
-        $planProdHrs, $planManpower, $planOuintvaltput,
+        $planProdHrs, $planManpower, $planOutput,
         $planProdHrs, $planManpower
     );
     $success = $updateSummary->execute();

@@ -347,7 +347,7 @@
                         
                         <div class="table-person-container">
                             <div id="pic-header">
-                                List of Production Staffs
+                                List of Operators
                             </div>
                             <table id="table-person">
                                 <thead>
@@ -532,7 +532,7 @@
                     <div id="choose-container" class="edit-persons-container">
                         <span>Choose which staff to edit.</span>
                         <button id="line-leader-edit-button" class="choose-container-buttons">Line Leaders</button>
-                        <button id="prod-staff-edit-button" class="choose-container-buttons">Production Staffs</button>
+                        <button id="prod-staff-edit-button" class="choose-container-buttons">Operators</button>
                     </div>
                     <div id="line-leader-edit-container" class="edit-persons-container">
                         <button class="edit-back-btn" onclick="goBack()">← Back</button>
@@ -637,7 +637,7 @@
                     <div id="choose-add-container" class="edit-persons-container">
                         <span>Choose which staff to create.</span>
                         <button id="line-leader-add-button" class="choose-container-buttons">Line Leaders</button>
-                        <button id="prod-staff-add-button" class="choose-container-buttons">Production Staffs</button>
+                        <button id="prod-staff-add-button" class="choose-container-buttons">Operators</button>
                     </div>
                     <div id="line-leader-add-container" class="add-persons-container">
                         <button class="add-back-btn" onclick="">← Back</button>
@@ -704,7 +704,7 @@
                             <input id="add-picture-ps" type="file" accept="image/*">
                         </div>
                         <div id="submit-button-add-ps-container">
-                            <button id="submit-button-add-ps">Add Production Staff</button>
+                            <button id="submit-button-add-ps">Add Operator</button>
                         </div>
                     </div>
                 </div>
