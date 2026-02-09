@@ -57,7 +57,7 @@
                     <p>The manpower count will be automatically filled in once you select a plan. Please double-check that the count is correct.</p>
                     <br>
 
-                    <span>5. Select a Production Staff.</span>
+                    <span>5. Select an Operator.</span>
                     <p>Choose a designated staff member for each process, and assign who is responsible for each process.</p>
 
                 </div>
